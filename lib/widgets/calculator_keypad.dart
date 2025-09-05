@@ -14,37 +14,57 @@ class CalculatorKeypad extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       child: Column(
         children: [
-          // 第1行: 括弧、変数、区切り文字
+          // 第1行: 数字キー
           _buildKeyRow([
+            _buildKey('7', '7'),
+            _buildKey('8', '8'),
+            _buildKey('9', '9'),
             _buildKey('(', '('),
             _buildKey(')', ')'),
+            _buildKey('DEL', 'DEL'),
+          ]),
+          
+          // 第2行: 数字キー
+          _buildKeyRow([
+            _buildKey('4', '4'),
+            _buildKey('5', '5'),
+            _buildKey('6', '6'),
+            _buildKey('+', '+'),
+            _buildKey('-', '-'),
+            _buildKey('*', '×'),
+          ]),
+          
+          // 第3行: 数字キー
+          _buildKeyRow([
+            _buildKey('1', '1'),
+            _buildKey('2', '2'),
+            _buildKey('3', '3'),
+            _buildKey('/', '÷'),
+            _buildKey('^', 'x^y'),
+            _buildKey('sqrt(', '√'),
+          ]),
+          
+          // 第4行: 数字キーと小数点
+          _buildKeyRow([
+            _buildKey('0', '0'),
+            _buildKey('.', '.'),
             _buildKey('x', 'x'),
             _buildKey('y', 'y'),
             _buildKey('z', 'z'),
-            _buildKey(',', ','),
-          ]),
-          
-          // 第2行: 移動、削除
-          _buildKeyRow([
-            _buildKey('←', '←'),
-            _buildKey('→', '→'),
-            _buildKey('DEL', 'DEL'),
-            _buildKey('^', '^'),
-            _buildKey('sqrt(', '√'),
             _buildKey('cbrt(', '∛'),
           ]),
           
-          // 第3行: 根号、分数
+          // 第5行: 移動、削除
           _buildKeyRow([
-            _buildKey('root(', 'n√'),
+            _buildKey('←', '◀'),
+            _buildKey('→', '▶'),
+            _buildKey('root(', 'ⁿ√'),
             _buildKey('frac(', 'a/b'),
             _buildKey('abs(', '|x|'),
             _buildKey('pi', 'π'),
-            _buildKey('e', 'e'),
-            _buildKey('i', 'i'),
           ]),
           
-          // 第4行: 関数
+          // 第6行: 関数
           _buildKeyRow([
             _buildKey('sin(', 'sin'),
             _buildKey('cos(', 'cos'),
@@ -54,7 +74,7 @@ class CalculatorKeypad extends StatelessWidget {
             _buildKey('n!', 'n!'),
           ]),
           
-          // 第5行: 順列・組み合わせ
+          // 第7行: 順列・組み合わせ
           _buildKeyRow([
             _buildKey('nPr(', 'P'),
             _buildKey('nCr(', 'C'),
@@ -64,19 +84,14 @@ class CalculatorKeypad extends StatelessWidget {
             _buildKey('Im(', 'Im'),
           ]),
           
-          // 第6行: 複素数、演算子
+          // 第8行: 複素数、演算子
           _buildKeyRow([
             _buildKey('conj(', 'z*'),
             _buildKey('|', '|'),
-            _buildKey('/', '÷'),
-            _buildKey('*', '×'),
-            _buildKey('-', '-'),
-            _buildKey('+', '+'),
-          ]),
-          
-          // 第7行: 等号
-          _buildKeyRow([
-            _buildKey('=', '=', isWide: true, isPrimary: true),
+            _buildKey('e', 'e'),
+            _buildKey('i', 'i'),
+            _buildKey(',', ','),
+            _buildKey('=', '=', isPrimary: true),
           ]),
         ],
       ),
@@ -94,7 +109,8 @@ class CalculatorKeypad extends StatelessWidget {
   Widget _buildKey(String value, String display, {bool isWide = false, bool isPrimary = false}) {
     return Container(
       margin: const EdgeInsets.all(1.5),
-              child: Material(
+      height: 50,
+      child: Material(
           color: _getKeyColor(value),
           borderRadius: BorderRadius.circular(6),
           elevation: isPrimary ? 2 : 0,
@@ -113,7 +129,7 @@ class CalculatorKeypad extends StatelessWidget {
                 child: Text(
                   display,
                   style: TextStyle(
-                    fontSize: isWide ? 18 : 12,
+                    fontSize: isWide ? 20 : 16,
                     fontWeight: isPrimary ? FontWeight.bold : FontWeight.w600,
                     color: _getTextColor(value),
                   ),
@@ -140,6 +156,18 @@ class CalculatorKeypad extends StatelessWidget {
       case '*':
       case '/':
         return Colors.orange.shade100;
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '.':
+        return Colors.blue.shade50;
       default:
         return Colors.grey.shade50;
     }
@@ -159,6 +187,18 @@ class CalculatorKeypad extends StatelessWidget {
       case '*':
       case '/':
         return Colors.orange.shade800;
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '.':
+        return Colors.blue.shade800;
       default:
         return Colors.black87;
     }

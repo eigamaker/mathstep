@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/calculator_keypad.dart';
 import '../widgets/latex_preview.dart';
-import '../widgets/input_method_selector.dart';
 import '../services/chatgpt_service.dart';
 import '../models/math_expression.dart';
-import '../models/solution.dart';
 import 'solution_screen.dart';
+import 'guide_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +16,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _textController = TextEditingController();
+  final FocusNode _textFieldFocus = FocusNode();
   String _currentExpression = '';
   String _latexExpression = '';
   bool _isLoading = false;
@@ -25,11 +25,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     _textController.addListener(_onTextChanged);
+    // アプリ起動時にテキストフィールドにフォーカスを当てる
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _textFieldFocus.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     _textController.dispose();
+    _textFieldFocus.dispose();
     super.dispose();
   }
 
@@ -58,6 +63,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _insertText(String text) {
+    // テキストフィールドにフォーカスを当てる
+    _textFieldFocus.requestFocus();
+    
     final cursorPosition = _textController.selection.baseOffset;
     final textBefore = _textController.text.substring(0, cursorPosition);
     final textAfter = _textController.text.substring(cursorPosition);
@@ -69,6 +77,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _deleteText() {
+    // テキストフィールドにフォーカスを当てる
+    _textFieldFocus.requestFocus();
+    
     final cursorPosition = _textController.selection.baseOffset;
     if (cursorPosition > 0) {
       final textBefore = _textController.text.substring(0, cursorPosition - 1);
@@ -82,6 +93,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _moveCursor(int direction) {
+    // テキストフィールドにフォーカスを当てる
+    _textFieldFocus.requestFocus();
+    
     final cursorPosition = _textController.selection.baseOffset;
     final newPosition = (cursorPosition + direction).clamp(0, _textController.text.length);
     
@@ -143,12 +157,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('MathStep'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GuideScreen(),
+                ),
+              );
+            },
+            tooltip: '使い方ガイド',
+          ),
+        ],
       ),
       body: Column(
         children: [
-          // 入力方法選択
-          const InputMethodSelector(),
-          
           // LaTeXプレビュー
           Expanded(
             flex: 2,
@@ -159,26 +184,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'プレビュー',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: _latexExpression.isNotEmpty
-                        ? LatexPreview(expression: _latexExpression)
-                        : const Center(
-                            child: Text(
-                              '数式を入力してください',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                  ),
-                ],
-              ),
+              child: _latexExpression.isNotEmpty
+                  ? LatexPreview(expression: _latexExpression)
+                  : const Center(
+                      child: Text(
+                        '数式を入力してください',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
             ),
           ),
           
@@ -187,8 +200,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
               controller: _textController,
+              focusNode: _textFieldFocus,
               decoration: const InputDecoration(
-                labelText: '数式入力（電卓シンタックス）',
+                labelText: '数式を入力',
                 border: OutlineInputBorder(),
                 hintText: '例: (2x+1)/(x-3) = cbrt(x+2)',
               ),

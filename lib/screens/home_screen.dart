@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/calculator_keypad.dart';
-import '../widgets/latex_preview.dart';
+import '../widgets/latex_preview_scroll.dart';
 import '../services/chatgpt_service.dart';
 import '../models/math_expression.dart';
 import 'solution_screen.dart';
 import 'guide_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import '../services/ocr_service.dart';
+import '../services/vision_formula_service.dart';
+import '../utils/syntax_converter.dart';
+import '../utils/ocr_postprocessor.dart';
+import 'image_region_picker_screen.dart';
+import 'formula_editor_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +29,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _currentExpression = '';
   String _latexExpression = '';
   bool _isLoading = false;
+  final ImagePicker _picker = ImagePicker();
+  String? _lastOcrImagePath;
+  Uint8List? _lastCroppedBytes;
 
   @override
   void initState() {
@@ -41,8 +53,223 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _onTextChanged() {
     setState(() {
       _currentExpression = _textController.text;
-      _latexExpression = _convertToLatex(_currentExpression);
+      _latexExpression = SyntaxConverter.calculatorToLatex(_currentExpression);
     });
+  }
+
+  Future<void> _refineWithVision() async {
+    try {
+      if (_lastCroppedBytes == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('まず画像から範囲を選択してください')),
+        );
+        return;
+      }
+      final service = VisionFormulaService();
+      final expr = await service.extractCalculatorSyntax(_lastCroppedBytes!, mimeType: 'image/png');
+      if (!mounted) return;
+      final normalized = OcrPostprocessor.toCalculatorSyntax(expr);
+      _textController.text = normalized;
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('AI抽出に失敗しました: $e')),
+      );
+    }
+  }
+
+  Future<void> _openFormulaEditor() async {
+    final edited = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FormulaEditorScreen(initialCalculatorSyntax: _textController.text),
+      ),
+    );
+    if (edited is String) {
+      _textController.text = edited;
+    }
+  }
+
+  Future<void> _pickFromCameraAndRecognizeWithRegion() async {
+    try {
+      final XFile? shot = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+      if (shot == null) return;
+      _lastOcrImagePath = shot.path;
+      if (!mounted) return;
+      final Uint8List? cropped = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ImageRegionPickerScreen(imagePath: shot.path)),
+      );
+      if (cropped == null) return;
+      _lastCroppedBytes = cropped;
+      _lastCroppedBytes = cropped;
+      final ocr = OcrService();
+      final raw = await ocr.extractTextFromImageBytes(cropped);
+      if (!mounted) return;
+      if (raw.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('選択範囲からテキストを検出できませんでした')),
+        );
+        return;
+      }
+      final normalized = OcrPostprocessor.toCalculatorSyntax(raw);
+      _textController.text = normalized;
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('OCR中にエラーが発生しました: $e')),
+      );
+    }
+  }
+
+  Future<void> _pickFromGalleryAndRecognize() async {
+    try {
+      final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+      if (picked == null) return;
+      _lastOcrImagePath = picked.path;
+      if (!mounted) return;
+      final Uint8List? cropped = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ImageRegionPickerScreen(imagePath: picked.path)),
+      );
+      if (cropped == null) return;
+      final ocr = OcrService();
+      final raw = await ocr.extractTextFromImageBytes(cropped);
+      if (!mounted) return;
+      if (raw.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('選択範囲からテキストを検出できませんでした')),
+        );
+        return;
+      }
+      final normalized = OcrPostprocessor.toCalculatorSyntax(raw);
+      _textController.text = normalized;
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('OCR中にエラーが発生しました: $e')),
+      );
+    }
+  }
+
+  // 改良版: OCR結果を電卓記法に寄せる軽量正規化
+  String _normalizeOcrToCalculatorV2(String raw) {
+    String s = raw;
+    s = s.replaceAll('\r', ' ').replaceAll('\n', ' ');
+    s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
+    s = s
+        .replaceAll('×', '*')
+        .replaceAll('·', '*')
+        .replaceAll('⋅', '*')
+        .replaceAll('÷', '/')
+        .replaceAll('−', '-')
+        .replaceAll('—', '-')
+        .replaceAll('π', 'pi')
+        .replaceAll('Π', 'pi');
+    s = s.replaceAllMapped(RegExp(r'√\s*\(([^\)]+)\)'), (m) => 'sqrt(${m.group(1)})');
+    s = s.replaceAllMapped(RegExp(r'√\s*([A-Za-z0-9]+)'), (m) => 'sqrt(${m.group(1)})');
+    s = s.replaceAllMapped(RegExp(r'\|\s*([^|]+?)\s*\|'), (m) => 'abs(${m.group(1)})');
+    s = s.replaceAll(RegExp(r'\s*\(\s*'), '(');
+    s = s.replaceAll(RegExp(r'\s*\)\s*'), ')');
+    return s;
+  }
+
+  // OCR結果を電卓記法に寄せる軽量正規化
+  String _normalizeOcrToCalculator(String raw) {
+    String s = raw;
+    // unify whitespace
+    s = s.replaceAll('\r', ' ').replaceAll('\n', ' ');
+    s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
+    // common math symbols
+    s = s
+        .replaceAll('×', '*')
+        .replaceAll('·', '*')
+        .replaceAll('⋅', '*')
+        .replaceAll('÷', '/')
+        .replaceAll('−', '-')
+        .replaceAll('—', '-')
+        .replaceAll('π', 'pi')
+        .replaceAll('Π', 'pi');
+    // sqrt forms
+    s = s.replaceAllMapped(RegExp(r'√\s*\(([^\)]+)\)'), (m) => 'sqrt(${m.group(1)})');
+    s = s.replaceAllMapped(RegExp(r'√\s*([A-Za-z0-9]+)'), (m) => 'sqrt(${m.group(1)})');
+    // absolute value |expr|
+    s = s.replaceAllMapped(RegExp(r'\|\s*([^|]+?)\s*\|'), (m) => 'abs(${m.group(1)})');
+    // cleanup spaces around parens
+    s = s.replaceAll(RegExp(r'\s*\(\s*'), '(');
+    s = s.replaceAll(RegExp(r'\s*\)\s*'), ')');
+    return s;
+  }
+
+  Future<void> _pickFromCameraAndRecognize() async {
+    try {
+      final XFile? shot = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+      if (shot == null) return;
+
+      _lastOcrImagePath = shot.path;
+      final ocr = OcrService();
+      final candidates = await ocr.extractLineCandidates(shot.path);
+      if (!mounted) return;
+
+      if (candidates.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('画像からテキストを検出できませんでした')),
+        );
+        return;
+      }
+
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          final allJoined = candidates.join(' ');
+          final list = <String>['(すべて結合)', ...candidates];
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: Text('画像から数式を選択', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: list.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, i) {
+                        final t = i == 0 ? allJoined : list[i];
+                        final label = i == 0 ? list[i] : t;
+                        return ListTile(
+                          title: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
+                          onTap: () {
+                            Navigator.pop(context, t);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ).then((selected) {
+        if (selected is String && selected.trim().isNotEmpty) {
+          final normalized = _normalizeOcrToCalculator(selected);
+          // テキストフィールドに反映（UI表示＋プロンプトの一部として利用）
+          _textController.text = normalized;
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('OCR中にエラーが発生しました: $e')),
+      );
+    }
   }
 
   String _convertToLatex(String calculatorSyntax) {
@@ -159,6 +386,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: _openFormulaEditor,
+            tooltip: '式エディタを開く',
+          ),
+          IconButton(
+            icon: const Icon(Icons.auto_fix_high),
+            onPressed: _refineWithVision,
+            tooltip: 'AIで数式抽出 (Vision)',
+          ),
+          IconButton(
+            icon: const Icon(Icons.photo_library_outlined),
+            onPressed: _pickFromGalleryAndRecognize,
+            tooltip: 'ギャラリーから範囲指定',
+          ),
+          IconButton(
+            icon: const Icon(Icons.photo_camera_outlined),
+            onPressed: _pickFromCameraAndRecognizeWithRegion,
+            tooltip: 'カメラで範囲指定',
+          ),
+          IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () {
               Navigator.push(
@@ -185,7 +432,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: _latexExpression.isNotEmpty
-                  ? LatexPreview(expression: _latexExpression)
+                  ? LatexPreviewScrollable(expression: _latexExpression)
                   : const Center(
                       child: Text(
                         '数式を入力してください',

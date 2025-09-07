@@ -116,6 +116,67 @@ class SyntaxConverter {
       (match) => '\\overline{${match.group(1)}}',
     );
     
+    // --- Calculus extensions (Math III) ---
+    String _inf(String s) => s.replaceAll('inf', '\\infty').replaceAll('∞', '\\infty');
+
+    // Definite integral: integral(lower,upper,expr,var) or int(lower,upper,expr,var)
+    latex = latex.replaceAllMapped(
+      RegExp(r'integral\(([^,]+),([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\int_{${_inf(m.group(1)!.trim())}}^{${_inf(m.group(2)!.trim())}} ${m.group(3)!.trim()} \\, d${m.group(4)!.trim()}',
+    );
+    latex = latex.replaceAllMapped(
+      RegExp(r'int\(([^,]+),([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\int_{${_inf(m.group(1)!.trim())}}^{${_inf(m.group(2)!.trim())}} ${m.group(3)!.trim()} \\, d${m.group(4)!.trim()}',
+    );
+
+    // Indefinite integral: integral(expr,var) or int(expr,var)
+    latex = latex.replaceAllMapped(
+      RegExp(r'(?:integral|int)\(([^,]+),([^)]+)\)'),
+      (m) => '\\int ${m.group(1)!.trim()} \\, d${m.group(2)!.trim()}',
+    );
+
+    // Derivatives: diff(expr,var), diff2(expr,var), partial(expr,var)
+    latex = latex.replaceAllMapped(
+      RegExp(r'diff2\(([^,]+),([^)]+)\)'),
+      (m) => '\\frac{d^{2}}{d ${m.group(2)!.trim()}^{2}} ${m.group(1)!.trim()}',
+    );
+    latex = latex.replaceAllMapped(
+      RegExp(r'diff\(([^,]+),([^)]+)\)'),
+      (m) => '\\frac{d}{d ${m.group(2)!.trim()}} ${m.group(1)!.trim()}',
+    );
+    latex = latex.replaceAllMapped(
+      RegExp(r'partial\(([^,]+),([^)]+)\)'),
+      (m) => '\\frac{\\partial}{\\partial ${m.group(2)!.trim()}} ${m.group(1)!.trim()}',
+    );
+
+    // Limit: limit(var,value,expr) or lim(var,value,expr)
+    latex = latex.replaceAllMapped(
+      RegExp(r'(?:limit|lim)\(([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\lim_{${m.group(1)!.trim()} \\to ${_inf(m.group(2)!.trim())}} ${m.group(3)!.trim()}',
+    );
+
+    // Sum/Prod with index variable
+    latex = latex.replaceAllMapped(
+      RegExp(r'sum\(\s*([a-zA-Z]\\w*)\s*=\s*([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\sum_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
+    );
+    latex = latex.replaceAllMapped(
+      RegExp(r'sum\(\s*([a-zA-Z]\\w*),([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\sum_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
+    );
+    latex = latex.replaceAllMapped(
+      RegExp(r'prod\(\s*([a-zA-Z]\\w*)\s*=\s*([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\prod_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
+    );
+    latex = latex.replaceAllMapped(
+      RegExp(r'prod\(\s*([a-zA-Z]\\w*),([^,]+),([^,]+),([^)]+)\)'),
+      (m) => '\\prod_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
+    );
+
+    // Piecewise and matrix
+    latex = _convertCases(latex);
+    latex = _convertMatrix(latex);
+
     return latex;
   }
   
@@ -137,5 +198,122 @@ class SyntaxConverter {
     normalized = normalized.replaceAll('＝', '=');
     
     return normalized;
+  }
+
+  // --- Helpers: piecewise and matrix ---
+  static String _convertCases(String s) {
+    const head = 'cases(';
+    int idx = 0;
+    while (true) {
+      idx = s.indexOf(head, idx);
+      if (idx == -1) break;
+      final start = idx + head.length;
+      final end = _findMatchingParen(s, start - 1);
+      if (end == -1) break;
+      final inner = s.substring(start, end);
+      final latex = _casesInnerToLatex(inner);
+      s = s.substring(0, idx) + latex + s.substring(end + 1);
+      idx += latex.length;
+    }
+    return s;
+  }
+
+  static String _casesInnerToLatex(String inner) {
+    final items = _splitTopLevelGroups(inner);
+    final lines = <String>[];
+    for (final g in items) {
+      final pair = _splitTopLevelCommas(_stripParens(g));
+      if (pair.length >= 2) {
+        final expr = pair[0].trim();
+        final condRaw = pair[1].trim();
+        final cond = (condRaw.toLowerCase() == 'otherwise' || condRaw.toLowerCase() == 'else')
+            ? '\\text{otherwise}'
+            : '\\text{if } ' + condRaw;
+        lines.add('$expr & $cond');
+      }
+    }
+    if (lines.isEmpty) return inner; // fallback
+    return '\\begin{cases} ' + lines.join(' \\ ') + ' \\end{cases}';
+  }
+
+  static String _convertMatrix(String s) {
+    const head = 'matrix(';
+    int idx = 0;
+    while (true) {
+      idx = s.indexOf(head, idx);
+      if (idx == -1) break;
+      final start = idx + head.length;
+      final end = _findMatchingParen(s, start - 1);
+      if (end == -1) break;
+      final inner = s.substring(start, end);
+      final latex = _matrixInnerToLatex(inner);
+      s = s.substring(0, idx) + latex + s.substring(end + 1);
+      idx += latex.length;
+    }
+    return s;
+  }
+
+  static String _matrixInnerToLatex(String inner) {
+    final rows = _splitTopLevelGroups(inner).map((g) => _stripParens(g)).toList();
+    if (rows.isEmpty) return inner;
+    final rowLatex = rows.map((r) => _splitTopLevelCommas(r).map((e) => e.trim()).join(' & ')).join(' \\ ');
+    return '\\begin{bmatrix} ' + rowLatex + ' \\end{bmatrix}';
+  }
+
+  static int _findMatchingParen(String s, int openIndex) {
+    int depth = 0;
+    for (int i = openIndex; i < s.length; i++) {
+      final c = s[i];
+      if (c == '(') depth++;
+      if (c == ')') {
+        depth--;
+        if (depth == 0) return i;
+      }
+    }
+    return -1;
+  }
+
+  static List<String> _splitTopLevelGroups(String s) {
+    final res = <String>[];
+    int depth = 0;
+    int start = -1;
+    for (int i = 0; i < s.length; i++) {
+      final c = s[i];
+      if (c == '(') {
+        if (depth == 0) start = i;
+        depth++;
+      } else if (c == ')') {
+        depth--;
+        if (depth == 0 && start >= 0) {
+          res.add(s.substring(start, i + 1));
+        }
+      }
+    }
+    return res;
+  }
+
+  static List<String> _splitTopLevelCommas(String s) {
+    final res = <String>[];
+    int depth = 0;
+    int last = 0;
+    for (int i = 0; i < s.length; i++) {
+      final c = s[i];
+      if (c == '(') depth++;
+      if (c == ')') depth--;
+      if (c == ',' && depth == 0) {
+        res.add(s.substring(last, i));
+        last = i + 1;
+      }
+    }
+    res.add(s.substring(last));
+    return res;
+  }
+
+  static String _stripParens(String s) {
+    String t = s.trim();
+    if (t.startsWith('(') && t.endsWith(')')) {
+      return t.substring(1, t.length - 1);
+    }
+    return t;
   }
 }

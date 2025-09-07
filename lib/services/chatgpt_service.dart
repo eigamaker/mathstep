@@ -8,7 +8,9 @@ class ChatGptService {
   Future<Solution> generateSolution(String latexExpression) async {
     // API設定が正しく読み込まれているかチェック
     if (!ApiConfig.isConfigured) {
-      throw Exception('OpenAI API key is not configured. Please check your .env file.');
+      // APIキーが設定されていない場合は、モックデータを返すが、ユーザーに通知する
+      print('Warning: OpenAI API key is not configured. Using mock data.');
+      return _createMockSolution(latexExpression);
     }
     
     final systemPrompt = '''

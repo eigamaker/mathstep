@@ -23,6 +23,15 @@ class OcrPostprocessor {
         .replaceAll('π', 'pi')
         .replaceAll('Π', 'pi');
 
+    // Character misrecognition fixes
+    // Fix common OCR errors where 'x' is misread as 'ae' (especially in cursive handwriting)
+    s = s.replaceAll(RegExp(r'\bae\b'), 'x');
+    
+    // Fix other common character misrecognitions in mathematical context
+    // Only apply these when they appear as standalone words (using word boundaries)
+    s = s.replaceAll(RegExp(r'\bcl\b'), 'd'); // 'cl' often misread as 'd' in handwriting
+    s = s.replaceAll(RegExp(r'\bco\b'), 'o'); // 'co' often misread as 'o' in handwriting
+
     // sqrt forms: √(expr) -> sqrt(expr), √x -> sqrt(x)
     s = s.replaceAllMapped(RegExp(r'√\s*\(([^\)]+)\)'), (m) => 'sqrt(${m.group(1)})');
     s = s.replaceAllMapped(RegExp(r'√\s*([A-Za-z0-9]+)'), (m) => 'sqrt(${m.group(1)})');

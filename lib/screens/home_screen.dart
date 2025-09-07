@@ -7,7 +7,6 @@ import '../models/math_expression.dart';
 import 'solution_screen.dart';
 import 'guide_screen.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'dart:typed_data';
 import '../services/ocr_service.dart';
 import '../services/vision_formula_service.dart';
@@ -15,6 +14,7 @@ import '../utils/syntax_converter.dart';
 import '../utils/ocr_postprocessor.dart';
 import 'image_region_picker_screen.dart';
 import 'formula_editor_screen.dart';
+import '../config/api_config.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -30,7 +30,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _latexExpression = '';
   bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
-  String? _lastOcrImagePath;
   Uint8List? _lastCroppedBytes;
 
   @override
@@ -94,7 +93,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     try {
       final XFile? shot = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
       if (shot == null) return;
-      _lastOcrImagePath = shot.path;
       if (!mounted) return;
       final Uint8List? cropped = await Navigator.push(
         context,
@@ -126,7 +124,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     try {
       final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
       if (picked == null) return;
-      _lastOcrImagePath = picked.path;
       if (!mounted) return;
       final Uint8List? cropped = await Navigator.push(
         context,
@@ -152,142 +149,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  // 改良版: OCR結果を電卓記法に寄せる軽量正規化
-  String _normalizeOcrToCalculatorV2(String raw) {
-    String s = raw;
-    s = s.replaceAll('\r', ' ').replaceAll('\n', ' ');
-    s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
-    s = s
-        .replaceAll('×', '*')
-        .replaceAll('·', '*')
-        .replaceAll('⋅', '*')
-        .replaceAll('÷', '/')
-        .replaceAll('−', '-')
-        .replaceAll('—', '-')
-        .replaceAll('π', 'pi')
-        .replaceAll('Π', 'pi');
-    s = s.replaceAllMapped(RegExp(r'√\s*\(([^\)]+)\)'), (m) => 'sqrt(${m.group(1)})');
-    s = s.replaceAllMapped(RegExp(r'√\s*([A-Za-z0-9]+)'), (m) => 'sqrt(${m.group(1)})');
-    s = s.replaceAllMapped(RegExp(r'\|\s*([^|]+?)\s*\|'), (m) => 'abs(${m.group(1)})');
-    s = s.replaceAll(RegExp(r'\s*\(\s*'), '(');
-    s = s.replaceAll(RegExp(r'\s*\)\s*'), ')');
-    return s;
-  }
 
-  // OCR結果を電卓記法に寄せる軽量正規化
-  String _normalizeOcrToCalculator(String raw) {
-    String s = raw;
-    // unify whitespace
-    s = s.replaceAll('\r', ' ').replaceAll('\n', ' ');
-    s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
-    // common math symbols
-    s = s
-        .replaceAll('×', '*')
-        .replaceAll('·', '*')
-        .replaceAll('⋅', '*')
-        .replaceAll('÷', '/')
-        .replaceAll('−', '-')
-        .replaceAll('—', '-')
-        .replaceAll('π', 'pi')
-        .replaceAll('Π', 'pi');
-    // sqrt forms
-    s = s.replaceAllMapped(RegExp(r'√\s*\(([^\)]+)\)'), (m) => 'sqrt(${m.group(1)})');
-    s = s.replaceAllMapped(RegExp(r'√\s*([A-Za-z0-9]+)'), (m) => 'sqrt(${m.group(1)})');
-    // absolute value |expr|
-    s = s.replaceAllMapped(RegExp(r'\|\s*([^|]+?)\s*\|'), (m) => 'abs(${m.group(1)})');
-    // cleanup spaces around parens
-    s = s.replaceAll(RegExp(r'\s*\(\s*'), '(');
-    s = s.replaceAll(RegExp(r'\s*\)\s*'), ')');
-    return s;
-  }
 
-  Future<void> _pickFromCameraAndRecognize() async {
-    try {
-      final XFile? shot = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
-      if (shot == null) return;
 
-      _lastOcrImagePath = shot.path;
-      final ocr = OcrService();
-      final candidates = await ocr.extractLineCandidates(shot.path);
-      if (!mounted) return;
-
-      if (candidates.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('画像からテキストを検出できませんでした')),
-        );
-        return;
-      }
-
-      await showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) {
-          final allJoined = candidates.join(' ');
-          final list = <String>['(すべて結合)', ...candidates];
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: Text('画像から数式を選択', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  Flexible(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, i) {
-                        final t = i == 0 ? allJoined : list[i];
-                        final label = i == 0 ? list[i] : t;
-                        return ListTile(
-                          title: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
-                          onTap: () {
-                            Navigator.pop(context, t);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ).then((selected) {
-        if (selected is String && selected.trim().isNotEmpty) {
-          final normalized = _normalizeOcrToCalculator(selected);
-          // テキストフィールドに反映（UI表示＋プロンプトの一部として利用）
-          _textController.text = normalized;
-        }
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OCR中にエラーが発生しました: $e')),
-      );
-    }
-  }
-
-  String _convertToLatex(String calculatorSyntax) {
-    // 基本的な変換（詳細は後で実装）
-    String latex = calculatorSyntax;
-    latex = latex.replaceAll('frac(', r'\frac{');
-    latex = latex.replaceAll('sqrt(', r'\sqrt{');
-    latex = latex.replaceAll('cbrt(', r'\sqrt[3]{');
-    latex = latex.replaceAll('sin(', r'\sin(');
-    latex = latex.replaceAll('cos(', r'\cos(');
-    latex = latex.replaceAll('tan(', r'\tan(');
-    latex = latex.replaceAll('ln(', r'\ln(');
-    latex = latex.replaceAll('log(', r'\log(');
-    latex = latex.replaceAll('pi', r'\pi');
-    latex = latex.replaceAll('e', 'e');
-    latex = latex.replaceAll('i', 'i');
-    return latex;
-  }
 
   void _insertText(String text) {
     // テキストフィールドにフォーカスを当てる
@@ -344,6 +208,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     try {
+      // APIキーの設定状況をチェック
+      final isApiConfigured = await _checkApiConfiguration();
+      
+      if (!isApiConfigured) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('APIキーが設定されていません。デモデータを表示します。'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('ChatGPTに送信中...'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+
       final chatGptService = ChatGptService();
       final solution = await chatGptService.generateSolution(_latexExpression);
       
@@ -375,6 +262,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<bool> _checkApiConfiguration() async {
+    try {
+      // API設定をチェック
+      return ApiConfig.isConfigured;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -448,11 +344,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: TextField(
               controller: _textController,
               focusNode: _textFieldFocus,
+              keyboardType: TextInputType.none, // デフォルトキーボードを無効化
+              showCursor: true,
               decoration: const InputDecoration(
                 labelText: '数式を入力',
                 border: OutlineInputBorder(),
                 hintText: '例: (2x+1)/(x-3) = cbrt(x+2)',
               ),
+              onTap: () {
+                // タップ時にフォーカスを維持するが、キーボードは表示しない
+                _textFieldFocus.requestFocus();
+              },
             ),
           ),
           

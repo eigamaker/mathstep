@@ -76,6 +76,12 @@ class _FormulaEditorScreenState extends State<FormulaEditorScreen> {
               maxLines: null,
               minLines: 5,
               onChanged: (_) => setState(() {}),
+              onTap: () {
+                // タップ時にフォーカスを維持する
+                _controller.selection = TextSelection.fromPosition(
+                  TextPosition(offset: _controller.text.length),
+                );
+              },
             ),
           ),
           const SizedBox(height: 8),

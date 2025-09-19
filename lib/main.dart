@@ -7,8 +7,13 @@ import 'screens/history_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // .envファイルを読み込み
-  await dotenv.load(fileName: ".env");
+  // .envファイルを読み込み（存在する場合のみ）
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    // .envファイルが存在しない場合は無視
+    print('Warning: .env file not found. Using default configuration.');
+  }
   
   runApp(const ProviderScope(child: MathStepApp()));
 }

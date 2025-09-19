@@ -6,13 +6,7 @@ import '../services/chatgpt_service.dart';
 import '../models/math_expression.dart';
 import 'solution_screen.dart';
 import 'guide_screen.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
-import '../services/ocr_service.dart';
-import '../services/vision_formula_service.dart';
 import '../utils/syntax_converter.dart';
-import '../utils/ocr_postprocessor.dart';
-import 'image_region_picker_screen.dart';
 import 'formula_editor_screen.dart';
 import '../config/api_config.dart';
 
@@ -29,8 +23,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _currentExpression = '';
   String _latexExpression = '';
   bool _isLoading = false;
-  final ImagePicker _picker = ImagePicker();
-  Uint8List? _lastCroppedBytes;
 
   @override
   void initState() {
@@ -56,26 +48,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  Future<void> _refineWithVision() async {
-    try {
-      if (_lastCroppedBytes == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('まず画像から範囲を選択してください')),
-        );
-        return;
-      }
-      final service = VisionFormulaService();
-      final expr = await service.extractCalculatorSyntax(_lastCroppedBytes!, mimeType: 'image/png');
-      if (!mounted) return;
-      final normalized = OcrPostprocessor.toCalculatorSyntax(expr);
-      _textController.text = normalized;
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('AI抽出に失敗しました: $e')),
-      );
-    }
-  }
 
   Future<void> _openFormulaEditor() async {
     final edited = await Navigator.push(
@@ -89,65 +61,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<void> _pickFromCameraAndRecognizeWithRegion() async {
-    try {
-      final XFile? shot = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
-      if (shot == null) return;
-      if (!mounted) return;
-      final Uint8List? cropped = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => ImageRegionPickerScreen(imagePath: shot.path)),
-      );
-      if (cropped == null) return;
-      _lastCroppedBytes = cropped;
-      _lastCroppedBytes = cropped;
-      final ocr = OcrService();
-      final raw = await ocr.extractTextFromImageBytes(cropped);
-      if (!mounted) return;
-      if (raw.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('選択範囲からテキストを検出できませんでした')),
-        );
-        return;
-      }
-      final normalized = OcrPostprocessor.toCalculatorSyntax(raw);
-      _textController.text = normalized;
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OCR中にエラーが発生しました: $e')),
-      );
-    }
-  }
-
-  Future<void> _pickFromGalleryAndRecognize() async {
-    try {
-      final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
-      if (picked == null) return;
-      if (!mounted) return;
-      final Uint8List? cropped = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => ImageRegionPickerScreen(imagePath: picked.path)),
-      );
-      if (cropped == null) return;
-      final ocr = OcrService();
-      final raw = await ocr.extractTextFromImageBytes(cropped);
-      if (!mounted) return;
-      if (raw.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('選択範囲からテキストを検出できませんでした')),
-        );
-        return;
-      }
-      final normalized = OcrPostprocessor.toCalculatorSyntax(raw);
-      _textController.text = normalized;
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OCR中にエラーが発生しました: $e')),
-      );
-    }
-  }
 
 
 
@@ -287,21 +200,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             tooltip: '式エディタを開く',
           ),
           IconButton(
-            icon: const Icon(Icons.auto_fix_high),
-            onPressed: _refineWithVision,
-            tooltip: 'AIで数式抽出 (Vision)',
-          ),
-          IconButton(
-            icon: const Icon(Icons.photo_library_outlined),
-            onPressed: _pickFromGalleryAndRecognize,
-            tooltip: 'ギャラリーから範囲指定',
-          ),
-          IconButton(
-            icon: const Icon(Icons.photo_camera_outlined),
-            onPressed: _pickFromCameraAndRecognizeWithRegion,
-            tooltip: 'カメラで範囲指定',
-          ),
-          IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () {
               Navigator.push(
@@ -322,17 +220,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             flex: 2,
             child: Container(
               margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey.shade50,
               ),
               child: _latexExpression.isNotEmpty
                   ? LatexPreviewScrollable(expression: _latexExpression)
                   : const Center(
-                      child: Text(
-                        '数式を入力してください',
-                        style: TextStyle(color: Colors.grey),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.functions,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            '数式を入力してください',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'キーパッドまたは式エディタを使用して数式を入力できます',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
             ),
@@ -346,10 +268,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               focusNode: _textFieldFocus,
               keyboardType: TextInputType.none, // デフォルトキーボードを無効化
               showCursor: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: '数式を入力',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: '例: (2x+1)/(x-3) = cbrt(x+2)',
+                prefixIcon: const Icon(Icons.calculate),
+                suffixIcon: _currentExpression.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _textController.clear();
+                        },
+                        tooltip: 'クリア',
+                      )
+                    : null,
               ),
               onTap: () {
                 // タップ時にフォーカスを維持するが、キーボードは表示しない
@@ -364,13 +298,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Container(
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: _isLoading ? null : _generateSolution,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              child: _isLoading
-                  ? const CircularProgressIndicator()
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.auto_awesome),
+              label: _isLoading
+                  ? const Text('処理中...', style: TextStyle(fontSize: 18))
                   : const Text(
                       '解説を表示',
                       style: TextStyle(fontSize: 18),
@@ -383,24 +327,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // 電卓キーパッド
           Expanded(
             flex: 3,
-            child: CalculatorKeypad(
-              onKeyPressed: (key) {
-                switch (key) {
-                  case 'DEL':
-                    _deleteText();
-                    break;
-                  case '←':
-                    _moveCursor(-1);
-                    break;
-                  case '→':
-                    _moveCursor(1);
-                    break;
-                  default:
-                    _insertText(key);
-                }
-              },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: CalculatorKeypad(
+                onKeyPressed: (key) {
+                  switch (key) {
+                    case 'DEL':
+                      _deleteText();
+                      break;
+                    case '←':
+                      _moveCursor(-1);
+                      break;
+                    case '→':
+                      _moveCursor(1);
+                      break;
+                    default:
+                      _insertText(key);
+                  }
+                },
+              ),
             ),
           ),
+          
+          const SizedBox(height: 16),
         ],
       ),
     );

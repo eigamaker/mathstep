@@ -1,4 +1,4 @@
-class MathExpression {
+﻿class MathExpression {
   final String id;
   final String calculatorSyntax;
   final String latexExpression;
@@ -6,7 +6,7 @@ class MathExpression {
   final String? tag;
   final String? notes;
 
-  MathExpression({
+  const MathExpression({
     required this.id,
     required this.calculatorSyntax,
     required this.latexExpression,

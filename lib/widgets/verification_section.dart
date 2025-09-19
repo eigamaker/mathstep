@@ -4,10 +4,7 @@ import '../models/solution.dart';
 class VerificationSection extends StatelessWidget {
   final Verification verification;
 
-  const VerificationSection({
-    super.key,
-    required this.verification,
-  });
+  const VerificationSection({super.key, required this.verification});
 
   @override
   Widget build(BuildContext context) {
@@ -17,33 +14,36 @@ class VerificationSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 定義域チェック
-            if (verification.domainCheck != null && verification.domainCheck!.isNotEmpty) ...[
+            // 螳夂ｾｩ蝓溘メ繧ｧ繝・け
+            if (verification.domainCheck != null &&
+                verification.domainCheck!.isNotEmpty) ...[
               _buildVerificationItem(
                 icon: Icons.domain_verification,
-                title: '定義域チェック',
+                title: 'Domain check',
                 content: verification.domainCheck!,
                 color: Colors.blue,
               ),
               const SizedBox(height: 16),
             ],
-            
-            // 検算
-            if (verification.verification != null && verification.verification!.isNotEmpty) ...[
+
+            // Verification
+            if (verification.verification != null &&
+                verification.verification!.isNotEmpty) ...[
               _buildVerificationItem(
                 icon: Icons.verified,
-                title: '検算',
+                title: 'Verification',
                 content: verification.verification!,
                 color: Colors.green,
               ),
               const SizedBox(height: 16),
             ],
-            
-            // よくある間違い
-            if (verification.commonMistakes != null && verification.commonMistakes!.isNotEmpty) ...[
+
+            // Common mistakes
+            if (verification.commonMistakes != null &&
+                verification.commonMistakes!.isNotEmpty) ...[
               _buildVerificationItem(
                 icon: Icons.warning,
-                title: 'よくある間違い',
+                title: 'Common pitfalls',
                 content: verification.commonMistakes!,
                 color: Colors.orange,
               ),
@@ -66,14 +66,10 @@ class VerificationSection extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 20,
-          ),
+          child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -89,10 +85,7 @@ class VerificationSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                content,
-                style: const TextStyle(fontSize: 14),
-              ),
+              Text(content, style: const TextStyle(fontSize: 14)),
             ],
           ),
         ),

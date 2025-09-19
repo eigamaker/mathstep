@@ -6,7 +6,7 @@ class Solution {
   final Verification? verification;
   final DateTime timestamp;
 
-  Solution({
+  const Solution({
     required this.id,
     required this.mathExpressionId,
     required this.steps,
@@ -20,7 +20,9 @@ class Solution {
       'id': id,
       'mathExpressionId': mathExpressionId,
       'steps': steps.map((step) => step.toJson()).toList(),
-      'alternativeSolutions': alternativeSolutions?.map((alt) => alt.toJson()).toList(),
+      'alternativeSolutions': alternativeSolutions
+          ?.map((alt) => alt.toJson())
+          .toList(),
       'verification': verification?.toJson(),
       'timestamp': timestamp.toIso8601String(),
     };
@@ -30,11 +32,17 @@ class Solution {
     return Solution(
       id: json['id'],
       mathExpressionId: json['mathExpressionId'],
-      steps: (json['steps'] as List).map((step) => SolutionStep.fromJson(step)).toList(),
+      steps: (json['steps'] as List)
+          .map((step) => SolutionStep.fromJson(step))
+          .toList(),
       alternativeSolutions: json['alternativeSolutions'] != null
-          ? (json['alternativeSolutions'] as List).map((alt) => AlternativeSolution.fromJson(alt)).toList()
+          ? (json['alternativeSolutions'] as List)
+                .map((alt) => AlternativeSolution.fromJson(alt))
+                .toList()
           : null,
-      verification: json['verification'] != null ? Verification.fromJson(json['verification']) : null,
+      verification: json['verification'] != null
+          ? Verification.fromJson(json['verification'])
+          : null,
       timestamp: DateTime.parse(json['timestamp']),
     );
   }
@@ -47,7 +55,7 @@ class SolutionStep {
   final String? latexExpression;
   final bool isExpanded;
 
-  SolutionStep({
+  const SolutionStep({
     required this.id,
     required this.title,
     required this.description,
@@ -97,7 +105,7 @@ class AlternativeSolution {
   final String title;
   final List<SolutionStep> steps;
 
-  AlternativeSolution({
+  const AlternativeSolution({
     required this.id,
     required this.title,
     required this.steps,
@@ -115,7 +123,9 @@ class AlternativeSolution {
     return AlternativeSolution(
       id: json['id'],
       title: json['title'],
-      steps: (json['steps'] as List).map((step) => SolutionStep.fromJson(step)).toList(),
+      steps: (json['steps'] as List)
+          .map((step) => SolutionStep.fromJson(step))
+          .toList(),
     );
   }
 }
@@ -125,7 +135,7 @@ class Verification {
   final String? verification;
   final String? commonMistakes;
 
-  Verification({
+  const Verification({
     this.domainCheck,
     this.verification,
     this.commonMistakes,

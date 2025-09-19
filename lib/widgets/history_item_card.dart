@@ -40,7 +40,9 @@ class HistoryItemCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -54,16 +56,13 @@ class HistoryItemCard extends StatelessWidget {
                     ),
                   Text(
                     DateFormat('MM/dd HH:mm').format(expression.timestamp),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // 数式プレビュー
               Container(
                 width: double.infinity,
@@ -75,9 +74,9 @@ class HistoryItemCard extends StatelessWidget {
                 ),
                 child: LatexPreview(expression: expression.latexExpression),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // 電卓シンタックス
               Text(
                 expression.calculatorSyntax,
@@ -89,7 +88,7 @@ class HistoryItemCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               if (expression.notes != null && expression.notes!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Container(
@@ -109,9 +108,9 @@ class HistoryItemCard extends StatelessWidget {
                   ),
                 ),
               ],
-              
+
               const SizedBox(height: 12),
-              
+
               // アクションボタン
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -155,18 +154,14 @@ class HistoryItemCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 16,
-              color: color,
-            ),
+            Icon(icon, size: 16, color: color),
             const SizedBox(width: 4),
             Text(
               label,

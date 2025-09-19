@@ -38,7 +38,7 @@ class LatexPreviewScrollable extends StatelessWidget {
       return Math.tex(
         expression,
         textStyle: const TextStyle(
-          fontSize: 24,
+          fontSize: 18,
           color: Colors.black87,
         ),
       );

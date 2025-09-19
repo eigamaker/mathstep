@@ -1,61 +1,25 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../models/solution.dart';
+
 import '../config/api_config.dart';
+import '../models/solution.dart';
 
 class ChatGptService {
+  ChatGptService({http.Client? client}) : _client = client;
+
+  final http.Client? _client;
 
   Future<Solution> generateSolution(String latexExpression) async {
-    // API設定が正しく読み込まれているかチェック
     if (!ApiConfig.isConfigured) {
-      // APIキーが設定されていない場合は、モックデータを返すが、ユーザーに通知する
-      print('Warning: OpenAI API key is not configured. Using mock data.');
+      debugPrint('OpenAI API key is not configured. Returning mock data.');
       return _createMockSolution(latexExpression);
     }
-    
-    final systemPrompt = '''
-あなたは受験数学の専門家です。与えられた数式について、以下の形式で詳しく解説してください：
 
-1. ステップバイステップの解法
-2. 別解がある場合はそれも提示
-3. 検算・定義域チェック
-4. よくある間違いポイント
-
-回答は以下のJSON形式で返してください：
-{
-  "steps": [
-    {
-      "id": "step1",
-      "title": "ステップ1のタイトル",
-      "description": "詳細な説明",
-      "latexExpression": "\\LaTeX式（必要に応じて）"
-    }
-  ],
-  "alternativeSolutions": [
-    {
-      "id": "alt1",
-      "title": "別解のタイトル",
-      "steps": [...]
-    }
-  ],
-  "verification": {
-    "domainCheck": "定義域の確認",
-    "verification": "検算結果",
-    "commonMistakes": "よくある間違い"
-  }
-}
-''';
-
-    final userPrompt = '''
-以下の数式について解説してください：
-
-\\[ $latexExpression \\]
-
-受験生向けに分かりやすく、ステップごとに詳しく説明してください。
-''';
-
+    final client = _client ?? http.Client();
     try {
-      final response = await http.post(
+      final response = await client.post(
         Uri.parse(ApiConfig.openaiApiUrl),
         headers: {
           'Content-Type': 'application/json',
@@ -64,116 +28,186 @@ class ChatGptService {
         body: jsonEncode({
           'model': ApiConfig.model,
           'messages': [
-            {'role': 'system', 'content': systemPrompt},
-            {'role': 'user', 'content': userPrompt},
+            {'role': 'system', 'content': _systemPrompt},
+            {'role': 'user', 'content': _buildUserPrompt(latexExpression)},
           ],
           'temperature': ApiConfig.temperature,
           'max_tokens': ApiConfig.maxTokens,
         }),
       );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final content = data['choices'][0]['message']['content'];
-        
-        // JSONレスポンスをパース
-        return _parseSolutionResponse(content);
-      } else {
-        throw Exception('API request failed: ${response.statusCode}');
+      if (response.statusCode != 200) {
+        throw Exception(
+          'API request failed with status ${response.statusCode}',
+        );
       }
-    } catch (e) {
-      // API呼び出しに失敗した場合は、モックデータを返す
+
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final choices = payload['choices'] as List<dynamic>?;
+      final firstChoice = (choices != null && choices.isNotEmpty)
+          ? choices.first as Map<String, dynamic>
+          : null;
+      final message = firstChoice?['message'] as Map<String, dynamic>?;
+      final content = message?['content'] as String?;
+
+      if (content == null || content.isEmpty) {
+        throw const FormatException('Empty response from API');
+      }
+
+      return _parseSolutionResponse(content) ??
+          _createMockSolution(latexExpression);
+    } catch (error, stackTrace) {
+      debugPrint('ChatGptService error: $error\n$stackTrace');
       return _createMockSolution(latexExpression);
+    } finally {
+      if (_client == null) {
+        client.close();
+      }
     }
   }
 
-  Solution _parseSolutionResponse(String content) {
-    try {
-      // JSON部分を抽出
-      final jsonStart = content.indexOf('{');
-      final jsonEnd = content.lastIndexOf('}') + 1;
-      
-      if (jsonStart != -1 && jsonEnd > jsonStart) {
-        final jsonString = content.substring(jsonStart, jsonEnd);
-        final jsonData = jsonDecode(jsonString);
-        
-        return Solution(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          mathExpressionId: '',
-          steps: (jsonData['steps'] as List).map((step) => SolutionStep(
-            id: step['id'],
-            title: step['title'],
-            description: step['description'],
-            latexExpression: step['latexExpression'],
-          )).toList(),
-          alternativeSolutions: jsonData['alternativeSolutions'] != null
-              ? (jsonData['alternativeSolutions'] as List).map((alt) => AlternativeSolution(
-                  id: alt['id'],
-                  title: alt['title'],
-                  steps: (alt['steps'] as List).map((step) => SolutionStep(
-                    id: step['id'],
-                    title: step['title'],
-                    description: step['description'],
-                    latexExpression: step['latexExpression'],
-                  )).toList(),
-                )).toList()
-              : null,
-          verification: jsonData['verification'] != null
-              ? Verification(
-                  domainCheck: jsonData['verification']['domainCheck'],
-                  verification: jsonData['verification']['verification'],
-                  commonMistakes: jsonData['verification']['commonMistakes'],
-                )
-              : null,
-          timestamp: DateTime.now(),
-        );
-      }
-    } catch (e) {
-      // JSON解析に失敗した場合
+  static const _systemPrompt = '''
+You are an expert math tutor for exam preparation. Provide step-by-step explanations covering:
+1. Detailed reasoning for each step
+2. Alternative approaches when they exist
+3. Verification and domain checks
+4. Common pitfalls and reminders
+
+Return the answer in the following JSON shape:
+{
+  "steps": [
+    {
+      "id": "step1",
+      "title": "Step title",
+      "description": "Explanation",
+      "latexExpression": "\\LaTeX expression if needed"
     }
-    
-    // フォールバック: モックデータを返す
-    return _createMockSolution('');
+  ],
+  "alternativeSolutions": [
+    {
+      "id": "alt1",
+      "title": "Alternative approach",
+      "steps": [ ... ]
+    }
+  ],
+  "verification": {
+    "domainCheck": "Domain checks",
+    "verification": "Verification steps",
+    "commonMistakes": "Typical mistakes"
+  }
+}
+''';
+
+  String _buildUserPrompt(String latexExpression) {
+    return '''Explain the following expression for high-school students.
+\\[ $latexExpression \\]
+''';
+  }
+
+  Solution? _parseSolutionResponse(String content) {
+    try {
+      final start = content.indexOf('{');
+      final end = content.lastIndexOf('}');
+      if (start == -1 || end <= start) {
+        return null;
+      }
+
+      final jsonString = content.substring(start, end + 1);
+      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+
+      return Solution(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        mathExpressionId: '',
+        steps: (jsonMap['steps'] as List<dynamic>? ?? [])
+            .map(
+              (step) => SolutionStep(
+                id: step['id'] as String,
+                title: step['title'] as String,
+                description: step['description'] as String,
+                latexExpression: step['latexExpression'] as String?,
+              ),
+            )
+            .toList(),
+        alternativeSolutions:
+            (jsonMap['alternativeSolutions'] as List<dynamic>?)
+                ?.map(
+                  (alt) => AlternativeSolution(
+                    id: alt['id'] as String,
+                    title: alt['title'] as String,
+                    steps: (alt['steps'] as List<dynamic>)
+                        .map(
+                          (step) => SolutionStep(
+                            id: step['id'] as String,
+                            title: step['title'] as String,
+                            description: step['description'] as String,
+                            latexExpression: step['latexExpression'] as String?,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                )
+                .toList(),
+        verification: jsonMap['verification'] != null
+            ? Verification(
+                domainCheck: jsonMap['verification']['domainCheck'] as String?,
+                verification:
+                    jsonMap['verification']['verification'] as String?,
+                commonMistakes:
+                    jsonMap['verification']['commonMistakes'] as String?,
+              )
+            : null,
+        timestamp: DateTime.now(),
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Failed to parse solution response: $error\n$stackTrace');
+      return null;
+    }
   }
 
   Solution _createMockSolution(String latexExpression) {
     return Solution(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       mathExpressionId: '',
-      steps: [
+      steps: const [
         SolutionStep(
           id: 'step1',
-          title: '問題の理解',
-          description: '与えられた数式を分析し、解くべき問題を明確にします。',
+          title: 'Understand the problem',
+          description:
+              'Rephrase the given expression and identify what must be solved.',
         ),
         SolutionStep(
           id: 'step2',
-          title: '解法の適用',
-          description: '適切な数学的手法を用いて問題を解きます。',
+          title: 'Apply a strategy',
+          description:
+              'Select a suitable technique and show the intermediate reasoning.',
         ),
         SolutionStep(
           id: 'step3',
-          title: '答えの確認',
-          description: '得られた答えが正しいかどうかを確認します。',
+          title: 'Verify the answer',
+          description:
+              'Substitute the result back into the original equation to confirm it.',
         ),
       ],
-      alternativeSolutions: [
+      alternativeSolutions: const [
         AlternativeSolution(
           id: 'alt1',
-          title: '別解',
+          title: 'Alternative method',
           steps: [
             SolutionStep(
               id: 'alt_step1',
-              title: '別のアプローチ',
-              description: '異なる方法で問題を解きます。',
+              title: 'Different viewpoint',
+              description:
+                  'Present another approach that reaches the same conclusion.',
             ),
           ],
         ),
       ],
-      verification: Verification(
-        domainCheck: '定義域を確認してください。',
-        verification: '答えを元の式に代入して検算してください。',
-        commonMistakes: '符号の間違いや計算ミスに注意してください。',
+      verification: const Verification(
+        domainCheck:
+            'Confirm the domain restrictions before accepting the answer.',
+        verification: 'Re-evaluate the expression using the obtained solution.',
+        commonMistakes:
+            'Watch out for sign errors and skipped algebraic steps.',
       ),
       timestamp: DateTime.now(),
     );

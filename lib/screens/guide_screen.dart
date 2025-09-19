@@ -70,6 +70,52 @@ class GuideScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildCategory(
+              '積分・微分',
+              [
+                _buildExample('∫x²dx', ['∫', 'x', 'x^y', '2', ',', 'x', ')']),
+                _buildExample('∫₀¹x²dx', ['∫', '0', ',', '1', ',', 'x', 'x^y', '2', ',', 'x', ')']),
+                _buildExample('∫₀^∞e^(-x)dx', ['∫', '0', ',', '∞', ',', 'e', 'x^y', '(', '-', 'x', ')', ',', 'x', ')']),
+                _buildExample('∫sin(x)dx', ['∫', 'sin', 'x', ')', ',', 'x', ')']),
+                _buildExample('∫₀^(π/2)cos(x)dx', ['∫', '0', ',', 'π', '/', '2', ',', 'cos', 'x', ')', ',', 'x', ')']),
+                _buildExample('∫∫f(x,y)dxdy', ['∫', '∫', 'f', '(', 'x', ',', 'y', ')', ',', 'x', ',', 'y', ')']),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green.shade200),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.integration_instructions, color: Colors.green.shade700, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        '積分の入力方法',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade800,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildIntegralGuide('不定積分', '∫f(x)dx', '∫, 被積分関数, 変数'),
+                  const SizedBox(height: 8),
+                  _buildIntegralGuide('定積分', '∫ₐᵇf(x)dx', '∫, 下限, 上限, 被積分関数, 変数'),
+                  const SizedBox(height: 8),
+                  _buildIntegralGuide('重積分', '∫∫f(x,y)dxdy', '∫, ∫, 被積分関数, 変数1, 変数2'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildCategory(
               '変数・複雑な式',
               [
                 _buildExample('x² + 2x + 1', ['x', 'x^y', '2', '+', '2', '×', 'x', '+', '1']),
@@ -102,7 +148,10 @@ class GuideScreen extends StatelessWidget {
                     '• 関数キー（sin, cos, √など）を押すと自動的に「(」が入力されます\n'
                     '• カーソル移動は ◀ ▶ キーを使用してください\n'
                     '• 間違えた場合は DEL キーで削除できます\n'
-                    '• 数式はリアルタイムでプレビューされます',
+                    '• 数式はリアルタイムでプレビューされます\n'
+                    '• 積分記号∫は「∫」キーで入力できます\n'
+                    '• 定積分は「∫, 下限, 上限, 被積分関数, 変数」の順で入力\n'
+                    '• 不定積分は「∫, 被積分関数, 変数」の順で入力',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.blue.shade700,
@@ -190,6 +239,48 @@ class GuideScreen extends StatelessWidget {
           color: Colors.blue.shade800,
         ),
       ),
+    );
+  }
+
+  Widget _buildIntegralGuide(String type, String example, String format) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 80,
+          child: Text(
+            type,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.green.shade700,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                example,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'monospace',
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '入力順序: $format',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.green.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

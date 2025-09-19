@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../config/api_config.dart';
+import '../models/math_expression.dart';
+import '../utils/syntax_converter.dart';
 import '../widgets/calculator_keypad.dart';
 import '../widgets/latex_preview_scroll.dart';
-import '../services/chatgpt_service.dart';
-import '../models/math_expression.dart';
-import 'solution_screen.dart';
-import 'guide_screen.dart';
-import '../utils/syntax_converter.dart';
+import '../providers/expression_provider.dart';
+import '../providers/service_providers.dart';
 import 'formula_editor_screen.dart';
-import '../config/api_config.dart';
+import 'guide_screen.dart';
+import 'solution_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,15 +22,11 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocus = FocusNode();
-  String _currentExpression = '';
-  String _latexExpression = '';
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _textController.addListener(_onTextChanged);
-    // アプリ起動時にテキストフィールドにフォーカスを当てる
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _textFieldFocus.requestFocus();
     });
@@ -36,325 +34,441 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    _textController.removeListener(_onTextChanged);
     _textController.dispose();
     _textFieldFocus.dispose();
     super.dispose();
   }
 
   void _onTextChanged() {
-    setState(() {
-      _currentExpression = _textController.text;
-      _latexExpression = SyntaxConverter.calculatorToLatex(_currentExpression);
-    });
+    ref.read(expressionProvider.notifier).updateInput(_textController.text);
   }
 
-
-  Future<void> _openFormulaEditor() async {
-    final edited = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => FormulaEditorScreen(initialCalculatorSyntax: _textController.text),
-      ),
-    );
-    if (edited is String) {
-      _textController.text = edited;
+  void _focusInput() {
+    if (!_textFieldFocus.hasFocus) {
+      _textFieldFocus.requestFocus();
     }
   }
 
-
-
-
-
+  Future<void> _openFormulaEditor() async {
+    final edited = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            FormulaEditorScreen(initialCalculatorSyntax: _textController.text),
+      ),
+    );
+    if (edited != null) {
+      _textController.value = TextEditingValue(
+        text: edited,
+        selection: TextSelection.collapsed(offset: edited.length),
+      );
+    }
+  }
 
   void _insertText(String text) {
-    // テキストフィールドにフォーカスを当てる
-    _textFieldFocus.requestFocus();
-    
-    final cursorPosition = _textController.selection.baseOffset;
-    final textBefore = _textController.text.substring(0, cursorPosition);
-    final textAfter = _textController.text.substring(cursorPosition);
-    
-    _textController.text = textBefore + text + textAfter;
-    _textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: cursorPosition + text.length),
+    _focusInput();
+    final value = _textController.value;
+    final selection = value.selection;
+    final start = selection.start >= 0 ? selection.start : value.text.length;
+    final end = selection.end >= 0 ? selection.end : value.text.length;
+    final newText = value.text.replaceRange(start, end, text);
+    final position = start + text.length;
+    _textController.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: position),
     );
   }
 
   void _deleteText() {
-    // テキストフィールドにフォーカスを当てる
-    _textFieldFocus.requestFocus();
-    
-    final cursorPosition = _textController.selection.baseOffset;
-    if (cursorPosition > 0) {
-      final textBefore = _textController.text.substring(0, cursorPosition - 1);
-      final textAfter = _textController.text.substring(cursorPosition);
-      
-      _textController.text = textBefore + textAfter;
-      _textController.selection = TextSelection.fromPosition(
-        TextPosition(offset: cursorPosition - 1),
+    _focusInput();
+    final value = _textController.value;
+    final selection = value.selection;
+
+    if (selection.start != selection.end && selection.start >= 0) {
+      final newText = value.text.replaceRange(
+        selection.start,
+        selection.end,
+        '',
+      );
+      _textController.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: selection.start),
+      );
+      return;
+    }
+
+    final cursor = selection.start;
+    if (cursor > 0) {
+      final newText = value.text.replaceRange(cursor - 1, cursor, '');
+      _textController.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: cursor - 1),
       );
     }
   }
 
   void _moveCursor(int direction) {
-    // テキストフィールドにフォーカスを当てる
-    _textFieldFocus.requestFocus();
-    
-    final cursorPosition = _textController.selection.baseOffset;
-    final newPosition = (cursorPosition + direction).clamp(0, _textController.text.length);
-    
-    _textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: newPosition),
-    );
+    _focusInput();
+    final value = _textController.value;
+    final cursor = value.selection.baseOffset;
+    if (cursor < 0) {
+      final offset = direction.isNegative ? 0 : value.text.length;
+      _textController.selection = TextSelection.collapsed(offset: offset);
+      return;
+    }
+    final newPosition = (cursor + direction).clamp(0, value.text.length);
+    _textController.selection = TextSelection.collapsed(offset: newPosition);
   }
 
   Future<void> _generateSolution() async {
-    if (_currentExpression.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('数式を入力してください')),
-      );
+    final expressionState = ref.read(expressionProvider);
+    if (expressionState.input.trim().isEmpty) {
+      _showSnackBar('数式を入力してください');
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    final notifier = ref.read(expressionProvider.notifier);
+    notifier.clearError();
+    notifier.setLoading(true);
 
     try {
-      // APIキーの設定状況をチェック
-      final isApiConfigured = await _checkApiConfiguration();
-      
-      if (!isApiConfigured) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('APIキーが設定されていません。デモデータを表示します。'),
-              duration: Duration(seconds: 3),
-            ),
-          );
-        }
+      if (!ApiConfig.isConfigured) {
+        _showSnackBar('API key is missing. Showing mock data.');
       } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('ChatGPTに送信中...'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
+        _showSnackBar('ChatGPT縺ｫ騾∽ｿ｡荳ｭ...');
       }
 
-      final chatGptService = ChatGptService();
-      final solution = await chatGptService.generateSolution(_latexExpression);
-      
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SolutionScreen(
-              mathExpression: MathExpression(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                calculatorSyntax: _currentExpression,
-                latexExpression: _latexExpression,
-                timestamp: DateTime.now(),
-              ),
-              solution: solution,
+      final chatGptService = ref.read(chatGptServiceProvider);
+      final latexExpression = expressionState.latex.isEmpty
+          ? SyntaxConverter.calculatorToLatex(expressionState.input)
+          : expressionState.latex;
+      final solution = await chatGptService.generateSolution(latexExpression);
+
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SolutionScreen(
+            mathExpression: MathExpression(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              calculatorSyntax: expressionState.input,
+              latexExpression: latexExpression,
+              timestamp: DateTime.now(),
             ),
+            solution: solution,
           ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('エラーが発生しました: $e')),
-        );
-      }
+        ),
+      );
+    } catch (e, stackTrace) {
+      notifier.setError(e.toString());
+      debugPrint('Error in _generateSolution: $e\n$stackTrace');
+      if (!mounted) return;
+      _showSnackBar('エラーが発生しました: ${e.toString()}');
+      _showErrorDialog(e.toString());
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      notifier.setLoading(false);
     }
   }
 
-  Future<bool> _checkApiConfiguration() async {
-    try {
-      // API設定をチェック
-      return ApiConfig.isConfigured;
-    } catch (e) {
-      return false;
-    }
+  void _showSnackBar(
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), duration: duration));
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('エラー詳細'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final expressionState = ref.watch(expressionProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('MathStep'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: _openFormulaEditor,
-            tooltip: '式エディタを開く',
+      appBar: _buildAppBar(),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: _buildLatexPreview(expressionState.latex),
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const GuideScreen(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildExpressionField(expressionState.input),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildGenerateButton(expressionState.isLoading),
+          ),
+          if (expressionState.errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  expressionState.errorMessage!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              );
-            },
-            tooltip: '使い方ガイド',
+              ),
+            ),
+          const SizedBox(height: 16),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _buildCalculator(),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Row(
+        children: [
+          Icon(Icons.calculate, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          const Text('MathStep'),
+        ],
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: _openFormulaEditor,
+          tooltip: 'Open formula editor',
+        ),
+        IconButton(
+          icon: const Icon(Icons.help_outline),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GuideScreen()),
+            );
+          },
+          tooltip: 'Usage guide',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLatexPreview(String latexExpression) {
+    final hasExpression = latexExpression.isNotEmpty;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade50, Colors.purple.shade50],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      body: Column(
+      child: Container(
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.blue.shade100, width: 1),
+        ),
+        child: hasExpression
+            ? LatexPreviewScrollable(expression: latexExpression)
+            : _buildPlaceholder(),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // LaTeXプレビュー
-          Expanded(
-            flex: 2,
-            child: Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.grey.shade50,
-              ),
-              child: _latexExpression.isNotEmpty
-                  ? LatexPreviewScrollable(expression: _latexExpression)
-                  : const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.functions,
-                            size: 48,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            '数式を入力してください',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'キーパッドまたは式エディタを使用して数式を入力できます',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-            ),
-          ),
-          
-          // テキスト入力フィールド
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              controller: _textController,
-              focusNode: _textFieldFocus,
-              keyboardType: TextInputType.none, // デフォルトキーボードを無効化
-              showCursor: true,
-              decoration: InputDecoration(
-                labelText: '数式を入力',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                hintText: '例: (2x+1)/(x-3) = cbrt(x+2)',
-                prefixIcon: const Icon(Icons.calculate),
-                suffixIcon: _currentExpression.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _textController.clear();
-                        },
-                        tooltip: 'クリア',
-                      )
-                    : null,
-              ),
-              onTap: () {
-                // タップ時にフォーカスを維持するが、キーボードは表示しない
-                _textFieldFocus.requestFocus();
-              },
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.functions, size: 48, color: Colors.blue.shade300),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            '数式を入力してください',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          
-          const SizedBox(height: 16),
-          
-          // 解説生成ボタン
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _generateSolution,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.auto_awesome),
-              label: _isLoading
-                  ? const Text('処理中...', style: TextStyle(fontSize: 18))
-                  : const Text(
-                      '解説を表示',
-                      style: TextStyle(fontSize: 18),
-                    ),
-            ),
+          const SizedBox(height: 8),
+          Text(
+            'Use the keypad or the formula editor\\nto enter an expression',
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+            textAlign: TextAlign.center,
           ),
-          
-          const SizedBox(height: 16),
-          
-          // 電卓キーパッド
-          Expanded(
-            flex: 3,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: CalculatorKeypad(
-                onKeyPressed: (key) {
-                  switch (key) {
-                    case 'DEL':
-                      _deleteText();
-                      break;
-                    case '←':
-                      _moveCursor(-1);
-                      break;
-                    case '→':
-                      _moveCursor(1);
-                      break;
-                    default:
-                      _insertText(key);
-                  }
-                },
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+
+  Widget _buildExpressionField(String currentExpression) {
+    return TextField(
+      controller: _textController,
+      focusNode: _textFieldFocus,
+      keyboardType: TextInputType.none,
+      showCursor: true,
+      decoration: InputDecoration(
+        labelText: 'Enter an expression',
+        labelStyle: TextStyle(
+          color: Colors.blue.shade600,
+          fontWeight: FontWeight.w500,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        hintText: 'Example: (2x+1)/(x-3) = cbrt(x+2)',
+        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+        prefixIcon: Icon(Icons.calculate, color: Colors.blue.shade600),
+        suffixIcon: currentExpression.isNotEmpty
+            ? IconButton(
+                icon: Icon(Icons.clear, color: Colors.red.shade600),
+                onPressed: () {
+                  _textController.clear();
+                },
+                tooltip: '繧ｯ繝ｪ繧｢',
+              )
+            : null,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+      ),
+      onTap: _focusInput,
+    );
+  }
+
+  Widget _buildGenerateButton(bool isLoading) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: isLoading ? null : _generateSolution,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: isLoading
+              ? Colors.grey.shade400
+              : Colors.blue.shade600,
+          foregroundColor: Colors.white,
+          elevation: isLoading ? 0 : 4,
+          shadowColor: Colors.blue.shade200,
+        ),
+        icon: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Icon(Icons.auto_awesome, size: 22),
+        label: Text(
+          isLoading ? '生成中...' : '解説を表示',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCalculator() {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.grey.shade50, Colors.grey.shade100],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: CalculatorKeypad(
+          onKeyPressed: (event) {
+            switch (event.type) {
+              case CalculatorKeyType.delete:
+                _deleteText();
+                break;
+              case CalculatorKeyType.moveLeft:
+                _moveCursor(-1);
+                break;
+              case CalculatorKeyType.moveRight:
+                _moveCursor(1);
+                break;
+              case CalculatorKeyType.input:
+                _insertText(event.value);
+                break;
+            }
+          },
+        ),
       ),
     );
   }

@@ -41,6 +41,7 @@ class LatexPreviewScrollable extends StatelessWidget {
           fontSize: 18,
           color: Colors.black87,
         ),
+        mathStyle: MathStyle.display, // より大きな表示スタイル
       );
     } catch (e) {
       return Text(

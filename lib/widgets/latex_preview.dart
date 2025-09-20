@@ -46,6 +46,7 @@ class LatexPreview extends StatelessWidget {
           fontSize: 24,
           color: Colors.black87,
         ),
+        mathStyle: MathStyle.display, // より大きな表示スタイル
       );
     } catch (e) {
       // LaTeXの解析に失敗した場合は、プレーンテキストで表示

@@ -61,18 +61,12 @@ class SyntaxConverter {
       (match) => '|${match.group(1)}|',
     );
     
-    // 分数の簡易記法 (a)/(b) -> \frac{a}{b}
-    latex = latex.replaceAllMapped(
-      RegExp(r'\(([^)]+)\)/\(([^)]+)\)'),
-      (match) => '\\frac{${match.group(1)}}{${match.group(2)}}',
-    );
-    
     // 複素数
     latex = latex.replaceAll('i', 'i');
     latex = latex.replaceAll('pi', '\\pi');
     latex = latex.replaceAll('e', 'e');
     
-    // 総和と総積
+    // 総和と総積（分数より先に変換）
     latex = latex.replaceAllMapped(
       RegExp(r'sum\(([^,]+),([^,]+),([^)]+)\)'),
       (match) => '\\sum_{${match.group(1)}}^{${match.group(2)}} ${match.group(3)}',
@@ -81,6 +75,49 @@ class SyntaxConverter {
     latex = latex.replaceAllMapped(
       RegExp(r'prod\(([^,]+),([^,]+),([^)]+)\)'),
       (match) => '\\prod_{${match.group(1)}}^{${match.group(2)}} ${match.group(3)}',
+    );
+    
+    // 単純なΣ記号の変換 (sum(n=1,n,expression))
+    latex = latex.replaceAllMapped(
+      RegExp(r'sum\(([a-zA-Z]+)=([^,]+),([^,]+),([^)]+)\)'),
+      (match) => '\\sum_{${match.group(1)}=${match.group(2)}}^{${match.group(3)}} ${match.group(4)}',
+    );
+    
+    // 単純なΠ記号の変換 (prod(n=1,n,expression))
+    latex = latex.replaceAllMapped(
+      RegExp(r'prod\(([a-zA-Z]+)=([^,]+),([^,]+),([^)]+)\)'),
+      (match) => '\\prod_{${match.group(1)}=${match.group(2)}}^{${match.group(3)}} ${match.group(4)}',
+    );
+    
+    // 分数の簡易記法 (a)/(b) -> \frac{a}{b}
+    latex = latex.replaceAllMapped(
+      RegExp(r'\(([^)]+)\)/\(([^)]+)\)'),
+      (match) => '\\frac{${match.group(1)}}{${match.group(2)}}',
+    );
+    
+    // 単純な分数 a/b -> \frac{a}{b} (括弧なし)
+    latex = latex.replaceAllMapped(
+      RegExp(r'(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)'),
+      (match) => '\\frac{${match.group(1)}}{${match.group(2)}}',
+    );
+    
+    // 変数を含む分数 a/b -> \frac{a}{b}
+    latex = latex.replaceAllMapped(
+      RegExp(r'([a-zA-Z0-9+\-*/^()]+)\s*/\s*([a-zA-Z0-9+\-*/^()]+)'),
+      (match) {
+        final numerator = match.group(1)?.trim() ?? '';
+        final denominator = match.group(2)?.trim() ?? '';
+        // 既に\fracで囲まれている場合はスキップ
+        if (numerator.contains('\\frac') || denominator.contains('\\frac')) {
+          return match.group(0) ?? '';
+        }
+        
+        // 分数内のΣ記号を適切に処理
+        String processedNumerator = _processSumInFraction(numerator);
+        String processedDenominator = _processSumInFraction(denominator);
+        
+        return '\\frac{$processedNumerator}{$processedDenominator}';
+      },
     );
     
     // 順列と組み合わせ
@@ -132,6 +169,18 @@ class SyntaxConverter {
     // Indefinite integral: integral(expr,var) or int(expr,var)
     latex = latex.replaceAllMapped(
       RegExp(r'(?:integral|int)\(([^,]+),([^)]+)\)'),
+      (m) => '\\int ${m.group(1)!.trim()} \\, d${m.group(2)!.trim()}',
+    );
+    
+    // より簡潔な積分記法: ∫[a,b] f(x) dx
+    latex = latex.replaceAllMapped(
+      RegExp(r'∫\[([^,]+),([^\]]+)\]\s*([^d]+)\s*d([a-zA-Z]+)'),
+      (m) => '\\int_{${_inf(m.group(1)!.trim())}}^{${_inf(m.group(2)!.trim())}} ${m.group(3)!.trim()} \\, d${m.group(4)!.trim()}',
+    );
+    
+    // 単純な積分記法: ∫ f(x) dx
+    latex = latex.replaceAllMapped(
+      RegExp(r'∫\s*([^d]+)\s*d([a-zA-Z]+)'),
       (m) => '\\int ${m.group(1)!.trim()} \\, d${m.group(2)!.trim()}',
     );
 
@@ -315,5 +364,30 @@ class SyntaxConverter {
       return t.substring(1, t.length - 1);
     }
     return t;
+  }
+
+  // 分数内のΣ記号を適切に処理するヘルパーメソッド
+  static String _processSumInFraction(String expression) {
+    // 既にLaTeX形式のΣ記号が含まれている場合はそのまま返す
+    if (expression.contains('\\sum')) {
+      return expression;
+    }
+    
+    // sum()形式のΣ記号をLaTeX形式に変換
+    String result = expression;
+    
+    // sum(n=1,10,expression) -> \displaystyle\sum_{n=1}^{10} expression
+    result = result.replaceAllMapped(
+      RegExp(r'sum\(([a-zA-Z]+)=([^,]+),([^,]+),([^)]+)\)'),
+      (match) => '\\displaystyle\\sum_{${match.group(1)}=${match.group(2)}}^{${match.group(3)}} ${match.group(4)}',
+    );
+    
+    // sum(1,10,expression) -> \displaystyle\sum_{1}^{10} expression
+    result = result.replaceAllMapped(
+      RegExp(r'sum\(([^,]+),([^,]+),([^)]+)\)'),
+      (match) => '\\displaystyle\\sum_{${match.group(1)}}^{${match.group(2)}} ${match.group(3)}',
+    );
+    
+    return result;
   }
 }

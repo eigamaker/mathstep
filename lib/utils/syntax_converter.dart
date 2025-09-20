@@ -1,6 +1,9 @@
 class SyntaxConverter {
   static String calculatorToLatex(String calculatorSyntax) {
     String latex = calculatorSyntax;
+
+    latex = _convertGenericFractions(latex);
+
     
     // 基本的な変換ルール
     latex = latex.replaceAllMapped(
@@ -367,6 +370,243 @@ class SyntaxConverter {
   }
 
   // 分数内のΣ記号を適切に処理するヘルパーメソッド
+  static String _convertGenericFractions(String input) {
+    if (!input.contains('/')) {
+      return input;
+    }
+
+    final buffer = StringBuffer();
+    var index = 0;
+    while (index < input.length) {
+      final slash = input.indexOf('/', index);
+      if (slash == -1) {
+        buffer.write(input.substring(index));
+        break;
+      }
+
+      final left = _extractFractionLeftOperand(input, slash - 1);
+      final right = _extractFractionRightOperand(input, slash + 1);
+
+      if (left == null || right == null || left.start < index) {
+        buffer.write(input.substring(index, slash + 1));
+        index = slash + 1;
+        continue;
+      }
+
+      var numerator = input.substring(left.start, left.end).trim();
+      var denominator = input.substring(right.start, right.end).trim();
+
+      if (numerator.isEmpty || denominator.isEmpty) {
+        buffer.write(input.substring(index, slash + 1));
+        index = slash + 1;
+        continue;
+      }
+
+      numerator = _normalizeFractionOperand(numerator);
+      denominator = _normalizeFractionOperand(denominator);
+
+      buffer.write(input.substring(index, left.start));
+      buffer.write('\\frac{$numerator}{$denominator}');
+      index = right.end;
+    }
+    return buffer.toString();
+  }
+
+  static String _normalizeFractionOperand(String value) {
+    if (value.startsWith('- ')) {
+      return '-${value.substring(2).trimLeft()}';
+    }
+    if (value.startsWith('+ ')) {
+      return value.substring(2).trimLeft();
+    }
+    return value;
+  }
+
+  static _Span? _extractFractionLeftOperand(String input, int index) {
+    var i = _skipWhitespaceBackward(input, index);
+    if (i < 0) {
+      return null;
+    }
+
+    final end = i + 1;
+    final code = input.codeUnitAt(i);
+
+    int start;
+
+    if (code == _rParen) {
+      final openIndex = _findMatchingOpenParenBackward(input, i);
+      if (openIndex == -1) {
+        return null;
+      }
+      start = openIndex;
+      var j = openIndex - 1;
+      while (j >= 0 && _isIdentifierChar(input, j)) {
+        j--;
+      }
+      start = j + 1;
+    } else if (_isIdentifierChar(input, i)) {
+      var j = i;
+      while (j >= 0 && _isIdentifierChar(input, j)) {
+        j--;
+      }
+      start = j + 1;
+    } else {
+      return null;
+    }
+
+    final signIndex = _skipWhitespaceBackward(input, start - 1);
+    if (signIndex >= 0 && input.codeUnitAt(signIndex) == _minus) {
+      final prev = _skipWhitespaceBackward(input, signIndex - 1);
+      final prevCode = prev >= 0 ? input.codeUnitAt(prev) : null;
+      if (_isOperatorLike(prevCode)) {
+        start = signIndex;
+      }
+    }
+
+    return _Span(start, end);
+  }
+
+  static _Span? _extractFractionRightOperand(String input, int index) {
+    var i = _skipWhitespaceForward(input, index);
+    if (i >= input.length) {
+      return null;
+    }
+
+    var start = i;
+    var code = input.codeUnitAt(i);
+
+    if (code == _plus || code == _minus) {
+      final signStart = start;
+      i = _skipWhitespaceForward(input, i + 1);
+      if (i >= input.length) {
+        return null;
+      }
+      start = signStart;
+      code = input.codeUnitAt(i);
+    }
+
+    int end;
+
+    if (code == _lParen) {
+      final closeIndex = _findMatchingCloseParen(input, i);
+      if (closeIndex == -1) {
+        return null;
+      }
+      end = closeIndex + 1;
+    } else if (_isIdentifierChar(input, i)) {
+      var j = i;
+      while (j < input.length && _isIdentifierChar(input, j)) {
+        j++;
+      }
+      if (j < input.length && input.codeUnitAt(j) == _lParen) {
+        final closeIndex = _findMatchingCloseParen(input, j);
+        if (closeIndex == -1) {
+          return null;
+        }
+        end = closeIndex + 1;
+      } else {
+        end = j;
+      }
+    } else {
+      return null;
+    }
+
+    return _Span(start, end);
+  }
+
+  static int _skipWhitespaceBackward(String input, int index) {
+    var i = index;
+    while (i >= 0) {
+      final code = input.codeUnitAt(i);
+      if (!_isWhitespace(code)) {
+        return i;
+      }
+      i--;
+    }
+    return -1;
+  }
+
+  static int _skipWhitespaceForward(String input, int index) {
+    var i = index;
+    while (i < input.length) {
+      final code = input.codeUnitAt(i);
+      if (!_isWhitespace(code)) {
+        return i;
+      }
+      i++;
+    }
+    return input.length;
+  }
+
+  static bool _isWhitespace(int code) {
+    return code == 32 || code == 9 || code == 10 || code == 13;
+  }
+
+  static bool _isIdentifierChar(String input, int index) {
+    final code = input.codeUnitAt(index);
+    if ((code >= 48 && code <= 57) || (code >= 65 && code <= 90) ||
+        (code >= 97 && code <= 122)) {
+      return true;
+    }
+    return code == 95 || code == 46 || code == 39;
+  }
+
+  static bool _isOperatorLike(int? code) {
+    if (code == null) {
+      return true;
+    }
+    return code == _plus ||
+        code == _minus ||
+        code == _asterisk ||
+        code == _slash ||
+        code == _caret ||
+        code == _comma ||
+        code == _lParen ||
+        code == _equals;
+  }
+
+  static int _findMatchingOpenParenBackward(String input, int closeIndex) {
+    var depth = 0;
+    for (var i = closeIndex; i >= 0; i--) {
+      final code = input.codeUnitAt(i);
+      if (code == _rParen) {
+        depth++;
+      } else if (code == _lParen) {
+        depth--;
+        if (depth == 0) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
+
+  static int _findMatchingCloseParen(String input, int openIndex) {
+    var depth = 0;
+    for (var i = openIndex; i < input.length; i++) {
+      final code = input.codeUnitAt(i);
+      if (code == _lParen) {
+        depth++;
+      } else if (code == _rParen) {
+        depth--;
+        if (depth == 0) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
+
+  static const int _plus = 43;
+  static const int _minus = 45;
+  static const int _asterisk = 42;
+  static const int _slash = 47;
+  static const int _caret = 94;
+  static const int _comma = 44;
+  static const int _equals = 61;
+  static const int _lParen = 40;
+  static const int _rParen = 41;
+
   static String _processSumInFraction(String expression) {
     // 既にLaTeX形式のΣ記号が含まれている場合はそのまま返す
     if (expression.contains('\\sum')) {
@@ -390,4 +630,11 @@ class SyntaxConverter {
     
     return result;
   }
+}
+
+class _Span {
+  final int start;
+  final int end;
+
+  const _Span(this.start, this.end);
 }

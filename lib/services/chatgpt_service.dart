@@ -13,7 +13,9 @@ class ChatGptService {
 
   Future<Solution> generateSolution(String latexExpression) async {
     if (!ApiConfig.isConfigured) {
-      throw Exception('OpenAI APIキーが設定されていません。.envファイルにOPENAI_API_KEYを設定してください。');
+      throw Exception(
+        'OpenAI APIキーが設定されていません。.envファイルにOPENAI_API_KEYを設定してください。',
+      );
     }
 
     final client = _client ?? http.Client();
@@ -26,11 +28,11 @@ class ChatGptService {
         ],
         // temperatureとmax_tokensパラメータを削除（モデルによって異なるため）
       };
-      
+
       debugPrint('API Request URL: ${ApiConfig.openaiApiUrl}');
       debugPrint('API Request Model: ${ApiConfig.model}');
       debugPrint('API Request Body: ${jsonEncode(requestBody)}');
-      
+
       final response = await client.post(
         Uri.parse(ApiConfig.openaiApiUrl),
         headers: {
@@ -59,14 +61,14 @@ class ChatGptService {
         throw const FormatException('Empty response from API');
       }
 
-       final solution = _parseSolutionResponse(content);
-       if (solution == null) {
-         throw Exception('APIからの応答を解析できませんでした。');
-       }
-       return solution;
-     } catch (error, stackTrace) {
-       debugPrint('ChatGptService error: $error\n$stackTrace');
-       rethrow; // エラーを再スローして、呼び出し元で処理させる
+      final solution = _parseSolutionResponse(content);
+      if (solution == null) {
+        throw Exception('APIからの応答を解析できませんでした。');
+      }
+      return solution;
+    } catch (error, stackTrace) {
+      debugPrint('ChatGptService error: $error\n$stackTrace');
+      rethrow; // エラーを再スローして、呼び出し元で処理させる
     } finally {
       if (_client == null) {
         client.close();
@@ -121,7 +123,14 @@ Return the answer in the following JSON shape:
       }
 
       final jsonString = content.substring(start, end + 1);
-      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      debugPrint('Extracted JSON: $jsonString');
+
+      // LaTeX式のエスケープ文字を処理してからJSON解析
+      final cleanedJsonString = _cleanJsonString(jsonString);
+      debugPrint('Cleaned JSON: $cleanedJsonString');
+
+      final jsonMap = jsonDecode(cleanedJsonString) as Map<String, dynamic>;
+      debugPrint('Parsed JSON Map: $jsonMap');
 
       return Solution(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -129,10 +138,11 @@ Return the answer in the following JSON shape:
         steps: (jsonMap['steps'] as List<dynamic>? ?? [])
             .map(
               (step) => SolutionStep(
-                id: step['id'] as String,
-                title: step['title'] as String,
-                description: step['description'] as String,
-                latexExpression: step['latexExpression'] as String?,
+                id: _safeStringCast(step['id']) ?? 'unknown',
+                title: _safeStringCast(step['title']) ?? 'Untitled',
+                description:
+                    _safeStringCast(step['description']) ?? 'No description',
+                latexExpression: _safeStringCast(step['latexExpression']),
               ),
             )
             .toList(),
@@ -140,15 +150,19 @@ Return the answer in the following JSON shape:
             (jsonMap['alternativeSolutions'] as List<dynamic>?)
                 ?.map(
                   (alt) => AlternativeSolution(
-                    id: alt['id'] as String,
-                    title: alt['title'] as String,
+                    id: _safeStringCast(alt['id']) ?? 'unknown',
+                    title: _safeStringCast(alt['title']) ?? 'Untitled',
                     steps: (alt['steps'] as List<dynamic>)
                         .map(
                           (step) => SolutionStep(
-                            id: step['id'] as String,
-                            title: step['title'] as String,
-                            description: step['description'] as String,
-                            latexExpression: step['latexExpression'] as String?,
+                            id: _safeStringCast(step['id']) ?? 'unknown',
+                            title: _safeStringCast(step['title']) ?? 'Untitled',
+                            description:
+                                _safeStringCast(step['description']) ??
+                                'No description',
+                            latexExpression: _safeStringCast(
+                              step['latexExpression'],
+                            ),
                           ),
                         )
                         .toList(),
@@ -157,11 +171,15 @@ Return the answer in the following JSON shape:
                 .toList(),
         verification: jsonMap['verification'] != null
             ? Verification(
-                domainCheck: jsonMap['verification']['domainCheck'] as String?,
-                verification:
-                    jsonMap['verification']['verification'] as String?,
-                commonMistakes:
-                    jsonMap['verification']['commonMistakes'] as String?,
+                domainCheck: _safeStringCast(
+                  jsonMap['verification']['domainCheck'],
+                ),
+                verification: _safeStringCast(
+                  jsonMap['verification']['verification'],
+                ),
+                commonMistakes: _safeStringCast(
+                  jsonMap['verification']['commonMistakes'],
+                ),
               )
             : null,
         timestamp: DateTime.now(),
@@ -172,52 +190,37 @@ Return the answer in the following JSON shape:
     }
   }
 
-  Solution _createMockSolution(String latexExpression) {
-    return Solution(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      mathExpressionId: '',
-      steps: const [
-        SolutionStep(
-          id: 'step1',
-          title: 'Understand the problem',
-          description:
-              'Rephrase the given expression and identify what must be solved.',
-        ),
-        SolutionStep(
-          id: 'step2',
-          title: 'Apply a strategy',
-          description:
-              'Select a suitable technique and show the intermediate reasoning.',
-        ),
-        SolutionStep(
-          id: 'step3',
-          title: 'Verify the answer',
-          description:
-              'Substitute the result back into the original equation to confirm it.',
-        ),
-      ],
-      alternativeSolutions: const [
-        AlternativeSolution(
-          id: 'alt1',
-          title: 'Alternative method',
-          steps: [
-            SolutionStep(
-              id: 'alt_step1',
-              title: 'Different viewpoint',
-              description:
-                  'Present another approach that reaches the same conclusion.',
-            ),
-          ],
-        ),
-      ],
-      verification: const Verification(
-        domainCheck:
-            'Confirm the domain restrictions before accepting the answer.',
-        verification: 'Re-evaluate the expression using the obtained solution.',
-        commonMistakes:
-            'Watch out for sign errors and skipped algebraic steps.',
-      ),
-      timestamp: DateTime.now(),
-    );
+  String? _safeStringCast(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    if (value is List) return value.join(', ');
+    if (value is Map) return value.toString();
+    return value.toString();
+  }
+
+  String _cleanJsonString(String jsonString) {
+    final buffer = StringBuffer();
+    var index = 0;
+
+    while (index < jsonString.length) {
+      final current = jsonString[index];
+      if (current == r'\') {
+        if (index + 1 < jsonString.length) {
+          final next = jsonString[index + 1];
+          const allowedEscapes = '"\\/bfnrtu';
+          if (!allowedEscapes.contains(next)) {
+            buffer.write('\\');
+            buffer.write(next);
+            index += 2;
+            continue;
+          }
+        }
+      }
+
+      buffer.write(current);
+      index += 1;
+    }
+
+    return buffer.toString();
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/syntax_converter.dart';
-import '../widgets/latex_preview_scroll.dart';
+import '../widgets/latex_preview.dart';
 
 class FormulaEditorScreen extends StatefulWidget {
   final String initialCalculatorSyntax;
@@ -60,7 +60,7 @@ class _FormulaEditorScreenState extends State<FormulaEditorScreen> {
             flex: 2,
             child: Container(
               margin: const EdgeInsets.all(12),
-              child: LatexPreviewScrollable(expression: latex.isEmpty ? ' ' : latex),
+              child: LatexPreview(expression: latex.isEmpty ? ' ' : latex),
             ),
           ),
           // Editor

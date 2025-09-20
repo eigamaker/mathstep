@@ -5,7 +5,7 @@ import '../config/api_config.dart';
 import '../models/math_expression.dart';
 import '../utils/syntax_converter.dart';
 import '../widgets/calculator_keypad.dart';
-import '../widgets/latex_preview_scroll.dart';
+import '../widgets/latex_preview.dart';
 import '../providers/expression_provider.dart';
 import '../providers/service_providers.dart';
 import 'formula_editor_screen.dart';
@@ -355,7 +355,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           border: Border.all(color: Colors.blue.shade100, width: 1),
         ),
         child: hasExpression
-            ? LatexPreviewScrollable(expression: latexExpression)
+            ? LatexPreview(expression: latexExpression)
             : _buildPlaceholder(),
       ),
     );

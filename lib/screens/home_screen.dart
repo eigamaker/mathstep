@@ -122,27 +122,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _generateSolution() async {
-    final expressionState = ref.read(expressionProvider);
-    if (expressionState.input.trim().isEmpty) {
+    // テキストコントローラーから直接入力を取得
+    final input = _textController.text.trim();
+    if (input.isEmpty) {
       _showSnackBar('数式を入力してください');
       return;
     }
 
-    final notifier = ref.read(expressionProvider.notifier);
-    notifier.clearError();
-    notifier.setLoading(true);
+    // プロバイダーの状態を安全に更新
+    try {
+      ref.read(expressionProvider.notifier).updateInput(input);
+      ref.read(expressionProvider.notifier).clearError();
+      ref.read(expressionProvider.notifier).setLoading(true);
+    } catch (e) {
+      debugPrint('Provider error: $e');
+      // プロバイダーエラーの場合は続行
+    }
 
     try {
       if (!ApiConfig.isConfigured) {
-        _showSnackBar('API key is missing. Showing mock data.');
-      } else {
-        _showSnackBar('ChatGPT縺ｫ騾∽ｿ｡荳ｭ...');
+        _showSnackBar('APIキーが設定されていません。');
+        _showErrorDialog(
+          'OpenAI APIキーが設定されていません。\n\n'
+          '設定方法：\n'
+          '1. プロジェクトルートに.envファイルを作成\n'
+          '2. 以下の内容を記述：\n'
+          '   OPENAI_API_KEY=your_api_key_here\n'
+          '3. アプリを再起動\n\n'
+          'APIキーはOpenAIの公式サイトで取得できます。',
+          title: 'APIキー設定が必要です',
+        );
+        return;
       }
+      
+      _showSnackBar('ChatGPTに送信中...');
+      debugPrint('Using model: ${ApiConfig.model}');
+      debugPrint('API URL: ${ApiConfig.openaiApiUrl}');
 
       final chatGptService = ref.read(chatGptServiceProvider);
-      final latexExpression = expressionState.latex.isEmpty
-          ? SyntaxConverter.calculatorToLatex(expressionState.input)
-          : expressionState.latex;
+      final latexExpression = SyntaxConverter.calculatorToLatex(input);
       final solution = await chatGptService.generateSolution(latexExpression);
 
       if (!mounted) return;
@@ -153,7 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           builder: (context) => SolutionScreen(
             mathExpression: MathExpression(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              calculatorSyntax: expressionState.input,
+              calculatorSyntax: input,
               latexExpression: latexExpression,
               timestamp: DateTime.now(),
             ),
@@ -162,13 +180,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     } catch (e, stackTrace) {
-      notifier.setError(e.toString());
+      try {
+        ref.read(expressionProvider.notifier).setError(e.toString());
+      } catch (providerError) {
+        debugPrint('Provider error in catch: $providerError');
+      }
       debugPrint('Error in _generateSolution: $e\n$stackTrace');
       if (!mounted) return;
-      _showSnackBar('エラーが発生しました: ${e.toString()}');
-      _showErrorDialog(e.toString());
+      
+      String errorMessage = e.toString();
+      String errorTitle = 'エラー';
+      
+      // APIキー関連のエラーの場合
+      if (errorMessage.contains('APIキー') || errorMessage.contains('OPENAI_API_KEY')) {
+        errorTitle = 'APIキー設定が必要です';
+      } else if (errorMessage.contains('API request failed')) {
+        errorTitle = 'API接続エラー';
+        errorMessage = 'ChatGPT APIへの接続に失敗しました。\n\n'
+            '確認事項：\n'
+            '• インターネット接続を確認\n'
+            '• APIキーが正しく設定されているか確認\n'
+            '• OpenAI APIの利用制限に達していないか確認';
+      } else if (errorMessage.contains('Empty response')) {
+        errorTitle = 'API応答エラー';
+        errorMessage = 'ChatGPT APIからの応答が空でした。\n\n'
+            'APIキーとネットワーク接続を確認してください。';
+      }
+      
+      _showSnackBar('エラーが発生しました');
+      _showErrorDialog(errorMessage, title: errorTitle);
     } finally {
-      notifier.setLoading(false);
+      try {
+        ref.read(expressionProvider.notifier).setLoading(false);
+      } catch (providerError) {
+        debugPrint('Provider error in finally: $providerError');
+      }
     }
   }
 
@@ -181,12 +227,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).showSnackBar(SnackBar(content: Text(message), duration: duration));
   }
 
-  void _showErrorDialog(String message) {
+  void _showErrorDialog(String message, {String title = 'エラー'}) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('エラー詳細'),
-        content: Text(message),
+        title: Text(title),
+        content: SingleChildScrollView(
+          child: Text(message),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

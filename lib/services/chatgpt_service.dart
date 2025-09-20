@@ -13,32 +13,37 @@ class ChatGptService {
 
   Future<Solution> generateSolution(String latexExpression) async {
     if (!ApiConfig.isConfigured) {
-      debugPrint('OpenAI API key is not configured. Returning mock data.');
-      return _createMockSolution(latexExpression);
+      throw Exception('OpenAI APIキーが設定されていません。.envファイルにOPENAI_API_KEYを設定してください。');
     }
 
     final client = _client ?? http.Client();
     try {
+      final requestBody = {
+        'model': ApiConfig.model,
+        'messages': [
+          {'role': 'system', 'content': _systemPrompt},
+          {'role': 'user', 'content': _buildUserPrompt(latexExpression)},
+        ],
+        // temperatureとmax_tokensパラメータを削除（モデルによって異なるため）
+      };
+      
+      debugPrint('API Request URL: ${ApiConfig.openaiApiUrl}');
+      debugPrint('API Request Model: ${ApiConfig.model}');
+      debugPrint('API Request Body: ${jsonEncode(requestBody)}');
+      
       final response = await client.post(
         Uri.parse(ApiConfig.openaiApiUrl),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${ApiConfig.openaiApiKey}',
         },
-        body: jsonEncode({
-          'model': ApiConfig.model,
-          'messages': [
-            {'role': 'system', 'content': _systemPrompt},
-            {'role': 'user', 'content': _buildUserPrompt(latexExpression)},
-          ],
-          'temperature': ApiConfig.temperature,
-          'max_tokens': ApiConfig.maxTokens,
-        }),
+        body: jsonEncode(requestBody),
       );
 
       if (response.statusCode != 200) {
+        debugPrint('API Error Response: ${response.body}');
         throw Exception(
-          'API request failed with status ${response.statusCode}',
+          'API request failed with status ${response.statusCode}: ${response.body}',
         );
       }
 
@@ -54,11 +59,14 @@ class ChatGptService {
         throw const FormatException('Empty response from API');
       }
 
-      return _parseSolutionResponse(content) ??
-          _createMockSolution(latexExpression);
-    } catch (error, stackTrace) {
-      debugPrint('ChatGptService error: $error\n$stackTrace');
-      return _createMockSolution(latexExpression);
+       final solution = _parseSolutionResponse(content);
+       if (solution == null) {
+         throw Exception('APIからの応答を解析できませんでした。');
+       }
+       return solution;
+     } catch (error, stackTrace) {
+       debugPrint('ChatGptService error: $error\n$stackTrace');
+       rethrow; // エラーを再スローして、呼び出し元で処理させる
     } finally {
       if (_client == null) {
         client.close();

@@ -65,5 +65,12 @@ class ExpressionNotifier extends StateNotifier<ExpressionState> {
 
 final expressionProvider =
     StateNotifierProvider<ExpressionNotifier, ExpressionState>(
-      (ref) => ExpressionNotifier(),
+      (ref) {
+        try {
+          return ExpressionNotifier();
+        } catch (e) {
+          debugPrint('Error creating ExpressionNotifier: $e');
+          return ExpressionNotifier();
+        }
+      },
     );

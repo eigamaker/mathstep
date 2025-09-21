@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
+import '../../localization/localization_extensions.dart';
 
 /// 履歴が空の場合のプレースホルダーウィジェット
 class EmptyHistoryPlaceholder extends StatelessWidget {
@@ -7,23 +8,23 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.history,
             size: AppConstants.largeIconSize,
             color: Colors.grey,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
-            AppConstants.emptyHistoryTitle,
+            context.l10n.historyEmptyTitle,
             style: TextStyle(fontSize: 18, color: Colors.grey),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            AppConstants.emptyHistoryMessage,
+            context.l10n.historyEmptyMessage,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),

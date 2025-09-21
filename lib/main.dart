@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mathstep/l10n/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import 'localization/app_language.dart';
+import 'providers/language_provider.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // .envファイルを読み込み（存在する場合のみ）
+
+  // Load .env file when available.
   try {
-    await dotenv.load(fileName: ".env");
-    print('Successfully loaded .env file');
+    await dotenv.load(fileName: '.env');
+    debugPrint('Successfully loaded .env file');
   } catch (e) {
-    // .envファイルが存在しない場合は無視
-    print('Warning: .env file not found. Using default configuration.');
-    // dotenvを手動で初期化
+    // When .env is not found, proceed with defaults.
+    debugPrint('Warning: .env file not found. Using default configuration.');
     dotenv.testLoad(fileInput: '');
   }
-  
-  // AdMobを初期化
+
+  // Initialize AdMob.
   await MobileAds.instance.initialize();
-  
-  // テストデバイスの設定
+
+  // Configure test devices.
   await MobileAds.instance.updateRequestConfiguration(
-    RequestConfiguration(
-      testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'], // ログに表示されたテストデバイスID
-    ),
+    RequestConfiguration(testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82']),
   );
-  
-  // AdMobデバッグログを有効化
+
+  // Enable debug friendly configuration.
   await MobileAds.instance.updateRequestConfiguration(
     RequestConfiguration(
       testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'],
@@ -37,21 +39,35 @@ void main() async {
       maxAdContentRating: MaxAdContentRating.g,
     ),
   );
-  
-  print('AdMob initialized successfully with debug logging');
-  
+
+  debugPrint('AdMob initialized successfully with debug logging');
+
   runApp(const ProviderScope(child: MathStepApp()));
 }
 
-class MathStepApp extends StatelessWidget {
+class MathStepApp extends ConsumerWidget {
   const MathStepApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final languageState = ref.watch(languageStateProvider);
+    final locale = languageState.language.locale;
+
     return MaterialApp(
-      title: 'MathStep',
+      debugShowCheckedModeBanner: false,
+      locale: locale,
+      supportedLocales: AppLanguage.supportedLanguages
+          .map((language) => language.locale)
+          .toList(),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      onGenerateTitle: (context) =>
+          AppLocalizations.of(context)?.appTitle ?? 'MathStep',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
@@ -66,7 +82,6 @@ class MathStepApp extends StatelessWidget {
         ),
       ),
       home: const SplashScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

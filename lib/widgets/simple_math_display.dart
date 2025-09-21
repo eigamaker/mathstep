@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
-class SimpleMathDisplay extends StatelessWidget {
-  final String expression;
+import '../localization/localization_extensions.dart';
 
+class SimpleMathDisplay extends StatelessWidget {
   const SimpleMathDisplay({super.key, required this.expression});
+
+  final String expression;
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +14,9 @@ class SimpleMathDisplay extends StatelessWidget {
     if (trimmed.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
-        child: const Text(
-          '数式を入力してください',
-          style: TextStyle(
+        child: Text(
+          context.l10n.homeInputRequired,
+          style: const TextStyle(
             fontSize: 16,
             color: Colors.grey,
             fontStyle: FontStyle.italic,
@@ -53,10 +55,10 @@ class SimpleMathDisplay extends StatelessWidget {
     var result = input;
 
     if (result.contains('∫')) {
-      result = result.replaceAll('∫', r'\int');
+      result = result.replaceAll('∫', r'\\int');
       result = result.replaceAllMapped(
-        RegExp(r'\\int(?!\\limits)(?=\s*(_|\^))'),
-        (match) => r'\int\limits',
+        RegExp(r'\\int(?!\\limits)(?=\\s*(_|\\^))'),
+        (match) => r'\\int\\limits',
       );
     }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../localization/localization_extensions.dart';
 import '../constants/app_constants.dart';
 import '../providers/solution_storage_provider.dart';
 import 'history/empty_history_placeholder.dart';
@@ -22,16 +23,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final historyItemsAsync = ref.watch(historyItemsProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('履歴'),
+        title: Text(context.l10n.historyTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.sort),
             onPressed: _showSortDialog,
-            tooltip: '履歴を並び替え',
+            tooltip: context.l10n.historySortTooltip,
           ),
         ],
       ),
@@ -42,7 +43,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                hintText: '数式を検索...',
+                hintText: context.l10n.historySearchHint,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -50,17 +51,23 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 suffixIcon: _state.searchQuery.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
-                        onPressed: () => setState(() => _state = _state.copyWith(searchQuery: '')),
+                        onPressed: () => setState(
+                          () => _state = _state.copyWith(searchQuery: ''),
+                        ),
                       )
                     : null,
               ),
-              onChanged: (query) => setState(() => _state = _state.copyWith(searchQuery: query)),
+              onChanged: (query) =>
+                  setState(() => _state = _state.copyWith(searchQuery: query)),
             ),
           ),
           Expanded(
             child: historyItemsAsync.when(
               data: (items) {
-                final filteredItems = HistoryFilter.filterAndSort(items, _state);
+                final filteredItems = HistoryFilter.filterAndSort(
+                  items,
+                  _state,
+                );
                 return filteredItems.isEmpty
                     ? const EmptyHistoryPlaceholder()
                     : ListView.builder(
@@ -78,7 +85,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(
-                child: Text('エラー: $error'),
+                child: Text(context.l10n.historyErrorMessage('$error')),
               ),
             ),
           ),
@@ -86,7 +93,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       ),
     );
   }
-
 
   void _viewExpression(MathExpressionWithSolution item) {
     Navigator.push(
@@ -100,24 +106,29 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-
   void _deleteExpression(MathExpressionWithSolution item) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(AppConstants.deleteConfirmTitle),
-        content: Text('${item.expression.calculatorSyntax} を履歴から削除しますか？'),
+        content: Text(
+          context.l10n.historyDeleteConfirmation(
+            item.expression.calculatorSyntax,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('キャンセル'),
+            child: Text(context.l10n.commonCancelButton),
           ),
           TextButton(
             onPressed: () {
-              ref.read(solutionStorageProvider.notifier).removeSolution(item.solution.id);
+              ref
+                  .read(solutionStorageProvider.notifier)
+                  .removeSolution(item.solution.id);
               Navigator.pop(context);
             },
-            child: const Text('削除'),
+            child: Text(context.l10n.commonDeleteButton),
           ),
         ],
       ),
@@ -136,4 +147,3 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 }
-

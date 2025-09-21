@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
+import '../../localization/localization_extensions.dart';
 import 'history_state.dart';
 
 /// 履歴のソート設定ダイアログ
@@ -31,25 +32,25 @@ class _SortDialogState extends State<SortDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(AppConstants.sortDialogTitle),
+      title: Text(context.l10n.historySortDialogTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           RadioListTile<String>(
-            title: const Text('新しい順'),
+            title: Text(context.l10n.historySortOptionNewest),
             value: AppConstants.sortByTimestamp,
             groupValue: _sortBy,
             onChanged: (value) => _updateSortBy(value!),
           ),
           RadioListTile<String>(
-            title: const Text('数式順'),
+            title: Text(context.l10n.historySortOptionExpression),
             value: AppConstants.sortByExpression,
             groupValue: _sortBy,
             onChanged: (value) => _updateSortBy(value!),
           ),
           const Divider(),
           SwitchListTile(
-            title: const Text('昇順'),
+            title: Text(context.l10n.historySortOrderAscending),
             value: _sortAscending,
             onChanged: (value) => _updateSortAscending(value),
           ),
@@ -58,7 +59,7 @@ class _SortDialogState extends State<SortDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('閉じる'),
+          child: Text(context.l10n.commonCloseButton),
         ),
       ],
     );
@@ -66,15 +67,11 @@ class _SortDialogState extends State<SortDialog> {
 
   void _updateSortBy(String value) {
     setState(() => _sortBy = value);
-    widget.onStateChanged(
-      widget.currentState.copyWith(sortBy: value),
-    );
+    widget.onStateChanged(widget.currentState.copyWith(sortBy: value));
   }
 
   void _updateSortAscending(bool value) {
     setState(() => _sortAscending = value);
-    widget.onStateChanged(
-      widget.currentState.copyWith(sortAscending: value),
-    );
+    widget.onStateChanged(widget.currentState.copyWith(sortAscending: value));
   }
 }

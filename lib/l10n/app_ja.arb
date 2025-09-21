@@ -1,0 +1,116 @@
+{
+  "@@locale": "ja",
+  "appTitle": "MathStep",
+  "commonErrorTitle": "エラー",
+  "commonOkButton": "OK",
+  "commonCancelButton": "キャンセル",
+  "commonDeleteButton": "削除",
+  "commonCloseButton": "閉じる",
+  "commonClear": "クリア",
+  "homeGenerating": "生成中...",
+  "homeInputRequired": "数式を入力してください。",
+  "homeApiKeyMissingSnack": "OpenAI APIキーが設定されていません。",
+  "homeApiKeyMissingDialogTitle": "APIキーが必要です",
+  "homeApiKeyMissingDialogMessage": "OpenAI APIキーが設定されていません。\n\n設定方法：\n1. プロジェクトルートに .env ファイルを作成\n2. OPENAI_API_KEY=your_api_key_here を記述\n3. アプリを再起動\n\nAPIキーはOpenAI公式サイトで取得できます。",
+  "homeSendingToChatGpt": "ChatGPTに送信中...",
+  "homeApiConnectionErrorTitle": "API接続エラー",
+  "homeApiConnectionErrorMessage": "ChatGPT API への接続に失敗しました。\n\n確認事項：\n• インターネット接続を確認\n• APIキーが正しく設定されているか確認\n• OpenAI API の利用制限に達していないか確認",
+  "homeApiResponseErrorTitle": "API応答エラー",
+  "homeApiResponseErrorMessage": "ChatGPT API からの応答が空でした。\n\nAPIキーとネットワーク接続を確認してください。",
+  "homeGenericErrorSnack": "エラーが発生しました。",
+  "homePlaceholderTitle": "数式を入力して開始しましょう",
+  "homePlaceholderSubtitle": "テンキーまたは式エディタを使って数式を入力してください。",
+  "homeExpressionFieldLabel": "数式を入力",
+  "homeExpressionHint": "例: (2x+1)/(x-3) = cbrt(x+2)",
+  "homeConditionFieldLabel": "条件・求める解（任意）",
+  "homeConditionHint": "例: x > 0 のときの最小値を求めよ、実数解の個数を求めよ",
+  "adLoadingMessage": "広告を読み込み中...",
+  "adLoadFailedMessage": "広告の読み込みに失敗しました。",
+  "adRewardMessage": "解法を表示します！",
+  "adNotReadyMessage": "広告の準備がまだできていません。",
+  "rewardAdShowingMessage": "広告を表示中...",
+  "rewardAdButtonReady": "解法を表示",
+  "historyTitle": "履歴",
+  "historySortTooltip": "履歴を並び替え",
+  "historySearchHint": "数式を検索...",
+  "historyErrorMessage": "エラー: {error}",
+  "historyDeleteConfirmation": "{expression} を履歴から削除しますか？",
+  "historySortDialogTitle": "並び替え",
+  "historySortOptionNewest": "新しい順",
+  "historySortOptionExpression": "数式順",
+  "historySortOrderAscending": "昇順",
+  "historyCopyTooltip": "数式をコピー",
+  "historyViewTooltip": "解法を見る",
+  "historyCopySuccessMessage": "数式をクリップボードにコピーしました。",
+  "historyEmptyTitle": "履歴がありません",
+  "historyEmptyMessage": "数式を入力して解法を生成すると、ここに履歴が表示されます。",
+  "relativeTimeDaysAgo": "{count}日前",
+  "relativeTimeHoursAgo": "{count}時間前",
+  "relativeTimeMinutesAgo": "{count}分前",
+  "relativeTimeJustNow": "たった今",
+  "guideHintTitle": "💡 ヒント",
+  "formulaEditorTitle": "式エディタ（数III対応）",
+  "formulaEditorApplyTooltip": "反映",
+  "formulaEditorFieldLabel": "電卓記法で編集（改行可）",
+  "languageSelectionTitle": "言語",
+  "languageSelectionHeading": "使用する言語を選択",
+  "languageSelectionDescription": "アプリで利用する言語を選んでください。",
+  "languageSelectionCurrentLabel": "現在の言語",
+  "languageSelectionContinue": "開始する",
+  "languageSelectionDone": "完了",
+  "settingsTitle": "設定",
+  "settingsLanguageLabel": "言語",
+  "settingsLanguageDescription": "現在は {native} ({english}) に設定されています",
+  "splashTagline": "数学のステップバイステップ解説",
+  "splashTapToStart": "タップして開始",
+  "navigationHome": "入力",
+  "navigationHistory": "履歴",
+  "navigationSettings": "設定",
+  "solutionStepExpressionLabel": "数式:",
+  "solutionStepDescriptionLabel": "詳細説明:",
+  "@historyErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyDeleteConfirmation": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@relativeTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsLanguageDescription": {
+    "placeholders": {
+      "native": {
+        "type": "String"
+      },
+      "english": {
+        "type": "String"
+      }
+    }
+  }
+}

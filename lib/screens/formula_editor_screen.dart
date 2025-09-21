@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../localization/localization_extensions.dart';
 import '../utils/syntax_converter.dart';
 import '../widgets/latex_preview.dart';
 
@@ -35,22 +36,25 @@ class _FormulaEditorScreenState extends State<FormulaEditorScreen> {
     final newText = before + text + after;
     _controller.text = newText;
     final target = caretTo ?? (before.length + text.length);
-    _controller.selection = TextSelection.fromPosition(TextPosition(offset: target));
+    _controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: target),
+    );
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final latex = SyntaxConverter.calculatorToLatex(_controller.text);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('式エディタ (数3対応)'),
+        title: Text(l10n.formulaEditorTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
-            tooltip: '反映',
+            tooltip: l10n.formulaEditorApplyTooltip,
             onPressed: () => Navigator.pop(context, _controller.text),
-          )
+          ),
         ],
       ),
       body: Column(
@@ -68,8 +72,8 @@ class _FormulaEditorScreenState extends State<FormulaEditorScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TextField(
               controller: _controller,
-              decoration: const InputDecoration(
-                labelText: '電卓記法で編集 (改行可)',
+              decoration: InputDecoration(
+                labelText: context.l10n.formulaEditorFieldLabel,
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.multiline,
@@ -92,25 +96,97 @@ class _FormulaEditorScreenState extends State<FormulaEditorScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _tool('frac', () => _insertTemplate('frac( , )', caretTo: _controller.selection.baseOffset + 5)),
-                _tool('sqrt', () => _insertTemplate('sqrt()', caretTo: _controller.selection.baseOffset + 5)),
+                _tool(
+                  'frac',
+                  () => _insertTemplate(
+                    'frac( , )',
+                    caretTo: _controller.selection.baseOffset + 5,
+                  ),
+                ),
+                _tool(
+                  'sqrt',
+                  () => _insertTemplate(
+                    'sqrt()',
+                    caretTo: _controller.selection.baseOffset + 5,
+                  ),
+                ),
                 _tool('^', () => _insertTemplate('^')),
-                _tool('abs', () => _insertTemplate('abs()', caretTo: _controller.selection.baseOffset + 4)),
-                _tool('int a→b', () => _insertTemplate('integral(a,b,f(x),x)', caretTo: _controller.selection.baseOffset + 9)),
-                _tool('∫ f dx', () => _insertTemplate('integral(f(x),x)', caretTo: _controller.selection.baseOffset + 9)),
-                _tool('d/dx', () => _insertTemplate('diff(f(x),x)', caretTo: _controller.selection.baseOffset + 5)),
-                _tool('d²/dx²', () => _insertTemplate('diff2(f(x),x)', caretTo: _controller.selection.baseOffset + 6)),
-                _tool('∂/∂x', () => _insertTemplate('partial(f(x),x)', caretTo: _controller.selection.baseOffset + 8)),
-                _tool('lim x→a', () => _insertTemplate('limit(x,a,f(x))', caretTo: _controller.selection.baseOffset + 7)),
+                _tool(
+                  'abs',
+                  () => _insertTemplate(
+                    'abs()',
+                    caretTo: _controller.selection.baseOffset + 4,
+                  ),
+                ),
+                _tool(
+                  'int a→b',
+                  () => _insertTemplate(
+                    'integral(a,b,f(x),x)',
+                    caretTo: _controller.selection.baseOffset + 9,
+                  ),
+                ),
+                _tool(
+                  '∫ f dx',
+                  () => _insertTemplate(
+                    'integral(f(x),x)',
+                    caretTo: _controller.selection.baseOffset + 9,
+                  ),
+                ),
+                _tool(
+                  'd/dx',
+                  () => _insertTemplate(
+                    'diff(f(x),x)',
+                    caretTo: _controller.selection.baseOffset + 5,
+                  ),
+                ),
+                _tool(
+                  'd²/dx²',
+                  () => _insertTemplate(
+                    'diff2(f(x),x)',
+                    caretTo: _controller.selection.baseOffset + 6,
+                  ),
+                ),
+                _tool(
+                  '∂/∂x',
+                  () => _insertTemplate(
+                    'partial(f(x),x)',
+                    caretTo: _controller.selection.baseOffset + 8,
+                  ),
+                ),
+                _tool(
+                  'lim x→a',
+                  () => _insertTemplate(
+                    'limit(x,a,f(x))',
+                    caretTo: _controller.selection.baseOffset + 7,
+                  ),
+                ),
                 _tool('sum', () => _insertTemplate('sum(i=1,n,f(i))')),
                 _tool('prod', () => _insertTemplate('prod(i=1,n,f(i))')),
                 _tool('Σ i,1..n', () => _insertTemplate('sum(i,1,n,f(i))')),
                 _tool('Π k,1..n', () => _insertTemplate('prod(k,1,n,a_k)')),
-                _tool('cases', () => _insertTemplate('cases((f(x), x<0),(g(x), 0<=x))')),
+                _tool(
+                  'cases',
+                  () => _insertTemplate('cases((f(x), x<0),(g(x), 0<=x))'),
+                ),
                 _tool('bmat 2x2', () => _insertTemplate('matrix((a,b),(c,d))')),
-                _tool('bmat 3x3', () => _insertTemplate('matrix((a,b,c),(d,e,f),(g,h,i))')),
-                _tool('| |', () => _insertTemplate('| |', caretTo: _controller.selection.baseOffset + 1)),
-                _tool('( )', () => _insertTemplate('() ', caretTo: _controller.selection.baseOffset + 1)),
+                _tool(
+                  'bmat 3x3',
+                  () => _insertTemplate('matrix((a,b,c),(d,e,f),(g,h,i))'),
+                ),
+                _tool(
+                  '| |',
+                  () => _insertTemplate(
+                    '| |',
+                    caretTo: _controller.selection.baseOffset + 1,
+                  ),
+                ),
+                _tool(
+                  '( )',
+                  () => _insertTemplate(
+                    '() ',
+                    caretTo: _controller.selection.baseOffset + 1,
+                  ),
+                ),
               ],
             ),
           ),
@@ -121,9 +197,6 @@ class _FormulaEditorScreenState extends State<FormulaEditorScreen> {
   }
 
   Widget _tool(String label, VoidCallback onPressed) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      child: Text(label),
-    );
+    return OutlinedButton(onPressed: onPressed, child: Text(label));
   }
 }

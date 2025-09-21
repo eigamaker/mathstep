@@ -1,0 +1,116 @@
+{
+  "@@locale": "zh",
+  "appTitle": "MathStep",
+  "commonErrorTitle": "错误",
+  "commonOkButton": "确定",
+  "commonCancelButton": "取消",
+  "commonDeleteButton": "删除",
+  "commonCloseButton": "关闭",
+  "commonClear": "清除",
+  "homeGenerating": "生成中...",
+  "homeInputRequired": "请输入一个表达式。",
+  "homeApiKeyMissingSnack": "未配置 OpenAI API 密钥。",
+  "homeApiKeyMissingDialogTitle": "需要 API 密钥",
+  "homeApiKeyMissingDialogMessage": "未配置 OpenAI API 密钥。\n\n设置方法：\n1. 在项目根目录创建 .env 文件\n2. 添加：OPENAI_API_KEY=your_api_key_here\n3. 重新启动应用\n\nAPI 密钥可在 OpenAI 官网获取。",
+  "homeSendingToChatGpt": "正在发送到 ChatGPT...",
+  "homeApiConnectionErrorTitle": "API 连接错误",
+  "homeApiConnectionErrorMessage": "无法连接到 ChatGPT API。\n\n请检查：\n• 网络连接是否正常\n• 是否正确设置了 API 密钥\n• 是否未达到 OpenAI API 的使用限制",
+  "homeApiResponseErrorTitle": "API 响应错误",
+  "homeApiResponseErrorMessage": "ChatGPT API 返回了空响应。\n\n请检查 API 密钥和网络连接。",
+  "homeGenericErrorSnack": "发生错误。",
+  "homePlaceholderTitle": "请输入表达式开始使用",
+  "homePlaceholderSubtitle": "使用键盘或公式编辑器输入表达式。",
+  "homeExpressionFieldLabel": "输入表达式",
+  "homeExpressionHint": "示例：(2x+1)/(x-3) = cbrt(x+2)",
+  "homeConditionFieldLabel": "条件/目标（可选）",
+  "homeConditionHint": "示例：求 x > 0 时的最小值，求实数解的个数",
+  "adLoadingMessage": "正在加载广告...",
+  "adLoadFailedMessage": "广告加载失败。",
+  "adRewardMessage": "正在显示解法！",
+  "adNotReadyMessage": "广告尚未准备好。",
+  "rewardAdShowingMessage": "广告播放中...",
+  "rewardAdButtonReady": "显示解法",
+  "historyTitle": "历史记录",
+  "historySortTooltip": "排序历史",
+  "historySearchHint": "搜索表达式...",
+  "historyErrorMessage": "错误：{error}",
+  "historyDeleteConfirmation": "要从历史记录中删除 {expression} 吗？",
+  "historySortDialogTitle": "排序",
+  "historySortOptionNewest": "按最新优先",
+  "historySortOptionExpression": "按表达式排序",
+  "historySortOrderAscending": "升序",
+  "historyCopyTooltip": "复制表达式",
+  "historyViewTooltip": "查看解法",
+  "historyCopySuccessMessage": "表达式已复制到剪贴板。",
+  "historyEmptyTitle": "暂无历史记录",
+  "historyEmptyMessage": "输入表达式并生成解法后，将在此显示。",
+  "relativeTimeDaysAgo": "{count}天前",
+  "relativeTimeHoursAgo": "{count}小时前",
+  "relativeTimeMinutesAgo": "{count}分钟前",
+  "relativeTimeJustNow": "刚刚",
+  "guideHintTitle": "💡 小提示",
+  "formulaEditorTitle": "公式编辑器（支持数学III）",
+  "formulaEditorApplyTooltip": "应用",
+  "formulaEditorFieldLabel": "以计算器语法编辑（可换行）",
+  "languageSelectionTitle": "语言",
+  "languageSelectionHeading": "选择要使用的语言",
+  "languageSelectionDescription": "请选择应用中使用的语言。",
+  "languageSelectionCurrentLabel": "当前语言",
+  "languageSelectionContinue": "开始使用",
+  "languageSelectionDone": "完成",
+  "settingsTitle": "设置",
+  "settingsLanguageLabel": "语言",
+  "settingsLanguageDescription": "当前语言：{native}（{english}）",
+  "splashTagline": "一步一步理解数学解法",
+  "splashTapToStart": "点击开始",
+  "navigationHome": "输入",
+  "navigationHistory": "历史",
+  "navigationSettings": "设置",
+  "solutionStepExpressionLabel": "表达式：",
+  "solutionStepDescriptionLabel": "详细说明：",
+  "@historyErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyDeleteConfirmation": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@relativeTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsLanguageDescription": {
+    "placeholders": {
+      "native": {
+        "type": "String"
+      },
+      "english": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../constants/app_constants.dart';
+import '../../localization/localization_extensions.dart';
 import '../../providers/solution_storage_provider.dart';
 import '../../widgets/latex_preview.dart';
 import 'history_state.dart';
@@ -24,7 +25,9 @@ class HistoryItemWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppConstants.historyItemSpacing),
       child: InkWell(
         onTap: onView,
-        borderRadius: BorderRadius.circular(AppConstants.historyItemBorderRadius),
+        borderRadius: BorderRadius.circular(
+          AppConstants.historyItemBorderRadius,
+        ),
         child: Padding(
           padding: const EdgeInsets.all(AppConstants.historyItemPadding),
           child: Column(
@@ -34,7 +37,8 @@ class HistoryItemWidget extends StatelessWidget {
               const SizedBox(height: AppConstants.historyItemSpacing),
               _buildExpressionText(context),
               const SizedBox(height: 8),
-              if (item.solution.problemStatement != null) _buildProblemStatement(),
+              if (item.solution.problemStatement != null)
+                _buildProblemStatement(),
               const SizedBox(height: 8),
               _buildFooter(context),
             ],
@@ -75,7 +79,7 @@ class HistoryItemWidget extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.copy, size: AppConstants.iconSize),
           onPressed: () => _copyToClipboard(context),
-          tooltip: '数式をコピー',
+          tooltip: context.l10n.historyCopyTooltip,
         ),
       ],
     );
@@ -84,10 +88,7 @@ class HistoryItemWidget extends StatelessWidget {
   Widget _buildProblemStatement() {
     return Text(
       item.solution.problemStatement!,
-      style: TextStyle(
-        fontSize: 14,
-        color: Colors.grey.shade600,
-      ),
+      style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
       maxLines: AppConstants.maxHistoryItemLines,
       overflow: TextOverflow.ellipsis,
     );
@@ -98,23 +99,23 @@ class HistoryItemWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          DateTimeFormatter.formatRelative(item.expression.timestamp),
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade500,
+          DateTimeFormatter.formatRelative(
+            item.expression.timestamp,
+            context.l10n,
           ),
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
         ),
         Row(
           children: [
             IconButton(
               icon: const Icon(Icons.visibility, size: AppConstants.iconSize),
               onPressed: onView,
-              tooltip: '解法を見る',
+              tooltip: context.l10n.historyViewTooltip,
             ),
             IconButton(
               icon: const Icon(Icons.delete, size: AppConstants.iconSize),
               onPressed: onDelete,
-              tooltip: '削除',
+              tooltip: context.l10n.commonDeleteButton,
             ),
           ],
         ),
@@ -125,9 +126,11 @@ class HistoryItemWidget extends StatelessWidget {
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: item.expression.calculatorSyntax));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(AppConstants.copySuccessMessage),
-        duration: Duration(seconds: AppConstants.maxSnackBarDurationSeconds),
+      SnackBar(
+        content: Text(context.l10n.historyCopySuccessMessage),
+        duration: const Duration(
+          seconds: AppConstants.maxSnackBarDurationSeconds,
+        ),
       ),
     );
   }

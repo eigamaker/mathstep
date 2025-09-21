@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/api_config.dart';
@@ -11,6 +11,9 @@ import '../providers/expression_provider.dart';
 import '../providers/service_providers.dart';
 import '../providers/solution_storage_provider.dart';
 import '../providers/reward_ad_provider.dart';
+import '../localization/localization_extensions.dart';
+import '../providers/language_provider.dart';
+import '../services/chatgpt_service.dart';
 import 'formula_editor_screen.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
@@ -39,12 +42,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-      Future<void> _loadAdAfterDelay() async {
-        // AdMob初期化を待つ
-        await Future.delayed(const Duration(seconds: 2));
-        ref.read(rewardAdProvider).loadAd();
-      }
-
+  Future<void> _loadAdAfterDelay() async {
+    // AdMob初期化を待つ
+    await Future.delayed(const Duration(seconds: 2));
+    ref.read(rewardAdProvider).loadAd();
+  }
 
   @override
   void dispose() {
@@ -143,51 +145,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _generateSolution() async {
-    // テキストコントローラーから直接入力を取得
+    final l10n = context.l10n;
+    final language = ref.read(appLanguageProvider);
     final input = _textController.text.trim();
     if (input.isEmpty) {
-      _showSnackBar('数式を入力してください');
+      _showSnackBar(l10n.homeInputRequired);
       return;
     }
 
-    // プロバイダーの状態を安全に更新
     try {
       ref.read(expressionProvider.notifier).updateInput(input);
       ref.read(expressionProvider.notifier).clearError();
       ref.read(expressionProvider.notifier).setLoading(true);
     } catch (e) {
       debugPrint('Provider error: $e');
-      // プロバイダーエラーの場合は続行
     }
 
     try {
       if (!ApiConfig.isConfigured) {
-        _showSnackBar('APIキーが設定されていません。');
+        _showSnackBar(l10n.homeApiKeyMissingSnack);
         _showErrorDialog(
-          'OpenAI APIキーが設定されていません。\n\n'
-          '設定方法：\n'
-          '1. プロジェクトルートに.envファイルを作成\n'
-          '2. 以下の内容を記述：\n'
-          '   OPENAI_API_KEY=your_api_key_here\n'
-          '3. アプリを再起動\n\n'
-          'APIキーはOpenAIの公式サイトで取得できます。',
-          title: 'APIキー設定が必要です',
+          l10n.homeApiKeyMissingDialogMessage,
+          title: l10n.homeApiKeyMissingDialogTitle,
         );
         return;
       }
-      
-      _showSnackBar('ChatGPTに送信中...');
-      debugPrint('Using model: ${ApiConfig.model}');
-      debugPrint('API URL: ${ApiConfig.openaiApiUrl}');
+
+      _showSnackBar(l10n.homeSendingToChatGpt);
 
       final chatGptService = ref.read(chatGptServiceProvider);
       final latexExpression = SyntaxConverter.calculatorToLatex(input);
-      final condition = _conditionController.text.trim();
-      final solution = await chatGptService.generateSolution(latexExpression, condition);
+      final conditionRaw = _conditionController.text.trim();
+      final condition = conditionRaw.isEmpty ? null : conditionRaw;
+
+      final solution = await chatGptService.generateSolution(
+        latexExpression,
+        condition: condition,
+        language: language,
+      );
 
       if (!mounted) return;
 
-      // 数式と解法を作成
       final mathExpression = MathExpression(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         calculatorSyntax: input,
@@ -195,8 +193,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         timestamp: DateTime.now(),
       );
 
-      // 解法を自動保存
-      ref.read(solutionStorageProvider.notifier).addSolution(mathExpression, solution);
+      ref
+          .read(solutionStorageProvider.notifier)
+          .addSolution(mathExpression, solution);
 
       Navigator.push(
         context,
@@ -207,41 +206,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       );
-    } catch (e, stackTrace) {
-      try {
-        ref.read(expressionProvider.notifier).setError(e.toString());
-      } catch (providerError) {
-        debugPrint('Provider error in catch: $providerError');
-      }
-      debugPrint('Error in _generateSolution: $e\n$stackTrace');
+    } on ChatGptException catch (error) {
       if (!mounted) return;
-      
-      String errorMessage = e.toString();
-      String errorTitle = 'エラー';
-      
-      // APIキー関連のエラーの場合
-      if (errorMessage.contains('APIキー') || errorMessage.contains('OPENAI_API_KEY')) {
-        errorTitle = 'APIキー設定が必要です';
-      } else if (errorMessage.contains('API request failed')) {
-        errorTitle = 'API接続エラー';
-        errorMessage = 'ChatGPT APIへの接続に失敗しました。\n\n'
-            '確認事項：\n'
-            '• インターネット接続を確認\n'
-            '• APIキーが正しく設定されているか確認\n'
-            '• OpenAI APIの利用制限に達していないか確認';
-      } else if (errorMessage.contains('Empty response')) {
-        errorTitle = 'API応答エラー';
-        errorMessage = 'ChatGPT APIからの応答が空でした。\n\n'
-            'APIキーとネットワーク接続を確認してください。';
+
+      String errorTitle;
+      String errorMessage;
+
+      switch (error.type) {
+        case ChatGptErrorType.apiKeyMissing:
+          errorTitle = l10n.homeApiKeyMissingDialogTitle;
+          errorMessage = l10n.homeApiKeyMissingDialogMessage;
+          break;
+        case ChatGptErrorType.emptyResponse:
+        case ChatGptErrorType.jsonParse:
+          errorTitle = l10n.homeApiResponseErrorTitle;
+          errorMessage = l10n.homeApiResponseErrorMessage;
+          break;
+        case ChatGptErrorType.apiRequestFailed:
+          errorTitle = l10n.homeApiConnectionErrorTitle;
+          errorMessage = l10n.homeApiConnectionErrorMessage;
+          break;
       }
-      
-      _showSnackBar('エラーが発生しました');
+
+      _showSnackBar(l10n.homeGenericErrorSnack);
       _showErrorDialog(errorMessage, title: errorTitle);
+    } catch (error, stackTrace) {
+      debugPrint('Error in _generateSolution: $error\n$stackTrace');
+      if (!mounted) return;
+      _showSnackBar(l10n.homeGenericErrorSnack);
+      _showErrorDialog(error.toString(), title: l10n.commonErrorTitle);
     } finally {
-      try {
-        ref.read(expressionProvider.notifier).setLoading(false);
-      } catch (providerError) {
-        debugPrint('Provider error in finally: $providerError');
+      if (mounted) {
+        try {
+          ref.read(expressionProvider.notifier).setLoading(false);
+        } catch (providerError) {
+          debugPrint('Provider error in finally: $providerError');
+        }
       }
     }
   }
@@ -255,21 +255,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).showSnackBar(SnackBar(content: Text(message), duration: duration));
   }
 
-  void _showErrorDialog(String message, {String title = 'エラー'}) {
+  void _showErrorDialog(String message, {String? title}) {
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: SingleChildScrollView(
-          child: Text(message),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
+      builder: (dialogContext) {
+        final l10n = dialogContext.l10n;
+        return AlertDialog(
+          title: Text(title ?? l10n.commonErrorTitle),
+          content: SingleChildScrollView(child: Text(message)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.commonOkButton),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -395,6 +396,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildPlaceholder() {
+    final l10n = context.l10n;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -409,7 +411,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            '数式を入力してください',
+            l10n.homePlaceholderTitle,
             style: TextStyle(
               color: Colors.grey.shade600,
               fontSize: 18,
@@ -418,7 +420,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Use the keypad or the formula editor\\nto enter an expression',
+            l10n.homePlaceholderSubtitle,
             style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
             textAlign: TextAlign.center,
           ),
@@ -428,13 +430,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildExpressionField(String currentExpression) {
+    final l10n = context.l10n;
     return TextField(
       controller: _textController,
       focusNode: _textFieldFocus,
       keyboardType: TextInputType.none,
       showCursor: true,
       decoration: InputDecoration(
-        labelText: '数式を入力',
+        labelText: l10n.homeExpressionFieldLabel,
         labelStyle: TextStyle(
           color: Colors.blue.shade600,
           fontWeight: FontWeight.w500,
@@ -453,7 +456,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
-        hintText: '例: (2x+1)/(x-3) = cbrt(x+2)',
+        hintText: l10n.homeExpressionHint,
         hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
         prefixIcon: Icon(Icons.calculate, color: Colors.blue.shade600),
         suffixIcon: currentExpression.isNotEmpty
@@ -462,7 +465,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onPressed: () {
                   _textController.clear();
                 },
-                tooltip: 'クリア',
+                tooltip: l10n.commonClear,
               )
             : null,
         contentPadding: const EdgeInsets.symmetric(
@@ -471,10 +474,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       onTap: _focusInput,
+      readOnly: true,
     );
   }
 
   Widget _buildConditionField() {
+    final l10n = context.l10n;
     return TextField(
       controller: _conditionController,
       focusNode: _conditionFieldFocus,
@@ -485,7 +490,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       maxLines: 2,
       minLines: 1,
       decoration: InputDecoration(
-        labelText: '条件・求める解（任意）',
+        labelText: l10n.homeConditionFieldLabel,
         labelStyle: TextStyle(
           color: Colors.green.shade600,
           fontWeight: FontWeight.w500,
@@ -504,7 +509,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         filled: true,
         fillColor: Colors.green.shade50,
-        hintText: '例: x > 0 のときの最小値を求めよ、実数解の個数を求めよ',
+        hintText: l10n.homeConditionHint,
         hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
         prefixIcon: Icon(Icons.help_outline, color: Colors.green.shade600),
         suffixIcon: _conditionController.text.isNotEmpty
@@ -513,7 +518,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onPressed: () {
                   _conditionController.clear();
                 },
-                tooltip: 'クリア',
+                tooltip: l10n.commonClear,
               )
             : null,
         contentPadding: const EdgeInsets.symmetric(
@@ -527,14 +532,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-      Widget _buildGenerateButton(bool isLoading) {
-        return RewardAdButton(
-          onRewardEarned: _generateSolution,
-          isLoading: isLoading,
-          buttonText: '解法を表示',
-          loadingText: '生成中...',
-        );
-      }
+  Widget _buildGenerateButton(bool isLoading) {
+    return RewardAdButton(
+      onRewardEarned: _generateSolution,
+      isLoading: isLoading,
+    );
+  }
 
   Widget _buildCalculator() {
     return DecoratedBox(

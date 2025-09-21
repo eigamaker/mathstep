@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/solution.dart';
+import '../localization/localization_extensions.dart';
 import 'latex_preview.dart';
 
 class SolutionStepCard extends StatelessWidget {
@@ -21,19 +22,14 @@ class SolutionStepCard extends StatelessWidget {
       child: ExpansionTile(
         title: Text(
           step.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(
           step.description,
           maxLines: isExpanded ? null : 2,
           overflow: isExpanded ? null : TextOverflow.ellipsis,
         ),
-        trailing: Icon(
-          isExpanded ? Icons.expand_less : Icons.expand_more,
-        ),
+        trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
         onExpansionChanged: (expanded) {
           onToggleExpansion();
         },
@@ -44,44 +40,33 @@ class SolutionStepCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.grey.shade50,
-                border: Border(
-                  top: BorderSide(color: Colors.grey.shade300),
-                ),
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '数式:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                  Text(
+                    context.l10n.solutionStepExpressionLabel,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   const SizedBox(height: 8),
                   LatexPreview(expression: step.latexExpression!),
                 ],
               ),
             ),
-          
+
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '詳細説明:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                Text(
+                  context.l10n.solutionStepDescriptionLabel,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  step.description,
-                  style: const TextStyle(fontSize: 14),
-                ),
+                Text(step.description, style: const TextStyle(fontSize: 14)),
               ],
             ),
           ),

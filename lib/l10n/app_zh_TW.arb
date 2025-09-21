@@ -1,0 +1,116 @@
+{
+  "@@locale": "zh_TW",
+  "appTitle": "MathStep",
+  "commonErrorTitle": "錯誤",
+  "commonOkButton": "確定",
+  "commonCancelButton": "取消",
+  "commonDeleteButton": "刪除",
+  "commonCloseButton": "關閉",
+  "commonClear": "清除",
+  "homeGenerating": "產生中...",
+  "homeInputRequired": "請輸入數學式。",
+  "homeApiKeyMissingSnack": "尚未設定 OpenAI API 金鑰。",
+  "homeApiKeyMissingDialogTitle": "需要 API 金鑰",
+  "homeApiKeyMissingDialogMessage": "尚未設定 OpenAI API 金鑰。\n\n設定方式：\n1. 在專案根目錄建立 .env 檔案\n2. 加入：OPENAI_API_KEY=your_api_key_here\n3. 重新啟動應用程式\n\nAPI 金鑰可在 OpenAI 官方網站取得。",
+  "homeSendingToChatGpt": "正在傳送至 ChatGPT...",
+  "homeApiConnectionErrorTitle": "API 連線錯誤",
+  "homeApiConnectionErrorMessage": "無法連線至 ChatGPT API。\n\n請確認：\n• 網路連線是否正常\n• 是否正確設定 API 金鑰\n• 是否未達到 OpenAI API 使用限制",
+  "homeApiResponseErrorTitle": "API 回應錯誤",
+  "homeApiResponseErrorMessage": "ChatGPT API 傳回空白回應。\n\n請檢查 API 金鑰與網路連線。",
+  "homeGenericErrorSnack": "發生錯誤。",
+  "homePlaceholderTitle": "輸入數學式開始使用",
+  "homePlaceholderSubtitle": "使用鍵盤或公式編輯器輸入數學式。",
+  "homeExpressionFieldLabel": "輸入數學式",
+  "homeExpressionHint": "範例：(2x+1)/(x-3) = cbrt(x+2)",
+  "homeConditionFieldLabel": "條件／目標（選填）",
+  "homeConditionHint": "範例：求 x > 0 時的最小值、求實數解的個數",
+  "adLoadingMessage": "正在載入廣告...",
+  "adLoadFailedMessage": "廣告載入失敗。",
+  "adRewardMessage": "將顯示解法！",
+  "adNotReadyMessage": "廣告尚未準備好。",
+  "rewardAdShowingMessage": "廣告播放中...",
+  "rewardAdButtonReady": "顯示解法",
+  "historyTitle": "歷程",
+  "historySortTooltip": "排序歷程",
+  "historySearchHint": "搜尋數學式...",
+  "historyErrorMessage": "錯誤：{error}",
+  "historyDeleteConfirmation": "要從歷程中刪除 {expression} 嗎？",
+  "historySortDialogTitle": "排序",
+  "historySortOptionNewest": "最新優先",
+  "historySortOptionExpression": "依數學式排序",
+  "historySortOrderAscending": "遞增",
+  "historyCopyTooltip": "複製數學式",
+  "historyViewTooltip": "查看解法",
+  "historyCopySuccessMessage": "已將數學式複製到剪貼簿。",
+  "historyEmptyTitle": "尚無歷程",
+  "historyEmptyMessage": "輸入數學式並產生解法後，就會顯示在這裡。",
+  "relativeTimeDaysAgo": "{count} 天前",
+  "relativeTimeHoursAgo": "{count} 小時前",
+  "relativeTimeMinutesAgo": "{count} 分鐘前",
+  "relativeTimeJustNow": "剛剛",
+  "guideHintTitle": "💡 小提示",
+  "formulaEditorTitle": "公式編輯器（支援數學III）",
+  "formulaEditorApplyTooltip": "套用",
+  "formulaEditorFieldLabel": "以計算器語法編輯（可換行）",
+  "languageSelectionTitle": "語言",
+  "languageSelectionHeading": "選擇使用的語言",
+  "languageSelectionDescription": "請選擇要在應用程式中使用的語言。",
+  "languageSelectionCurrentLabel": "目前的語言",
+  "languageSelectionContinue": "開始使用",
+  "languageSelectionDone": "完成",
+  "settingsTitle": "設定",
+  "settingsLanguageLabel": "語言",
+  "settingsLanguageDescription": "目前語言：{native}（{english}）",
+  "splashTagline": "一步一步理解數學解法",
+  "splashTapToStart": "點選開始",
+  "navigationHome": "輸入",
+  "navigationHistory": "歷程",
+  "navigationSettings": "設定",
+  "solutionStepExpressionLabel": "數學式：",
+  "solutionStepDescriptionLabel": "詳細說明：",
+  "@historyErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyDeleteConfirmation": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@relativeTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsLanguageDescription": {
+    "placeholders": {
+      "native": {
+        "type": "String"
+      },
+      "english": {
+        "type": "String"
+      }
+    }
+  }
+}

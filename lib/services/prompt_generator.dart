@@ -1,77 +1,72 @@
-/// プロンプト生成を担当するクラス
+import '../localization/app_language.dart';
+
+/// Builds prompts that are sent to ChatGPT.
 class PromptGenerator {
-  static const String _systemPrompt = '''
-あなたは数学の専門講師です。生徒がステップバイステップで数式の展開を理解できるように、以下の方針で回答してください：
+  static String buildSystemPrompt(AppLanguage language) {
+    return '''
+You are an experienced math instructor. Help students understand each transformation by explaining it step by step with supportive language.
 
-【基本方針】
-1. 数式を段階的に展開し、各ステップを丁寧に説明する
-2. 生徒が理解しやすいレベルで説明する
-3. 計算過程を省略せず、すべて示す
+Guidelines:
+1. Break the solution into clear steps with short titles.
+2. Show every intermediate calculation without skipping algebraic transformations.
+3. Keep the explanation friendly and accessible for high-school level learners.
+4. Escape LaTeX properly (use double backslashes) and prefer basic commands.
 
-【回答形式】
-以下のJSON形式で返してください：
+Output format (JSON):
 {
-  "problemStatement": "数学の問題文",
+  "problemStatement": "Text that introduces the problem",
   "steps": [
     {
       "id": "step1",
-      "title": "ステップのタイトル",
-      "description": "分かりやすい説明",
-      "latexExpression": "シンプルなLaTeX式"
+      "title": "Short step title",
+      "description": "Student-friendly explanation",
+      "latexExpression": "Simple LaTeX representation"
     }
   ],
   "alternativeSolutions": [
     {
       "id": "alt1",
-      "title": "別の解法",
+      "title": "Optional alternative approach",
       "steps": [ ... ]
     }
   ],
   "verification": {
-    "domainCheck": "定義域の確認",
-    "verification": "検証手順",
-    "commonMistakes": "よくある間違い"
+    "domainCheck": "Domain considerations",
+    "verification": "How to check the result",
+    "commonMistakes": "Typical pitfalls to avoid"
   }
 }
 
-【LaTeXの書き方】
-- バックスラッシュは二重エスケープ（\\）してください
-- 基本的な記号のみ使用
-- 例：\\frac{1}{2}、\\sqrt{x}、x^2
-
-【説明のポイント】
-- 各ステップのつながりを明確に説明する
-- 「なぜそうなるのか」を必ず説明する
-- 数式の変形理由を丁寧に説明する
-- 生徒が理解できるレベルで説明する
-
-【禁止事項】
-- 計算過程の省略
-- 突然の式変形（必ず理由を説明）
-- 複雑すぎるLaTeX記法
-- 説明の省略
+Always write the entire response in ${language.chatGptLanguageName}.
 ''';
+  }
 
-  /// システムプロンプトを取得
-  static String get systemPrompt => _systemPrompt;
+  static String buildUserPrompt(
+    String latexExpression, {
+    String? condition,
+    required AppLanguage language,
+  }) {
+    final buffer = StringBuffer()
+      ..writeln(
+        'Please analyse the following mathematical expression and provide a step-by-step solution in ${language.chatGptLanguageName}.',
+      )
+      ..writeln()
+      ..writeln('Main expression:')
+      ..writeln('\\[ $latexExpression \\]');
 
-  /// ユーザープロンプトを生成
-  static String buildUserPrompt(String latexExpression, [String? condition]) {
-    if (condition != null && condition.isNotEmpty) {
-      return '''以下の数式を分析して、数学の問題として提示し、解法を説明してください。
-
-数式：
-\\[ $latexExpression \\]
-
-条件・求める解：
-$condition
-
-上記の条件を考慮して、適切な解法を提供してください。
-''';
-    } else {
-      return '''以下の数式を分析して、数学の問題として提示し、解法を説明してください。
-\\[ $latexExpression \\]
-''';
+    if (condition != null && condition.trim().isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('Additional requirements:')
+        ..writeln(condition.trim());
     }
+
+    buffer
+      ..writeln()
+      ..writeln(
+        'Return the answer using the specified JSON format and keep LaTeX simple.',
+      );
+
+    return buffer.toString();
   }
 }

@@ -1,0 +1,116 @@
+{
+  "@@locale": "ko",
+  "appTitle": "MathStep",
+  "commonErrorTitle": "오류",
+  "commonOkButton": "확인",
+  "commonCancelButton": "취소",
+  "commonDeleteButton": "삭제",
+  "commonCloseButton": "닫기",
+  "commonClear": "지우기",
+  "homeGenerating": "생성 중...",
+  "homeInputRequired": "식을 입력하세요.",
+  "homeApiKeyMissingSnack": "OpenAI API 키가 설정되지 않았습니다.",
+  "homeApiKeyMissingDialogTitle": "API 키가 필요합니다",
+  "homeApiKeyMissingDialogMessage": "OpenAI API 키가 설정되지 않았습니다.\n\n설정 방법:\n1. 프로젝트 루트에 .env 파일을 생성합니다.\n2. OPENAI_API_KEY=your_api_key_here 를 추가합니다.\n3. 앱을 다시 시작합니다.\n\nAPI 키는 OpenAI 공식 웹사이트에서 발급받을 수 있습니다.",
+  "homeSendingToChatGpt": "ChatGPT로 전송 중...",
+  "homeApiConnectionErrorTitle": "API 연결 오류",
+  "homeApiConnectionErrorMessage": "ChatGPT API에 연결하지 못했습니다.\n\n다음을 확인하세요:\n• 인터넷 연결 상태\n• API 키가 올바르게 설정되었는지\n• OpenAI API 사용 한도에 도달하지 않았는지",
+  "homeApiResponseErrorTitle": "API 응답 오류",
+  "homeApiResponseErrorMessage": "ChatGPT API에서 빈 응답이 반환되었습니다.\n\nAPI 키와 네트워크 연결을 확인하세요.",
+  "homeGenericErrorSnack": "오류가 발생했습니다.",
+  "homePlaceholderTitle": "식을 입력하고 시작하세요",
+  "homePlaceholderSubtitle": "키패드 또는 식 편집기를 사용해 수식을 입력하세요.",
+  "homeExpressionFieldLabel": "식 입력",
+  "homeExpressionHint": "예: (2x+1)/(x-3) = cbrt(x+2)",
+  "homeConditionFieldLabel": "조건·목표 (선택)",
+  "homeConditionHint": "예: x > 0일 때의 최솟값을 구하시오, 실수 해의 개수를 구하시오",
+  "adLoadingMessage": "광고를 불러오는 중...",
+  "adLoadFailedMessage": "광고를 불러오지 못했습니다.",
+  "adRewardMessage": "해설을 표시합니다!",
+  "adNotReadyMessage": "광고가 아직 준비되지 않았습니다.",
+  "rewardAdShowingMessage": "광고 표시 중...",
+  "rewardAdButtonReady": "해설 보기",
+  "historyTitle": "기록",
+  "historySortTooltip": "기록 정렬",
+  "historySearchHint": "식을 검색...",
+  "historyErrorMessage": "오류: {error}",
+  "historyDeleteConfirmation": "{expression} 항목을 기록에서 삭제하시겠습니까?",
+  "historySortDialogTitle": "정렬",
+  "historySortOptionNewest": "최신 순",
+  "historySortOptionExpression": "수식 순",
+  "historySortOrderAscending": "오름차순",
+  "historyCopyTooltip": "수식 복사",
+  "historyViewTooltip": "해설 보기",
+  "historyCopySuccessMessage": "수식을 클립보드에 복사했습니다.",
+  "historyEmptyTitle": "기록이 없습니다",
+  "historyEmptyMessage": "식을 입력하고 해설을 생성하면 이곳에 표시됩니다.",
+  "relativeTimeDaysAgo": "{count}일 전",
+  "relativeTimeHoursAgo": "{count}시간 전",
+  "relativeTimeMinutesAgo": "{count}분 전",
+  "relativeTimeJustNow": "방금 전",
+  "guideHintTitle": "💡 팁",
+  "formulaEditorTitle": "식 편집기(수학 III 지원)",
+  "formulaEditorApplyTooltip": "반영",
+  "formulaEditorFieldLabel": "계산기 표기법으로 편집 (줄바꿈 가능)",
+  "languageSelectionTitle": "언어",
+  "languageSelectionHeading": "사용할 언어를 선택하세요",
+  "languageSelectionDescription": "앱에서 사용할 언어를 선택하세요.",
+  "languageSelectionCurrentLabel": "현재 선택된 언어",
+  "languageSelectionContinue": "시작하기",
+  "languageSelectionDone": "완료",
+  "settingsTitle": "설정",
+  "settingsLanguageLabel": "언어",
+  "settingsLanguageDescription": "현재 언어: {native} ({english})",
+  "splashTagline": "수학을 단계별로 이해하기",
+  "splashTapToStart": "탭하여 시작",
+  "navigationHome": "입력",
+  "navigationHistory": "기록",
+  "navigationSettings": "설정",
+  "solutionStepExpressionLabel": "수식:",
+  "solutionStepDescriptionLabel": "자세한 설명:",
+  "@historyErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyDeleteConfirmation": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@relativeTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsLanguageDescription": {
+    "placeholders": {
+      "native": {
+        "type": "String"
+      },
+      "english": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../localization/localization_extensions.dart';
+
 class GuideScreen extends StatelessWidget {
   const GuideScreen({super.key});
 
@@ -148,7 +150,7 @@ class GuideScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '\u6570\u5f0f: ' + expression,
+            '\u6570\u5f0f: $expression',
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -212,7 +214,7 @@ class GuideScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '💡 ヒント',
+            context.l10n.guideHintTitle,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -224,7 +226,7 @@ class GuideScreen extends StatelessWidget {
             (tip) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
-                '\u2022 ' + tip,
+                '\u2022 $tip',
                 style: TextStyle(fontSize: 14, color: Colors.blue.shade700),
               ),
             ),

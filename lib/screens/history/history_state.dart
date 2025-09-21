@@ -1,7 +1,8 @@
+import 'package:mathstep/l10n/app_localizations.dart';
+
 import '../../constants/app_constants.dart';
 import '../../providers/solution_storage_provider.dart';
 
-/// 履歴画面の状態を管理するクラス
 class HistoryState {
   const HistoryState({
     this.searchQuery = '',
@@ -26,30 +27,30 @@ class HistoryState {
   }
 }
 
-/// 履歴項目のフィルタリングとソートを行うクラス
 class HistoryFilter {
   static List<MathExpressionWithSolution> filterAndSort(
     List<MathExpressionWithSolution> items,
     HistoryState state,
   ) {
     var filtered = items;
-    
-    // 検索フィルタリング
+
     if (state.searchQuery.isNotEmpty) {
       final query = state.searchQuery.toLowerCase();
       filtered = filtered.where((item) {
         return item.expression.calculatorSyntax.toLowerCase().contains(query) ||
             item.expression.latexExpression.toLowerCase().contains(query) ||
-            (item.solution.problemStatement?.toLowerCase().contains(query) ?? false);
+            (item.solution.problemStatement?.toLowerCase().contains(query) ??
+                false);
       }).toList();
     }
-    
-    // ソート
+
     filtered.sort((a, b) {
       int comparison;
       switch (state.sortBy) {
         case AppConstants.sortByExpression:
-          comparison = a.expression.calculatorSyntax.compareTo(b.expression.calculatorSyntax);
+          comparison = a.expression.calculatorSyntax.compareTo(
+            b.expression.calculatorSyntax,
+          );
           break;
         case AppConstants.sortByTimestamp:
         default:
@@ -58,25 +59,24 @@ class HistoryFilter {
       }
       return state.sortAscending ? comparison : -comparison;
     });
-    
+
     return filtered;
   }
 }
 
-/// 日時フォーマット用のユーティリティクラス
 class DateTimeFormatter {
-  static String formatRelative(DateTime dateTime) {
+  static String formatRelative(DateTime dateTime, AppLocalizations l10n) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays > 0) {
-      return '${difference.inDays}${AppConstants.daysAgo}';
+      return l10n.relativeTimeDaysAgo(difference.inDays);
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}${AppConstants.hoursAgo}';
+      return l10n.relativeTimeHoursAgo(difference.inHours);
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}${AppConstants.minutesAgo}';
+      return l10n.relativeTimeMinutesAgo(difference.inMinutes);
     } else {
-      return AppConstants.justNow;
+      return l10n.relativeTimeJustNow;
     }
   }
 }

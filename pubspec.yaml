@@ -1,5 +1,5 @@
 name: mathstep
-description: "受験数学モバイルアプリ - 式入力からChatGPT解説まで"
+description: "蜿鈴ｨ捺焚蟄ｦ繝｢繝舌う繝ｫ繧｢繝励Μ - 蠑丞・蜉帙°繧韻hatGPT隗｣隱ｬ縺ｾ縺ｧ"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -51,7 +53,7 @@ dependencies:
   sqflite: ^2.3.2
   
   # Utilities
-  intl: ^0.19.0
+  intl: ^0.20.2
   uuid: ^4.4.0
   
   # Environment Variables
@@ -90,6 +92,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  generate: true
 
   # To add assets to your application, add an assets section, like this:
   assets:

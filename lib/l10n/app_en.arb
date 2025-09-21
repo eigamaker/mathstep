@@ -1,0 +1,116 @@
+{
+  "@@locale": "en",
+  "appTitle": "MathStep",
+  "commonErrorTitle": "Error",
+  "commonOkButton": "OK",
+  "commonCancelButton": "Cancel",
+  "commonDeleteButton": "Delete",
+  "commonCloseButton": "Close",
+  "commonClear": "Clear",
+  "homeGenerating": "Generating...",
+  "homeInputRequired": "Please enter an expression.",
+  "homeApiKeyMissingSnack": "OpenAI API key is not configured.",
+  "homeApiKeyMissingDialogTitle": "API key required",
+  "homeApiKeyMissingDialogMessage": "OpenAI API key is not configured.\n\nHow to set it:\n1. Create a .env file in the project root\n2. Add the line: OPENAI_API_KEY=your_api_key_here\n3. Restart the app\n\nYou can obtain an API key from the official OpenAI website.",
+  "homeSendingToChatGpt": "Sending to ChatGPT...",
+  "homeApiConnectionErrorTitle": "API connection error",
+  "homeApiConnectionErrorMessage": "Failed to reach the ChatGPT API.\n\nCheck the following:\n• Verify your internet connection\n• Make sure the API key is set correctly\n• Confirm that your OpenAI usage limits have not been reached",
+  "homeApiResponseErrorTitle": "API response error",
+  "homeApiResponseErrorMessage": "The ChatGPT API returned an empty response.\n\nPlease verify your API key and network connection.",
+  "homeGenericErrorSnack": "An error occurred.",
+  "homePlaceholderTitle": "Enter an expression to begin",
+  "homePlaceholderSubtitle": "Use the keypad or the formula editor to enter an expression.",
+  "homeExpressionFieldLabel": "Expression",
+  "homeExpressionHint": "Example: (2x+1)/(x-3) = cbrt(x+2)",
+  "homeConditionFieldLabel": "Conditions or target (optional)",
+  "homeConditionHint": "Example: Find the minimum when x > 0, determine the number of real solutions",
+  "adLoadingMessage": "Loading an ad...",
+  "adLoadFailedMessage": "Failed to load the ad.",
+  "adRewardMessage": "Solution unlocked!",
+  "adNotReadyMessage": "The ad is not ready yet.",
+  "rewardAdShowingMessage": "Showing ad...",
+  "rewardAdButtonReady": "Show solution",
+  "historyTitle": "History",
+  "historySortTooltip": "Sort history",
+  "historySearchHint": "Search expressions...",
+  "historyErrorMessage": "Error: {error}",
+  "historyDeleteConfirmation": "Remove {expression} from history?",
+  "historySortDialogTitle": "Sort",
+  "historySortOptionNewest": "Newest first",
+  "historySortOptionExpression": "By expression",
+  "historySortOrderAscending": "Ascending",
+  "historyCopyTooltip": "Copy expression",
+  "historyViewTooltip": "View solution",
+  "historyCopySuccessMessage": "Copied the expression to the clipboard.",
+  "historyEmptyTitle": "No history yet",
+  "historyEmptyMessage": "Enter an expression and generate a solution to see it listed here.",
+  "relativeTimeDaysAgo": "{count, plural, =1 {1 day ago} other {{count} days ago}}",
+  "relativeTimeHoursAgo": "{count, plural, =1 {1 hour ago} other {{count} hours ago}}",
+  "relativeTimeMinutesAgo": "{count, plural, =1 {1 minute ago} other {{count} minutes ago}}",
+  "relativeTimeJustNow": "Just now",
+  "guideHintTitle": "💡 Tips",
+  "formulaEditorTitle": "Formula editor",
+  "formulaEditorApplyTooltip": "Apply",
+  "formulaEditorFieldLabel": "Edit in calculator syntax (multi-line)",
+  "languageSelectionTitle": "Language",
+  "languageSelectionHeading": "Choose your language",
+  "languageSelectionDescription": "Pick the language you would like to use in the app.",
+  "languageSelectionCurrentLabel": "Currently selected",
+  "languageSelectionContinue": "Continue",
+  "languageSelectionDone": "Done",
+  "settingsTitle": "Settings",
+  "settingsLanguageLabel": "Language",
+  "settingsLanguageDescription": "Currently set to {native} ({english})",
+  "splashTagline": "Step-by-step math explanations",
+  "splashTapToStart": "Tap to start",
+  "navigationHome": "Home",
+  "navigationHistory": "History",
+  "navigationSettings": "Settings",
+  "solutionStepExpressionLabel": "Expression:",
+  "solutionStepDescriptionLabel": "Detailed explanation:",
+  "@historyErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyDeleteConfirmation": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@relativeTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@relativeTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsLanguageDescription": {
+    "placeholders": {
+      "native": {
+        "type": "String"
+      },
+      "english": {
+        "type": "String"
+      }
+    }
+  }
+}

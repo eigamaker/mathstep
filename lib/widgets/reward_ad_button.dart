@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../constants/app_constants.dart';
+
+import '../localization/localization_extensions.dart';
 import '../providers/reward_ad_provider.dart';
 import '../services/reward_ad_service.dart';
 
-/// リワード広告を表示するボタン
 class RewardAdButton extends ConsumerStatefulWidget {
   const RewardAdButton({
     super.key,
     required this.onRewardEarned,
     this.isLoading = false,
-    this.buttonText = '解法を表示',
-    this.loadingText = '生成中...',
   });
 
   final VoidCallback onRewardEarned;
   final bool isLoading;
-  final String buttonText;
-  final String loadingText;
 
   @override
   ConsumerState<RewardAdButton> createState() => _RewardAdButtonState();
@@ -40,7 +36,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
             : () => _showRewardAd(adNotifier),
         icon: _getButtonIcon(adState),
         label: Text(
-          _getButtonText(adState),
+          _getButtonText(context, adState),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
@@ -56,18 +52,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
   }
 
   Widget _getButtonIcon(RewardAdState adState) {
-    if (_isShowingAd || widget.isLoading) {
-      return const SizedBox(
-        width: 20,
-        height: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
-      );
-    }
-
-    if (adState.isLoading) {
+    if (_isShowingAd || widget.isLoading || adState.isLoading) {
       return const SizedBox(
         width: 20,
         height: 20,
@@ -85,24 +70,26 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
     return const Icon(Icons.download, size: 24);
   }
 
-  String _getButtonText(RewardAdState adState) {
+  String _getButtonText(BuildContext context, RewardAdState adState) {
+    final l10n = context.l10n;
+
     if (_isShowingAd) {
-      return '広告を表示中...';
+      return l10n.rewardAdShowingMessage;
     }
 
     if (widget.isLoading) {
-      return widget.loadingText;
+      return l10n.homeGenerating;
     }
 
     if (adState.isLoading) {
-      return AppConstants.adLoadingMessage;
+      return l10n.adLoadingMessage;
     }
 
     if (adState.isAdLoaded) {
-      return widget.buttonText;
+      return l10n.rewardAdButtonReady;
     }
 
-    return '広告を読み込み中...';
+    return l10n.adLoadingMessage;
   }
 
   Color _getButtonColor(RewardAdState adState) {
@@ -134,20 +121,22 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
       }
 
       if (!adNotifier.isAdLoaded) {
-        _showErrorSnackBar(AppConstants.adLoadFailedMessage);
+        _showErrorSnackBar(context.l10n.adLoadFailedMessage);
         return;
       }
 
       final rewarded = await adNotifier.showAd();
+      if (!mounted) return;
       if (rewarded) {
-        _showSuccessSnackBar(AppConstants.adRewardMessage);
+        _showSuccessSnackBar(context.l10n.adRewardMessage);
         widget.onRewardEarned();
       } else {
-        _showErrorSnackBar(AppConstants.adNotReadyMessage);
+        _showErrorSnackBar(context.l10n.adNotReadyMessage);
       }
     } catch (error) {
       debugPrint('RewardAdButton: Error while showing ad: $error');
-      _showErrorSnackBar(AppConstants.adLoadFailedMessage);
+      if (!mounted) return;
+      _showErrorSnackBar(context.l10n.adLoadFailedMessage);
     } finally {
       if (mounted) {
         setState(() => _isShowingAd = false);

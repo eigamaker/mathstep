@@ -11,7 +11,7 @@ class ChatGptService {
 
   final http.Client? _client;
 
-  Future<Solution> generateSolution(String latexExpression) async {
+  Future<Solution> generateSolution(String latexExpression, [String? condition]) async {
     if (!ApiConfig.isConfigured) {
       throw Exception(
         'OpenAI APIキーが設定されていません。.envファイルにOPENAI_API_KEYを設定してください。',
@@ -24,7 +24,7 @@ class ChatGptService {
         'model': ApiConfig.model,
         'messages': [
           {'role': 'system', 'content': _systemPrompt},
-          {'role': 'user', 'content': _buildUserPrompt(latexExpression)},
+          {'role': 'user', 'content': _buildUserPrompt(latexExpression, condition)},
         ],
         // temperatureとmax_tokensパラメータを削除（モデルによって異なるため）
       };
@@ -77,29 +77,31 @@ class ChatGptService {
   }
 
   static const _systemPrompt = '''
-あなたは高校数学の専門講師です。与えられた数式を分析して、以下の手順で回答してください：
+あなたは高校数学の専門講師です。高校生が理解しやすいように、以下の方針で回答してください：
 
-1. 数式から数学の問題を推測し、問題文として提示する
-2. その問題を解くための段階的な解法を提供する
-3. 代替解法がある場合は提示する
-4. 検証と定義域の確認を行う
-5. よくある間違いや注意点を指摘する
+【解法の方針】
+1. 必ず導関数を使った解法をメインにする
+2. 変数変換（t、uなど）は絶対に使わない
+3. 元の関数f(x)を直接扱う
+4. 計算過程を丁寧に説明する
+5. 高校生が知っている公式のみを使用する
 
-回答は以下のJSON形式で返してください：
+【回答形式】
+以下のJSON形式で返してください：
 {
-  "problemStatement": "推測した数学の問題文（例：f(x) = 2^{x+1} - √(2x) の最小値を求めよ。また、そのときのxの値を求めよ。）",
+  "problemStatement": "数学の問題文",
   "steps": [
     {
       "id": "step1",
       "title": "ステップのタイトル",
-      "description": "詳細な説明",
-      "latexExpression": "必要に応じてLaTeX式"
+      "description": "高校生向けの分かりやすい説明",
+      "latexExpression": "シンプルなLaTeX式"
     }
   ],
   "alternativeSolutions": [
     {
       "id": "alt1",
-      "title": "代替解法",
+      "title": "別の解法",
       "steps": [ ... ]
     }
   ],
@@ -110,20 +112,41 @@ class ChatGptService {
   }
 }
 
-数式の種類に応じて適切な問題を推測してください：
-- 関数式 → 最大値・最小値、極値、グラフの性質
-- 方程式 → 解の求め方、解の個数、実数解の条件
-- 不等式 → 解の範囲、成立条件
-- 三角関数 → 周期、振幅、位相、最大値・最小値
-- 指数・対数 → 増減、漸近線、交点
-- 積分 → 面積、体積、定積分の値
-- 微分 → 接線、法線、極値、変曲点
+【LaTeXの書き方】
+- バックスラッシュは二重エスケープ（\\）してください
+- 複雑な記号は避け、基本的な記号のみ使用
+- 例：\\frac{1}{2}、\\sqrt{x}、x^2
+
+【解法のルール】
+- 絶対に変数変換（t=...、u=...）を使わない
+- f(x)の導関数f'(x)を求めて解く
+- 計算過程を省略せず、すべて示す
+- 高校生が理解できるレベルで説明する
+
+【禁止事項】
+- 変数変換（t、u、g(t)、h(u)など）
+- 大学レベルの高度な手法
+- 複雑すぎるLaTeX記法
+- 説明の省略
 ''';
 
-  String _buildUserPrompt(String latexExpression) {
-    return '''以下の数式を分析して、高校生向けに数学の問題として提示し、解法を説明してください。
+  String _buildUserPrompt(String latexExpression, [String? condition]) {
+    if (condition != null && condition.isNotEmpty) {
+      return '''以下の数式を分析して、高校生向けに数学の問題として提示し、解法を説明してください。
+
+数式：
+\\[ $latexExpression \\]
+
+条件・求める解：
+$condition
+
+上記の条件を考慮して、適切な解法を提供してください。
+''';
+    } else {
+      return '''以下の数式を分析して、高校生向けに数学の問題として提示し、解法を説明してください。
 \\[ $latexExpression \\]
 ''';
+    }
   }
 
   Solution? _parseSolutionResponse(String content) {
@@ -141,8 +164,16 @@ class ChatGptService {
       final cleanedJsonString = _cleanJsonString(jsonString);
       debugPrint('Cleaned JSON: $cleanedJsonString');
 
-      final jsonMap = jsonDecode(cleanedJsonString) as Map<String, dynamic>;
-      debugPrint('Parsed JSON Map: $jsonMap');
+      Map<String, dynamic> jsonMap;
+      try {
+        jsonMap = jsonDecode(cleanedJsonString) as Map<String, dynamic>;
+        debugPrint('Parsed JSON Map: $jsonMap');
+      } catch (e) {
+        debugPrint('Failed to parse solution response: $e');
+        debugPrint('Original JSON: $jsonString');
+        debugPrint('Cleaned JSON: $cleanedJsonString');
+        throw Exception('APIからの応答を解析できませんでした。JSON形式が正しくありません。');
+      }
 
       return Solution(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -212,28 +243,21 @@ class ChatGptService {
   }
 
   String _cleanJsonString(String jsonString) {
-    final buffer = StringBuffer();
-    var index = 0;
-
-    while (index < jsonString.length) {
-      final current = jsonString[index];
-      if (current == r'\') {
-        if (index + 1 < jsonString.length) {
-          final next = jsonString[index + 1];
-          const allowedEscapes = '"\\/bfnrtu';
-          if (!allowedEscapes.contains(next)) {
-            buffer.write('\\');
-            buffer.write(next);
-            index += 2;
-            continue;
-          }
-        }
-      }
-
-      buffer.write(current);
-      index += 1;
-    }
-
-    return buffer.toString();
+    // ChatGPTが既に正しくエスケープしている場合は、そのまま使用
+    // 問題のあるエスケープシーケンスのみを修正
+    
+    String cleaned = jsonString;
+    
+    // 無効なエスケープシーケンスを修正（JSONで有効でないもの）
+    // ただし、LaTeXコマンドは既に正しくエスケープされているので触らない
+    
+    // 例外的に修正が必要なケースのみ処理
+    // 3つ以上の連続するバックスラッシュを2つに統一
+    cleaned = cleaned.replaceAllMapped(
+      RegExp(r'\\{3,}'),
+      (match) => '\\\\',
+    );
+    
+    return cleaned;
   }
 }

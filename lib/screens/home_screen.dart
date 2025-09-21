@@ -23,6 +23,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocus = FocusNode();
+  final TextEditingController _conditionController = TextEditingController();
+  final FocusNode _conditionFieldFocus = FocusNode();
 
   @override
   void initState() {
@@ -38,6 +40,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _textController.removeListener(_onTextChanged);
     _textController.dispose();
     _textFieldFocus.dispose();
+    _conditionController.dispose();
+    _conditionFieldFocus.dispose();
     super.dispose();
   }
 
@@ -167,7 +171,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       final chatGptService = ref.read(chatGptServiceProvider);
       final latexExpression = SyntaxConverter.calculatorToLatex(input);
-      final solution = await chatGptService.generateSolution(latexExpression);
+      final condition = _conditionController.text.trim();
+      final solution = await chatGptService.generateSolution(latexExpression, condition);
 
       if (!mounted) return;
 
@@ -265,18 +270,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: _buildAppBar(),
       body: Column(
         children: [
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: _buildLatexPreview(expressionState.latex),
-            ),
+          // プレビューエリア（固定高さ）
+          Container(
+            height: 200,
+            margin: const EdgeInsets.all(16),
+            child: _buildLatexPreview(expressionState.latex),
           ),
+          // 入力フィールドエリア
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildExpressionField(expressionState.input),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildConditionField(),
+          ),
+          const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildGenerateButton(expressionState.isLoading),
@@ -296,15 +306,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+          // キーパッドエリア（残りのスペースを使用）
           Expanded(
-            flex: 3,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _buildCalculator(),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -413,7 +423,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       keyboardType: TextInputType.none,
       showCursor: true,
       decoration: InputDecoration(
-        labelText: 'Enter an expression',
+        labelText: '数式を入力',
         labelStyle: TextStyle(
           color: Colors.blue.shade600,
           fontWeight: FontWeight.w500,
@@ -432,7 +442,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
-        hintText: 'Example: (2x+1)/(x-3) = cbrt(x+2)',
+        hintText: '例: (2x+1)/(x-3) = cbrt(x+2)',
         hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
         prefixIcon: Icon(Icons.calculate, color: Colors.blue.shade600),
         suffixIcon: currentExpression.isNotEmpty
@@ -441,7 +451,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onPressed: () {
                   _textController.clear();
                 },
-                tooltip: '繧ｯ繝ｪ繧｢',
+                tooltip: 'クリア',
               )
             : null,
         contentPadding: const EdgeInsets.symmetric(
@@ -453,13 +463,66 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _buildConditionField() {
+    return TextField(
+      controller: _conditionController,
+      focusNode: _conditionFieldFocus,
+      keyboardType: TextInputType.multiline,
+      textInputAction: TextInputAction.newline,
+      enableSuggestions: true,
+      autocorrect: true,
+      maxLines: 2,
+      minLines: 1,
+      decoration: InputDecoration(
+        labelText: '条件・求める解（任意）',
+        labelStyle: TextStyle(
+          color: Colors.green.shade600,
+          fontWeight: FontWeight.w500,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.green.shade400, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.green.shade50,
+        hintText: '例: x > 0 のときの最小値を求めよ、実数解の個数を求めよ',
+        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+        prefixIcon: Icon(Icons.help_outline, color: Colors.green.shade600),
+        suffixIcon: _conditionController.text.isNotEmpty
+            ? IconButton(
+                icon: Icon(Icons.clear, color: Colors.red.shade600),
+                onPressed: () {
+                  _conditionController.clear();
+                },
+                tooltip: 'クリア',
+              )
+            : null,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+      ),
+      onTap: () {
+        _conditionFieldFocus.requestFocus();
+      },
+    );
+  }
+
   Widget _buildGenerateButton(bool isLoading) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: isLoading ? null : _generateSolution,
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 18),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

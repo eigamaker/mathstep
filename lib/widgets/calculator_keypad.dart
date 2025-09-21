@@ -100,7 +100,6 @@ class CalculatorKeypad extends StatelessWidget {
       child: Column(
         children: [
           for (final row in _layout) _buildKeyRow(context, row),
-          _buildEqualsRow(),
         ],
       ),
     );
@@ -153,56 +152,6 @@ class CalculatorKeypad extends StatelessWidget {
     );
   }
 
-  Widget _buildEqualsRow() {
-    final background = Colors.green.withValues(alpha: 0.2);
-    final borderColor = Colors.green.withValues(alpha: 0.6);
-
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              margin: const EdgeInsets.all(1.5),
-              height: 50,
-              child: Material(
-                color: background,
-                borderRadius: BorderRadius.circular(6),
-                elevation: 2,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(6),
-                  onTap: () => onKeyPressed(
-                    const CalculatorKeyEvent(CalculatorKeyType.input, '='),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: borderColor, width: 1.5),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '=',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Expanded(child: SizedBox()),
-          const Expanded(child: SizedBox()),
-          const Expanded(child: SizedBox()),
-          const Expanded(child: SizedBox()),
-          const Expanded(child: SizedBox()),
-        ],
-      ),
-    );
-  }
 
   Color _backgroundColorFor(CalculatorKeyType type, String value) {
     switch (type) {
@@ -250,6 +199,8 @@ class CalculatorKeypad extends StatelessWidget {
             return Colors.indigo.withValues(alpha: 0.1);
           case 'n':
             return Colors.blue.withValues(alpha: 0.1);
+          case '=':
+            return Colors.green.withValues(alpha: 0.2);
           default:
             return Colors.grey.withValues(alpha: 0.08);
         }
@@ -302,6 +253,8 @@ class CalculatorKeypad extends StatelessWidget {
             return Colors.indigo.shade700;
           case 'n':
             return Colors.blue.shade700;
+          case '=':
+            return Colors.green.shade700;
           default:
             return Colors.grey.shade700;
         }

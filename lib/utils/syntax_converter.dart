@@ -116,14 +116,15 @@ class SyntaxConverter {
       (match) => '\\frac{${match.group(1)}}{${match.group(2)}}',
     );
     
-    // 変数を含む分数 a/b -> \frac{a}{b}
+    // 変数を含む分数 a/b -> \frac{a}{b} (既に\fracで囲まれている場合はスキップ)
     latex = latex.replaceAllMapped(
       RegExp(r'([a-zA-Z0-9+\-*/^()]+)\s*/\s*([a-zA-Z0-9+\-*/^()]+)'),
       (match) {
         final numerator = match.group(1)?.trim() ?? '';
         final denominator = match.group(2)?.trim() ?? '';
         // 既に\fracで囲まれている場合はスキップ
-        if (numerator.contains('\\frac') || denominator.contains('\\frac')) {
+        if (numerator.contains('\\frac') || denominator.contains('\\frac') ||
+            numerator.contains('\\') || denominator.contains('\\')) {
           return match.group(0) ?? '';
         }
         
@@ -224,19 +225,19 @@ class SyntaxConverter {
 
     // Sum/Prod with index variable
     latex = latex.replaceAllMapped(
-      RegExp(r'sum\(\s*([a-zA-Z]\\w*)\s*=\s*([^,]+),([^,]+),([^)]+)\)'),
+      RegExp(r'sum\(\s*([a-zA-Z]\w*)\s*=\s*([^,]+),([^,]+),([^)]+)\)'),
       (m) => '\\sum_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
     );
     latex = latex.replaceAllMapped(
-      RegExp(r'sum\(\s*([a-zA-Z]\\w*),([^,]+),([^,]+),([^)]+)\)'),
+      RegExp(r'sum\(\s*([a-zA-Z]\w*),([^,]+),([^,]+),([^)]+)\)'),
       (m) => '\\sum_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
     );
     latex = latex.replaceAllMapped(
-      RegExp(r'prod\(\s*([a-zA-Z]\\w*)\s*=\s*([^,]+),([^,]+),([^)]+)\)'),
+      RegExp(r'prod\(\s*([a-zA-Z]\w*)\s*=\s*([^,]+),([^,]+),([^)]+)\)'),
       (m) => '\\prod_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
     );
     latex = latex.replaceAllMapped(
-      RegExp(r'prod\(\s*([a-zA-Z]\\w*),([^,]+),([^,]+),([^)]+)\)'),
+      RegExp(r'prod\(\s*([a-zA-Z]\w*),([^,]+),([^,]+),([^)]+)\)'),
       (m) => '\\prod_{${m.group(1)!.trim()}=${m.group(2)!.trim()}}^{${m.group(3)!.trim()}} ${m.group(4)!.trim()}',
     );
 

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/math_expression.dart';
+import '../providers/solution_storage_provider.dart';
 import '../widgets/history_filter_bar.dart';
 import '../widgets/history_item_card.dart';
+import 'solution_screen.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -18,58 +20,48 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   String _sortBy = 'timestamp';
   bool _sortAscending = false;
 
-  final List<MathExpression> _mockExpressions = [
-    MathExpression(
-      id: '1',
-      calculatorSyntax: '(2x + 1) / (x - 3) = cbrt(x + 2)',
-      latexExpression: r'\frac{2x+1}{x-3}=\sqrt[3]{x+2}',
-      timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-      tag: 'Equation',
-    ),
-    MathExpression(
-      id: '2',
-      calculatorSyntax: 'sin(x) + cos(x) = 1',
-      latexExpression: r'\sin(x) + \cos(x) = 1',
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      tag: 'Trigonometry',
-    ),
-    MathExpression(
-      id: '3',
-      calculatorSyntax: 'x^2 + 2x + 1 = 0',
-      latexExpression: r'x^2 + 2x + 1 = 0',
-      timestamp: DateTime.now().subtract(const Duration(days: 1)),
-      tag: 'Quadratic',
-    ),
-  ];
-
-  List<MathExpression> get _filteredExpressions {
-    var filtered = _mockExpressions;
+  List<MathExpressionWithSolution> get _filteredExpressions {
+    final solutions = ref.watch(solutionStorageProvider);
+    var filtered = solutions.map((solution) {
+      // 解法から数式を再構築（実際の実装では別途管理する必要があります）
+      return MathExpressionWithSolution(
+        expression: MathExpression(
+          id: solution.mathExpressionId,
+          calculatorSyntax: solution.problemStatement ?? '数式',
+          latexExpression: '', // 実際の実装では適切に設定
+          timestamp: solution.timestamp,
+        ),
+        solution: solution,
+      );
+    }).toList();
 
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      filtered = filtered.where((expr) {
-        return expr.calculatorSyntax.toLowerCase().contains(query) ||
-            expr.latexExpression.toLowerCase().contains(query) ||
-            (expr.tag?.toLowerCase().contains(query) ?? false);
+      filtered = filtered.where((item) {
+        return item.expression.calculatorSyntax.toLowerCase().contains(query) ||
+            item.expression.latexExpression.toLowerCase().contains(query) ||
+            (item.solution.problemStatement?.toLowerCase().contains(query) ?? false);
       }).toList();
     }
 
     if (_selectedTag != null) {
-      filtered = filtered.where((expr) => expr.tag == _selectedTag).toList();
+      filtered = filtered.where((item) => 
+        item.solution.problemStatement?.contains(_selectedTag!) ?? false
+      ).toList();
     }
 
     filtered.sort((a, b) {
       int comparison;
       switch (_sortBy) {
         case 'tag':
-          comparison = (a.tag ?? '').compareTo(b.tag ?? '');
+          comparison = (a.solution.problemStatement ?? '').compareTo(b.solution.problemStatement ?? '');
           break;
         case 'expression':
-          comparison = a.calculatorSyntax.compareTo(b.calculatorSyntax);
+          comparison = a.expression.calculatorSyntax.compareTo(b.expression.calculatorSyntax);
           break;
         case 'timestamp':
         default:
-          comparison = a.timestamp.compareTo(b.timestamp);
+          comparison = a.expression.timestamp.compareTo(b.expression.timestamp);
           break;
       }
       return _sortAscending ? comparison : -comparison;
@@ -79,8 +71,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   List<String> get _availableTags {
-    return _mockExpressions
-        .map((expr) => expr.tag)
+    final solutions = ref.watch(solutionStorageProvider);
+    return solutions
+        .map((s) => s.problemStatement)
         .where((tag) => tag != null)
         .cast<String>()
         .toSet()
@@ -92,13 +85,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('History'),
+        title: const Text('履歴'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.sort),
             onPressed: _showSortDialog,
-            tooltip: 'Sort history',
+            tooltip: '履歴を並び替え',
           ),
         ],
       ),
@@ -118,13 +111,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: _filteredExpressions.length,
                     itemBuilder: (context, index) {
-                      final expression = _filteredExpressions[index];
+                      final item = _filteredExpressions[index];
                       return HistoryItemCard(
-                        expression: expression,
-                        onTap: () => _viewExpression(expression),
+                        expression: item.expression,
+                        onTap: () => _viewExpression(item),
                         onGenerateSimilar: () =>
-                            _generateSimilarProblem(expression),
-                        onDelete: () => _deleteExpression(expression),
+                            _generateSimilarProblem(item),
+                        onDelete: () => _deleteExpression(item),
                       );
                     },
                   ),
@@ -134,43 +127,45 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  void _viewExpression(MathExpression expression) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Opening ${expression.calculatorSyntax}')),
-    );
-  }
-
-  void _generateSimilarProblem(MathExpression expression) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Generating a similar problem for ${expression.calculatorSyntax}',
+  void _viewExpression(MathExpressionWithSolution item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SolutionScreen(
+          mathExpression: item.expression,
+          solution: item.solution,
         ),
       ),
     );
   }
 
-  void _deleteExpression(MathExpression expression) {
+  void _generateSimilarProblem(MathExpressionWithSolution item) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Generating a similar problem for ${item.expression.calculatorSyntax}',
+        ),
+      ),
+    );
+  }
+
+  void _deleteExpression(MathExpressionWithSolution item) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete entry'),
-        content: Text('Remove ${expression.calculatorSyntax} from history?'),
+        title: const Text('履歴から削除'),
+        content: Text('${item.expression.calculatorSyntax} を履歴から削除しますか？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('キャンセル'),
           ),
           TextButton(
             onPressed: () {
-              setState(() {
-                _mockExpressions.removeWhere(
-                  (expr) => expr.id == expression.id,
-                );
-              });
+              ref.read(solutionStorageProvider.notifier).removeSolution(item.solution.id);
               Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: const Text('削除'),
           ),
         ],
       ),
@@ -246,8 +241,14 @@ class _EmptyHistoryPlaceholder extends StatelessWidget {
           Icon(Icons.history, size: 64, color: Colors.grey),
           SizedBox(height: 16),
           Text(
-            'No history yet',
+            '履歴がありません',
             style: TextStyle(fontSize: 18, color: Colors.grey),
+          ),
+          SizedBox(height: 8),
+          Text(
+            '数式を入力して解法を生成すると、\nここに履歴が表示されます',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
       ),

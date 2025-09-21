@@ -212,7 +212,7 @@ class GuideScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '\U0001f4a1 \u30d2\u30f3\u30c8',
+            '💡 ヒント',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

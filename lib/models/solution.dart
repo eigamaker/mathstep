@@ -1,6 +1,7 @@
 class Solution {
   final String id;
   final String mathExpressionId;
+  final String? problemStatement;
   final List<SolutionStep> steps;
   final List<AlternativeSolution>? alternativeSolutions;
   final Verification? verification;
@@ -9,6 +10,7 @@ class Solution {
   const Solution({
     required this.id,
     required this.mathExpressionId,
+    this.problemStatement,
     required this.steps,
     this.alternativeSolutions,
     this.verification,
@@ -19,6 +21,7 @@ class Solution {
     return {
       'id': id,
       'mathExpressionId': mathExpressionId,
+      'problemStatement': problemStatement,
       'steps': steps.map((step) => step.toJson()).toList(),
       'alternativeSolutions': alternativeSolutions
           ?.map((alt) => alt.toJson())
@@ -32,6 +35,7 @@ class Solution {
     return Solution(
       id: json['id'],
       mathExpressionId: json['mathExpressionId'],
+      problemStatement: json['problemStatement'],
       steps: (json['steps'] as List)
           .map((step) => SolutionStep.fromJson(step))
           .toList(),
@@ -44,6 +48,26 @@ class Solution {
           ? Verification.fromJson(json['verification'])
           : null,
       timestamp: DateTime.parse(json['timestamp']),
+    );
+  }
+
+  Solution copyWith({
+    String? id,
+    String? mathExpressionId,
+    String? problemStatement,
+    List<SolutionStep>? steps,
+    List<AlternativeSolution>? alternativeSolutions,
+    Verification? verification,
+    DateTime? timestamp,
+  }) {
+    return Solution(
+      id: id ?? this.id,
+      mathExpressionId: mathExpressionId ?? this.mathExpressionId,
+      problemStatement: problemStatement ?? this.problemStatement,
+      steps: steps ?? this.steps,
+      alternativeSolutions: alternativeSolutions ?? this.alternativeSolutions,
+      verification: verification ?? this.verification,
+      timestamp: timestamp ?? this.timestamp,
     );
   }
 }

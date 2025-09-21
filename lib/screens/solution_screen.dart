@@ -88,6 +88,16 @@ class _SolutionScreenState extends State<SolutionScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
+                if (widget.solution.problemStatement != null) ...[
+                  Text(
+                    widget.solution.problemStatement!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 LatexPreview(expression: widget.mathExpression.latexExpression),
               ],
             ),

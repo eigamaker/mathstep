@@ -8,6 +8,7 @@ import '../widgets/calculator_keypad.dart';
 import '../widgets/latex_preview.dart';
 import '../providers/expression_provider.dart';
 import '../providers/service_providers.dart';
+import '../providers/solution_storage_provider.dart';
 import 'formula_editor_screen.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
@@ -170,16 +171,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       if (!mounted) return;
 
+      // 数式と解法を作成
+      final mathExpression = MathExpression(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        calculatorSyntax: input,
+        latexExpression: latexExpression,
+        timestamp: DateTime.now(),
+      );
+
+      // 解法を自動保存
+      ref.read(solutionStorageProvider.notifier).addSolution(mathExpression, solution);
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => SolutionScreen(
-            mathExpression: MathExpression(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              calculatorSyntax: input,
-              latexExpression: latexExpression,
-              timestamp: DateTime.now(),
-            ),
+            mathExpression: mathExpression,
             solution: solution,
           ),
         ),

@@ -77,39 +77,51 @@ class ChatGptService {
   }
 
   static const _systemPrompt = '''
-You are an expert math tutor for exam preparation. Provide step-by-step explanations covering:
-1. Detailed reasoning for each step
-2. Alternative approaches when they exist
-3. Verification and domain checks
-4. Common pitfalls and reminders
+あなたは高校数学の専門講師です。与えられた数式を分析して、以下の手順で回答してください：
 
-Return the answer in the following JSON shape:
+1. 数式から数学の問題を推測し、問題文として提示する
+2. その問題を解くための段階的な解法を提供する
+3. 代替解法がある場合は提示する
+4. 検証と定義域の確認を行う
+5. よくある間違いや注意点を指摘する
+
+回答は以下のJSON形式で返してください：
 {
+  "problemStatement": "推測した数学の問題文（例：f(x) = 2^{x+1} - √(2x) の最小値を求めよ。また、そのときのxの値を求めよ。）",
   "steps": [
     {
       "id": "step1",
-      "title": "Step title",
-      "description": "Explanation",
-      "latexExpression": "\\LaTeX expression if needed"
+      "title": "ステップのタイトル",
+      "description": "詳細な説明",
+      "latexExpression": "必要に応じてLaTeX式"
     }
   ],
   "alternativeSolutions": [
     {
       "id": "alt1",
-      "title": "Alternative approach",
+      "title": "代替解法",
       "steps": [ ... ]
     }
   ],
   "verification": {
-    "domainCheck": "Domain checks",
-    "verification": "Verification steps",
-    "commonMistakes": "Typical mistakes"
+    "domainCheck": "定義域の確認",
+    "verification": "検証手順",
+    "commonMistakes": "よくある間違い"
   }
 }
+
+数式の種類に応じて適切な問題を推測してください：
+- 関数式 → 最大値・最小値、極値、グラフの性質
+- 方程式 → 解の求め方、解の個数、実数解の条件
+- 不等式 → 解の範囲、成立条件
+- 三角関数 → 周期、振幅、位相、最大値・最小値
+- 指数・対数 → 増減、漸近線、交点
+- 積分 → 面積、体積、定積分の値
+- 微分 → 接線、法線、極値、変曲点
 ''';
 
   String _buildUserPrompt(String latexExpression) {
-    return '''Explain the following expression for high-school students.
+    return '''以下の数式を分析して、高校生向けに数学の問題として提示し、解法を説明してください。
 \\[ $latexExpression \\]
 ''';
   }
@@ -135,6 +147,7 @@ Return the answer in the following JSON shape:
       return Solution(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         mathExpressionId: '',
+        problemStatement: _safeStringCast(jsonMap['problemStatement']),
         steps: (jsonMap['steps'] as List<dynamic>? ?? [])
             .map(
               (step) => SolutionStep(

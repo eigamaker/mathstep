@@ -1,0 +1,50 @@
+/// アプリケーション全体で使用される定数
+class AppConstants {
+  // ストレージキー
+  static const String solutionsKey = 'solutions';
+  static const String expressionsKey = 'expressions';
+  
+  // エラーメッセージ
+  static const String apiKeyNotConfiguredError = 
+      'OpenAI APIキーが設定されていません。.envファイルにOPENAI_API_KEYを設定してください。';
+  static const String apiRequestFailedError = 'API request failed with status';
+  static const String emptyResponseError = 'Empty response from API';
+  static const String jsonParseError = 'APIからの応答を解析できませんでした。';
+  static const String jsonFormatError = 'APIからの応答を解析できませんでした。JSON形式が正しくありません。';
+  
+  // UI関連
+  static const String copySuccessMessage = '数式をクリップボードにコピーしました';
+  static const String deleteConfirmTitle = '履歴から削除';
+  static const String sortDialogTitle = '並び替え';
+  static const String emptyHistoryTitle = '履歴がありません';
+  static const String emptyHistoryMessage = '数式を入力して解法を生成すると、\nここに履歴が表示されます';
+  
+  // ソートオプション
+  static const String sortByTimestamp = 'timestamp';
+  static const String sortByExpression = 'expression';
+  
+  // 時間表示
+  static const String justNow = 'たった今';
+  static const String minutesAgo = '分前';
+  static const String hoursAgo = '時間前';
+  static const String daysAgo = '日前';
+  
+  // デフォルト値
+  static const String unknownId = 'unknown';
+  static const String untitled = 'Untitled';
+  static const String noDescription = 'No description';
+  
+  // 正規表現パターン
+  static const String multipleBackslashesPattern = r'\\{3,}';
+  static const String replacementBackslashes = '\\\\';
+  
+  // 制限値
+  static const int maxSnackBarDurationSeconds = 2;
+  static const int maxHistoryItemLines = 2;
+  static const double historyItemHeight = 60.0;
+  static const double historyItemBorderRadius = 12.0;
+  static const double historyItemPadding = 16.0;
+  static const double historyItemSpacing = 12.0;
+  static const double iconSize = 20.0;
+  static const double largeIconSize = 64.0;
+}

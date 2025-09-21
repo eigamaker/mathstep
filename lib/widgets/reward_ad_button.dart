@@ -31,18 +31,17 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
     final adState = ref.watch(rewardAdStateProvider);
     final adNotifier = ref.read(rewardAdProvider);
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton.icon(
-        onPressed: _isShowingAd || widget.isLoading ? null : () => _showRewardAd(adNotifier),
+        onPressed: _isShowingAd || widget.isLoading
+            ? null
+            : () => _showRewardAd(adNotifier),
         icon: _getButtonIcon(adState),
         label: Text(
           _getButtonText(adState),
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: _getButtonColor(adState),
@@ -119,35 +118,42 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
   }
 
   Future<void> _showRewardAd(RewardAdNotifier adNotifier) async {
-    if (!adNotifier.isAdLoaded) {
-      // 広告が読み込まれていない場合は読み込む
-      await adNotifier.loadAd();
-      if (!adNotifier.isAdLoaded) {
-        // 広告の読み込みに失敗した場合は、直接報酬を付与
-        _showErrorSnackBar('広告の読み込みに失敗しました。解法を表示します。');
-        widget.onRewardEarned();
-        return;
-      }
+    if (_isShowingAd || widget.isLoading) {
+      return;
     }
 
     setState(() => _isShowingAd = true);
 
     try {
-      final success = await adNotifier.showAd();
-      if (success) {
+      if (!adNotifier.isAdLoaded) {
+        await adNotifier.loadAd();
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      if (!adNotifier.isAdLoaded) {
+        _showErrorSnackBar(AppConstants.adLoadFailedMessage);
+        return;
+      }
+
+      final rewarded = await adNotifier.showAd();
+      if (rewarded) {
         _showSuccessSnackBar(AppConstants.adRewardMessage);
         widget.onRewardEarned();
       } else {
-        // 広告の表示に失敗した場合は、直接報酬を付与
-        _showErrorSnackBar('広告の表示に失敗しました。解法を表示します。');
-        widget.onRewardEarned();
+        _showErrorSnackBar(AppConstants.adNotReadyMessage);
       }
-    } catch (e) {
-      // 例外が発生した場合は、直接報酬を付与
-      _showErrorSnackBar('広告の表示に失敗しました。解法を表示します。');
-      widget.onRewardEarned();
+    } catch (error) {
+      debugPrint('RewardAdButton: Error while showing ad: $error');
+      _showErrorSnackBar(AppConstants.adLoadFailedMessage);
     } finally {
-      setState(() => _isShowingAd = false);
+      if (mounted) {
+        setState(() => _isShowingAd = false);
+      } else {
+        _isShowingAd = false;
+      }
     }
   }
 

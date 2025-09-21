@@ -16,12 +16,25 @@ class RewardAdService {
   bool _isDisposed = false;
   Completer<void>? _loadCompleter;
   Timer? _loadTimeoutTimer;
+  
+  // 状態変更のコールバック
+  VoidCallback? _onStateChanged;
 
   /// 蠎・相縺瑚ｪｭ縺ｿ霎ｼ縺ｾ繧後※縺・ｋ縺九←縺・°
   bool get isAdLoaded => _isAdLoaded;
 
   /// 蠎・相繧定ｪｭ縺ｿ霎ｼ縺ｿ荳ｭ縺九←縺・°
   bool get isLoading => _isLoading;
+
+  /// 状態変更のコールバックを設定
+  void setOnStateChanged(VoidCallback? callback) {
+    _onStateChanged = callback;
+  }
+
+  /// 状態変更を通知
+  void _notifyStateChanged() {
+    _onStateChanged?.call();
+  }
 
   /// 繝ｪ繝ｯ繝ｼ繝牙ｺ・相繧定ｪｭ縺ｿ霎ｼ繧
   Future<void> loadRewardedAd() async {
@@ -38,6 +51,7 @@ class RewardAdService {
     }
 
     _isLoading = true;
+    _notifyStateChanged();
     debugPrint('RewardAdService: ========== STARTING AD LOAD ==========');
     debugPrint('RewardAdService: Loading rewarded ad...');
     debugPrint('RewardAdService: Ad Unit ID: ${_getAdUnitId()}');
@@ -105,6 +119,7 @@ class RewardAdService {
       debugPrint('RewardAdService: Timeout after 15 seconds');
       _isLoading = false;
       _isAdLoaded = false;
+      _notifyStateChanged();
       final timeoutException = TimeoutException(
         'Ad loading timeout',
         const Duration(seconds: 15),
@@ -147,6 +162,7 @@ class RewardAdService {
           _rewardedAd = ad;
           _isAdLoaded = true;
           _isLoading = false;
+          _notifyStateChanged();
           _setFullScreenContentCallback();
           _completeLoadSuccessfully();
         },
@@ -168,6 +184,7 @@ class RewardAdService {
           _rewardedAd = null;
           _isAdLoaded = false;
           _isLoading = false;
+          _notifyStateChanged();
 
           if (!_isDisposed && error.code == 0) {
             debugPrint('RewardAdService: Retrying in 5 seconds...');
@@ -195,17 +212,74 @@ class RewardAdService {
       return false;
     }
 
+    final completer = Completer<bool>();
+    var rewardEarned = false;
+
+    // 一時的にコールバックを保存
+    final originalCallback = _rewardedAd!.fullScreenContentCallback;
+    
+    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        debugPrint('RewardAdService: Ad showed full screen content');
+        if (originalCallback?.onAdShowedFullScreenContent != null) {
+          originalCallback!.onAdShowedFullScreenContent!(ad);
+        }
+      },
+      onAdDismissedFullScreenContent: (ad) {
+        debugPrint('RewardAdService: Ad dismissed full screen content');
+        ad.dispose();
+        _rewardedAd = null;
+        _isAdLoaded = false;
+        _notifyStateChanged();
+        
+        // 報酬が獲得されたかどうかを返す
+        if (!completer.isCompleted) {
+          completer.complete(rewardEarned);
+        }
+        
+        // 元のコールバックを復元して次の広告を読み込み
+        if (originalCallback?.onAdDismissedFullScreenContent != null) {
+          originalCallback!.onAdDismissedFullScreenContent!(ad);
+        } else {
+          // 次の広告を読み込み
+          loadRewardedAd();
+        }
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        debugPrint(
+          'RewardAdService: Ad failed to show full screen content: $error',
+        );
+        ad.dispose();
+        _rewardedAd = null;
+        _isAdLoaded = false;
+        _notifyStateChanged();
+        
+        if (!completer.isCompleted) {
+          completer.complete(false);
+        }
+        
+        if (originalCallback?.onAdFailedToShowFullScreenContent != null) {
+          originalCallback!.onAdFailedToShowFullScreenContent!(ad, error);
+        }
+      },
+    );
+
     try {
       await _rewardedAd!.show(
         onUserEarnedReward: (ad, reward) {
           debugPrint(
             'RewardAdService: User earned reward: ${reward.amount} ${reward.type}',
           );
+          rewardEarned = true;
         },
       );
-      return true;
+      
+      return await completer.future;
     } catch (e) {
       debugPrint('RewardAdService: Error showing rewarded ad: $e');
+      if (!completer.isCompleted) {
+        completer.complete(false);
+      }
       return false;
     }
   }
@@ -244,6 +318,7 @@ class RewardAdService {
         ad.dispose();
         _rewardedAd = null;
         _isAdLoaded = false;
+        _notifyStateChanged();
         // 谺｡縺ｮ蠎・相繧剃ｺ句燕隱ｭ縺ｿ霎ｼ縺ｿ
         loadRewardedAd();
       },
@@ -254,6 +329,7 @@ class RewardAdService {
         ad.dispose();
         _rewardedAd = null;
         _isAdLoaded = false;
+        _notifyStateChanged();
       },
     );
   }
@@ -275,34 +351,37 @@ class RewardAdService {
 class RewardAdNotifier extends ChangeNotifier {
   final RewardAdService _adService = RewardAdService();
 
+  RewardAdNotifier() {
+    // 状態変更のコールバックを設定
+    _adService.setOnStateChanged(() {
+      notifyListeners();
+    });
+  }
+
   bool get isAdLoaded => _adService.isAdLoaded;
   bool get isLoading => _adService.isLoading;
 
   /// 蠎・相繧定ｪｭ縺ｿ霎ｼ繧
   Future<void> loadAd() async {
-    final future = _adService.loadRewardedAd();
-    if (_adService.isLoading) {
-      notifyListeners();
-    }
-    await future;
-    notifyListeners();
+    await _adService.loadRewardedAd();
+    // 状態変更はコールバックで自動的に通知される
   }
 
   /// 蠎・相繧定｡ｨ遉ｺ縺吶ｋ
   Future<bool> showAd() async {
-    final success = await _adService.showRewardedAd();
-    notifyListeners();
-    return success;
+    return await _adService.showRewardedAd();
+    // 状態変更はコールバックで自動的に通知される
   }
 
   /// 蠑ｷ蛻ｶ逧・↓隱ｭ縺ｿ霎ｼ縺ｿ繧貞●豁｢縺吶ｋ
   void forceStopLoading() {
     _adService.forceStopLoading();
-    notifyListeners();
+    // 状態変更はコールバックで自動的に通知される
   }
 
   @override
   void dispose() {
+    _adService.setOnStateChanged(null);
     _adService.dispose();
     super.dispose();
   }

@@ -6,9 +6,11 @@ import '../models/math_expression.dart';
 import '../utils/syntax_converter.dart';
 import '../widgets/calculator_keypad.dart';
 import '../widgets/latex_preview.dart';
+import '../widgets/reward_ad_button.dart';
 import '../providers/expression_provider.dart';
 import '../providers/service_providers.dart';
 import '../providers/solution_storage_provider.dart';
+import '../providers/reward_ad_provider.dart';
 import 'formula_editor_screen.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
@@ -32,8 +34,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _textController.addListener(_onTextChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _textFieldFocus.requestFocus();
+      // AdMob初期化後に広告を読み込み
+      _loadAdAfterDelay();
     });
   }
+
+      Future<void> _loadAdAfterDelay() async {
+        // AdMob初期化を待つ
+        await Future.delayed(const Duration(seconds: 2));
+        ref.read(rewardAdProvider).loadAd();
+      }
+
 
   @override
   void dispose() {
@@ -516,40 +527,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildGenerateButton(bool isLoading) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: isLoading ? null : _generateSolution,
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          backgroundColor: isLoading
-              ? Colors.grey.shade400
-              : Colors.blue.shade600,
-          foregroundColor: Colors.white,
-          elevation: isLoading ? 0 : 4,
-          shadowColor: Colors.blue.shade200,
-        ),
-        icon: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : const Icon(Icons.auto_awesome, size: 22),
-        label: Text(
-          isLoading ? '生成中...' : '解説を表示',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
+      Widget _buildGenerateButton(bool isLoading) {
+        return RewardAdButton(
+          onRewardEarned: _generateSolution,
+          isLoading: isLoading,
+          buttonText: '解法を表示',
+          loadingText: '生成中...',
+        );
+      }
 
   Widget _buildCalculator() {
     return DecoratedBox(

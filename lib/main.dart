@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -16,6 +17,28 @@ void main() async {
     // dotenvを手動で初期化
     dotenv.testLoad(fileInput: '');
   }
+  
+  // AdMobを初期化
+  await MobileAds.instance.initialize();
+  
+  // テストデバイスの設定
+  await MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+      testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'], // ログに表示されたテストデバイスID
+    ),
+  );
+  
+  // AdMobデバッグログを有効化
+  await MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+      testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'],
+      tagForChildDirectedTreatment: TagForChildDirectedTreatment.unspecified,
+      tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.unspecified,
+      maxAdContentRating: MaxAdContentRating.g,
+    ),
+  );
+  
+  print('AdMob initialized successfully with debug logging');
   
   runApp(const ProviderScope(child: MathStepApp()));
 }

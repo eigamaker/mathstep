@@ -191,16 +191,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guideHintTitle => '💡 Tips';
 
   @override
-  String get formulaEditorTitle => 'Formula editor';
-
-  @override
-  String get formulaEditorApplyTooltip => 'Apply';
-
-  @override
-  String get formulaEditorFieldLabel =>
-      'Edit in calculator syntax (multi-line)';
-
-  @override
   String get languageSelectionTitle => 'Language';
 
   @override

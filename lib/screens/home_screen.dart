@@ -14,7 +14,6 @@ import '../providers/reward_ad_provider.dart';
 import '../localization/localization_extensions.dart';
 import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
-import 'formula_editor_screen.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -68,21 +67,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<void> _openFormulaEditor() async {
-    final edited = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            FormulaEditorScreen(initialCalculatorSyntax: _textController.text),
-      ),
-    );
-    if (edited != null) {
-      _textController.value = TextEditingValue(
-        text: edited,
-        selection: TextSelection.collapsed(offset: edited.length),
-      );
-    }
-  }
 
   void _insertText(String text) {
     _focusInput();
@@ -344,11 +328,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       elevation: 0,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.edit_outlined),
-          onPressed: _openFormulaEditor,
-          tooltip: 'Open formula editor',
-        ),
         IconButton(
           icon: const Icon(Icons.help_outline),
           onPressed: () {

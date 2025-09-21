@@ -169,15 +169,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get guideHintTitle => '💡 팁';
 
   @override
-  String get formulaEditorTitle => '식 편집기(수학 III 지원)';
-
-  @override
-  String get formulaEditorApplyTooltip => '반영';
-
-  @override
-  String get formulaEditorFieldLabel => '계산기 표기법으로 편집 (줄바꿈 가능)';
-
-  @override
   String get languageSelectionTitle => '언어';
 
   @override

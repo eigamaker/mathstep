@@ -169,15 +169,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get guideHintTitle => '💡 小提示';
 
   @override
-  String get formulaEditorTitle => '公式编辑器（支持数学III）';
-
-  @override
-  String get formulaEditorApplyTooltip => '应用';
-
-  @override
-  String get formulaEditorFieldLabel => '以计算器语法编辑（可换行）';
-
-  @override
   String get languageSelectionTitle => '语言';
 
   @override
@@ -393,15 +384,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get guideHintTitle => '💡 小提示';
 
   @override
-  String get formulaEditorTitle => '公式编辑器（支持数学III）';
-
-  @override
-  String get formulaEditorApplyTooltip => '应用';
-
-  @override
-  String get formulaEditorFieldLabel => '以计算器语法编辑（可换行）';
-
-  @override
   String get languageSelectionTitle => '语言';
 
   @override
@@ -615,15 +597,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get guideHintTitle => '💡 小提示';
-
-  @override
-  String get formulaEditorTitle => '公式編輯器（支援數學III）';
-
-  @override
-  String get formulaEditorApplyTooltip => '套用';
-
-  @override
-  String get formulaEditorFieldLabel => '以計算器語法編輯（可換行）';
 
   @override
   String get languageSelectionTitle => '語言';

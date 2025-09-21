@@ -169,15 +169,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get guideHintTitle => '💡 ヒント';
 
   @override
-  String get formulaEditorTitle => '式エディタ（数III対応）';
-
-  @override
-  String get formulaEditorApplyTooltip => '反映';
-
-  @override
-  String get formulaEditorFieldLabel => '電卓記法で編集（改行可）';
-
-  @override
   String get languageSelectionTitle => '言語';
 
   @override

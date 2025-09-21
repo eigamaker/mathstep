@@ -398,24 +398,6 @@ abstract class AppLocalizations {
   /// **'💡 Tips'**
   String get guideHintTitle;
 
-  /// No description provided for @formulaEditorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Formula editor'**
-  String get formulaEditorTitle;
-
-  /// No description provided for @formulaEditorApplyTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Apply'**
-  String get formulaEditorApplyTooltip;
-
-  /// No description provided for @formulaEditorFieldLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit in calculator syntax (multi-line)'**
-  String get formulaEditorFieldLabel;
-
   /// No description provided for @languageSelectionTitle.
   ///
   /// In en, this message translates to:

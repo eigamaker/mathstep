@@ -15,6 +15,7 @@ class CalculatorKeypad extends StatelessWidget {
   final void Function(CalculatorKeyEvent event) onKeyPressed;
 
   static const List<List<_KeySpec>> _layout = [
+    // 数字と基本演算
     [
       _KeySpec.input('7'),
       _KeySpec.input('8'),
@@ -37,24 +38,34 @@ class CalculatorKeypad extends StatelessWidget {
       _KeySpec.input('3'),
       _KeySpec.input('/', label: '\u00F7'),
       _KeySpec.input('^', label: 'x^y'),
-      _KeySpec.input('sqrt(', label: '\u221A'),
+      _KeySpec.input('pow(', label: 'x^()'),
     ],
     [
       _KeySpec.input('0'),
       _KeySpec.input('.'),
+      _KeySpec.input('sqrt(', label: '\u221A'),
+      _KeySpec.input('cbrt(', label: '\u221B'),
+      _KeySpec.input('root(', label: '\u207F\u221A'),
+      _KeySpec.input('frac(', label: 'a/b'),
+    ],
+    // 変数と定数
+    [
       _KeySpec.input('x'),
       _KeySpec.input('y'),
       _KeySpec.input('z'),
-      _KeySpec.input('cbrt(', label: '\u221B'),
+      _KeySpec.input('n'),
+      _KeySpec.input('pi', label: '\u03C0'),
+      _KeySpec.input('e'),
     ],
     [
+      _KeySpec.input('i'),
+      _KeySpec.input('abs(', label: '|x|'),
+      _KeySpec.input('f(', label: 'f(x)'),
       _KeySpec.moveLeft(),
       _KeySpec.moveRight(),
-      _KeySpec.input('root(', label: '\u207F\u221A'),
-      _KeySpec.input('frac(', label: 'a/b'),
-      _KeySpec.input('abs(', label: '|x|'),
-      _KeySpec.input('pi', label: '\u03C0'),
+      _KeySpec.input(',', label: ','),
     ],
+    // 三角・対数関数
     [
       _KeySpec.input('sin('),
       _KeySpec.input('cos('),
@@ -63,21 +74,22 @@ class CalculatorKeypad extends StatelessWidget {
       _KeySpec.input('log('),
       _KeySpec.input('n!', label: 'n!'),
     ],
+    // 高度な数学関数
     [
-      _KeySpec.input('nPr(', label: 'P'),
-      _KeySpec.input('nCr(', label: 'C'),
       _KeySpec.input('sum(', label: '\u03A3'),
       _KeySpec.input('prod(', label: '\u03A0'),
       _KeySpec.input('int(', label: '\u222B'),
+      _KeySpec.input('nPr(', label: 'P'),
+      _KeySpec.input('nCr(', label: 'C'),
       _KeySpec.input('Re(', label: 'Re'),
     ],
     [
       _KeySpec.input('conj(', label: 'z*'),
       _KeySpec.input('Im(', label: 'Im'),
       _KeySpec.input('|', label: '|'),
-      _KeySpec.input('e'),
-      _KeySpec.input('i'),
-      _KeySpec.input(',', label: ','),
+      _KeySpec.moveLeft(),
+      _KeySpec.moveRight(),
+      _KeySpec.input('='),
     ],
   ];
 
@@ -223,15 +235,21 @@ class CalculatorKeypad extends StatelessWidget {
           case 'tan(':
           case 'ln(':
           case 'log(':
+          case 'pow(':
             return Colors.purple.withValues(alpha: 0.1);
           case 'sqrt(':
           case 'cbrt(':
           case 'root(':
             return Colors.teal.withValues(alpha: 0.1);
+          case 'n!':
+            return Colors.orange.withValues(alpha: 0.1);
           case 'int(':
           case 'sum(':
           case 'prod(':
+          case 'f(':
             return Colors.indigo.withValues(alpha: 0.1);
+          case 'n':
+            return Colors.blue.withValues(alpha: 0.1);
           default:
             return Colors.grey.withValues(alpha: 0.08);
         }
@@ -269,15 +287,21 @@ class CalculatorKeypad extends StatelessWidget {
           case 'tan(':
           case 'ln(':
           case 'log(':
+          case 'pow(':
             return Colors.purple.shade700;
           case 'sqrt(':
           case 'cbrt(':
           case 'root(':
             return Colors.teal.shade700;
+          case 'n!':
+            return Colors.orange.shade700;
           case 'int(':
           case 'sum(':
           case 'prod(':
+          case 'f(':
             return Colors.indigo.shade700;
+          case 'n':
+            return Colors.blue.shade700;
           default:
             return Colors.grey.shade700;
         }

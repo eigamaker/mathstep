@@ -17,9 +17,11 @@ class GuideScreen extends StatelessWidget {
           children: [
             _buildCategory('\u6307\u6570\u30fb\u6839\u53f7', [
               _buildExample('x^2', ['x', 'x^y', '2']),
-              _buildExample('sqrt(9)', ['\u221a', '9', ')']),
-              _buildExample('cbrt(8)', ['\u221b', '8', ')']),
-              _buildExample('root(4,16)', [
+              _buildExample('2^{x+1}', ['2', 'x^()', 'x', '+', '1', ')']),
+              _buildExample('e^{x^2}', ['e', 'x^()', 'x', 'x^y', '2', ')']),
+              _buildExample('\\sqrt{9}', ['\u221a', '9', ')']),
+              _buildExample('\\sqrt[3]{8}', ['\u221b', '8', ')']),
+              _buildExample('\\sqrt[4]{16}', [
                 '\u207f\u221a',
                 '4',
                 ',',
@@ -29,8 +31,8 @@ class GuideScreen extends StatelessWidget {
             ]),
             const SizedBox(height: 24),
             _buildCategory('\u5206\u6570\u30fb\u7d76\u5bfe\u5024', [
-              _buildExample('frac(1,2)', ['a/b', '1', ',', '2', ')']),
-              _buildExample('frac(x+1,x-1)', [
+              _buildExample('\\frac{1}{2}', ['a/b', '1', ',', '2', ')']),
+              _buildExample('\\frac{x+1}{x-1}', [
                 'a/b',
                 'x',
                 '+',
@@ -41,20 +43,20 @@ class GuideScreen extends StatelessWidget {
                 '1',
                 ')',
               ]),
-              _buildExample('abs(x)', ['|x|', 'x', ')']),
-              _buildExample('abs(3+4i)', ['|x|', '3', '+', '4', 'i', ')']),
+              _buildExample('|x|', ['|x|', 'x', ')']),
+              _buildExample('|3+4i|', ['|x|', '3', '+', '4', 'i', ')']),
             ]),
             const SizedBox(height: 24),
             _buildCategory('\u4e09\u89d2\u30fb\u5bfe\u6570\u95a2\u6570', [
-              _buildExample('sin(x)', ['sin(', 'x', ')']),
-              _buildExample('cos(x)', ['cos(', 'x', ')']),
-              _buildExample('tan(x)', ['tan(', 'x', ')']),
-              _buildExample('ln(e)', ['ln(', 'e', ')']),
-              _buildExample('log(100)', ['log(', '1', '0', '0', ')']),
+              _buildExample('\\sin(x)', ['sin(', 'x', ')']),
+              _buildExample('\\cos(x)', ['cos(', 'x', ')']),
+              _buildExample('\\tan(x)', ['tan(', 'x', ')']),
+              _buildExample('\\ln(e)', ['ln(', 'e', ')']),
+              _buildExample('\\log(100)', ['log(', '1', '0', '0', ')']),
             ]),
             const SizedBox(height: 24),
             _buildCategory('\u7dcf\u548c\u30fb\u7a4d\u5206\u30fb\u7a4d', [
-              _buildExample('sum(1,5,x)', [
+              _buildExample('\\sum_{1}^{5} x', [
                 '\u03a3',
                 '1',
                 ',',
@@ -63,7 +65,7 @@ class GuideScreen extends StatelessWidget {
                 'x',
                 ')',
               ]),
-              _buildExample('prod(1,4,x)', [
+              _buildExample('\\prod_{1}^{4} x', [
                 '\u03a0',
                 '1',
                 ',',
@@ -72,7 +74,7 @@ class GuideScreen extends StatelessWidget {
                 'x',
                 ')',
               ]),
-              _buildExample('int(0,1,x^2,x)', [
+              _buildExample('\\int_{0}^{1} x^2 \\, dx', [
                 '\u222b',
                 '0',
                 ',',
@@ -85,7 +87,7 @@ class GuideScreen extends StatelessWidget {
                 'x',
                 ')',
               ]),
-              _buildExample('int(sin(x),x)', [
+              _buildExample('\\int \\sin(x) \\, dx', [
                 '\u222b',
                 'sin(',
                 'x',
@@ -100,11 +102,11 @@ class GuideScreen extends StatelessWidget {
               '\u8907\u7d20\u6570\u30fb\u7d44\u307f\u5408\u308f\u305b',
               [
                 _buildExample('3+4i', ['3', '+', '4', 'i']),
-                _buildExample('conj(z)', ['z*', 'z', ')']),
-                _buildExample('Re(z)', ['Re', 'z', ')']),
-                _buildExample('Im(z)', ['Im', 'z', ')']),
-                _buildExample('nPr(5,3)', ['P', '5', ',', '3', ')']),
-                _buildExample('nCr(5,3)', ['C', '5', ',', '3', ')']),
+                _buildExample('\\overline{z}', ['z*', 'z', ')']),
+                _buildExample('\\Re(z)', ['Re', 'z', ')']),
+                _buildExample('\\Im(z)', ['Im', 'z', ')']),
+                _buildExample('P_{3}^{5}', ['P', '5', ',', '3', ')']),
+                _buildExample('C_{3}^{5}', ['C', '5', ',', '3', ')']),
               ],
             ),
             const SizedBox(height: 32),
@@ -191,6 +193,7 @@ class GuideScreen extends StatelessWidget {
   Widget _buildTipsSection(BuildContext context) {
     final tips = <String>[
       '\u95a2\u6570\u30ad\u30fc\uff08sin, cos, \u221a \u306a\u3069\uff09\u3092\u62bc\u3059\u3068\u81ea\u52d5\u7684\u306b\u300c(\u300d\u304c\u5165\u529b\u3055\u308c\u307e\u3059\u3002',
+      'x^y\u30ad\u30fc\u3067\u7c21\u5358\u306a\u6307\u6570\u3092\u3001x^()\u30ad\u30fc\u3067\u5f0f\u306e\u6307\u6570\u3092\u5165\u529b\u3067\u304d\u307e\u3059\u3002',
       '\u77e2\u5370\u30ad\u30fc\uff08\u2190 \u2192\uff09\u3067\u30ab\u30fc\u30bd\u30eb\u3092\u79fb\u52d5\u3067\u304d\u307e\u3059\u3002',
       'DEL\u30ad\u30fc\u3067\u30ab\u30fc\u30bd\u30eb\u306e\u5de6\u5074\u3092\u524a\u9664\u3067\u304d\u307e\u3059\u3002',
       '\u03a3, \u03a0, \u222b \u30ad\u30fc\u306f\u30ab\u30f3\u30de\u533a\u5207\u308a\u3067\u4e0b\u9650\u30fb\u4e0a\u9650\u30fb\u5f0f\u3092\u5165\u529b\u3057\u307e\u3059\u3002',

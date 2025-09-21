@@ -52,6 +52,18 @@ class SyntaxConverter {
       (match) => '\\log(${match.group(1)})',
     );
     
+    // pow()関数の変換（括弧付きべき乗）
+    latex = latex.replaceAllMapped(
+      RegExp(r'pow\(([^,]+),([^)]+)\)'),
+      (match) => '${match.group(1)}^{${match.group(2)}}',
+    );
+    
+    // x^()形式のべき乗の変換
+    latex = latex.replaceAllMapped(
+      RegExp(r'\^\(([^)]+)\)'),
+      (match) => '^{${match.group(1)}}',
+    );
+    
     // 累乗の変換
     latex = latex.replaceAllMapped(
       RegExp(r'\^(\d+)'),
@@ -139,6 +151,9 @@ class SyntaxConverter {
       RegExp(r'(\w+)!'),
       (match) => '${match.group(1)}!',
     );
+    
+    // n!記法の変換
+    latex = latex.replaceAll('n!', 'n!');
     
     // 複素数の実部・虚部
     latex = latex.replaceAllMapped(

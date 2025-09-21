@@ -80,6 +80,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _insertPowFunction() {
+    // 他のキーと同様に単純に ^( を挿入
+    _insertText('^(');
+  }
+
   void _deleteText() {
     _focusInput();
     final value = _textController.value;
@@ -512,7 +517,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 _moveCursor(1);
                 break;
               case CalculatorKeyType.input:
-                _insertText(event.value);
+                if (event.value == 'pow(') {
+                  // pow()キーの場合は特別な処理
+                  _insertPowFunction();
+                } else {
+                  _insertText(event.value);
+                }
                 break;
             }
           },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 
 import '../localization/localization_extensions.dart';
 
@@ -16,20 +17,20 @@ class GuideScreen extends StatelessWidget {
           _GuideExample(expression: 'x^2', keySequence: ['x', 'x^y', '2']),
           _GuideExample(
             expression: '2^{x+1}',
-            keySequence: ['2', 'x^()', 'x', '+', '1', ')'],
+            keySequence: ['2', 'x^y', '(', 'x', '+', '1', ')'],
           ),
           _GuideExample(
             expression: 'e^{x^2}',
-            keySequence: ['e', 'x^()', 'x', 'x^y', '2', ')'],
+            keySequence: ['e', 'x^y', '(', 'x', 'x^y', '2', ')'],
           ),
-          _GuideExample(expression: '\\sqrt{9}', keySequence: ['√', '9', ')']),
+          _GuideExample(expression: '\\sqrt{9}', keySequence: ['√', '9']),
           _GuideExample(
             expression: '\\sqrt[3]{8}',
-            keySequence: ['∛', '8', ')'],
+            keySequence: ['∛', '8'],
           ),
           _GuideExample(
             expression: '\\sqrt[4]{16}',
-            keySequence: ['ⁿ√', '4', ',', '16', ')'],
+            keySequence: ['ⁿ√', '4', ',', '16'],
           ),
         ],
       ),
@@ -38,16 +39,16 @@ class GuideScreen extends StatelessWidget {
         examples: const [
           _GuideExample(
             expression: '\\frac{1}{2}',
-            keySequence: ['a/b', '1', ',', '2', ')'],
+            keySequence: ['a/b', '1', ',', '2'],
           ),
           _GuideExample(
             expression: '\\frac{x+1}{x-1}',
-            keySequence: ['a/b', 'x', '+', '1', ',', 'x', '-', '1', ')'],
+            keySequence: ['a/b', 'x', '+', '1', ',', 'x', '-', '1'],
           ),
-          _GuideExample(expression: '|x|', keySequence: ['|x|', 'x', ')']),
+          _GuideExample(expression: '|x|', keySequence: ['|x|', 'x']),
           _GuideExample(
             expression: '|3+4i|',
-            keySequence: ['|x|', '3', '+', '4', 'i', ')'],
+            keySequence: ['|x|', '3', '+', '4', 'i'],
           ),
         ],
       ),
@@ -56,20 +57,20 @@ class GuideScreen extends StatelessWidget {
         examples: const [
           _GuideExample(
             expression: '\\sin(x)',
-            keySequence: ['sin(', 'x', ')'],
+            keySequence: ['sin', '(', 'x', ')'],
           ),
           _GuideExample(
             expression: '\\cos(x)',
-            keySequence: ['cos(', 'x', ')'],
+            keySequence: ['cos', '(', 'x', ')'],
           ),
           _GuideExample(
             expression: '\\tan(x)',
-            keySequence: ['tan(', 'x', ')'],
+            keySequence: ['tan', '(', 'x', ')'],
           ),
-          _GuideExample(expression: '\\ln(e)', keySequence: ['ln(', 'e', ')']),
+          _GuideExample(expression: '\\ln(e)', keySequence: ['ln', '(', 'e', ')']),
           _GuideExample(
             expression: '\\log(100)',
-            keySequence: ['log(', '1', '0', '0', ')'],
+            keySequence: ['log', '(', '1', '0', '0', ')'],
           ),
         ],
       ),
@@ -77,12 +78,12 @@ class GuideScreen extends StatelessWidget {
         title: l10n.guideCategorySeriesIntegralsTitle,
         examples: const [
           _GuideExample(
-            expression: '\\sum_{1}^{5} x',
-            keySequence: ['Σ', '1', ',', '5', ',', 'x', ')'],
+            expression: '\\sum_{i=1}^{5} x_i',
+            keySequence: ['Σ', 'i', '=', '1', ',', '5', ',', 'x', '_', 'i'],
           ),
           _GuideExample(
-            expression: '\\prod_{1}^{4} x',
-            keySequence: ['Π', '1', ',', '4', ',', 'x', ')'],
+            expression: '\\prod_{i=1}^{4} x_i',
+            keySequence: ['Π', 'i', '=', '1', ',', '4', ',', 'x', '_', 'i'],
           ),
           _GuideExample(
             expression: '\\int_{0}^{1} x^2 \\, dx',
@@ -97,12 +98,11 @@ class GuideScreen extends StatelessWidget {
               '2',
               ',',
               'x',
-              ')',
             ],
           ),
           _GuideExample(
             expression: '\\int \\sin(x) \\, dx',
-            keySequence: ['∫', 'sin(', 'x', ')', ',', 'x', ')'],
+            keySequence: ['∫', 'sin', '(', 'x', ')', ',', 'x'],
           ),
         ],
       ),
@@ -112,17 +112,17 @@ class GuideScreen extends StatelessWidget {
           _GuideExample(expression: '3+4i', keySequence: ['3', '+', '4', 'i']),
           _GuideExample(
             expression: '\\overline{z}',
-            keySequence: ['z*', 'z', ')'],
+            keySequence: ['z*', 'z'],
           ),
-          _GuideExample(expression: '\\Re(z)', keySequence: ['Re', 'z', ')']),
-          _GuideExample(expression: '\\Im(z)', keySequence: ['Im', 'z', ')']),
+          _GuideExample(expression: '\\Re(z)', keySequence: ['Re', '(', 'z', ')']),
+          _GuideExample(expression: '\\Im(z)', keySequence: ['Im', '(', 'z', ')']),
           _GuideExample(
             expression: 'P_{3}^{5}',
-            keySequence: ['P', '5', ',', '3', ')'],
+            keySequence: ['P', '5', ',', '3'],
           ),
           _GuideExample(
             expression: 'C_{3}^{5}',
-            keySequence: ['C', '5', ',', '3', ')'],
+            keySequence: ['C', '5', ',', '3'],
           ),
         ],
       ),
@@ -191,9 +191,29 @@ class GuideScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.guideExpressionLabel(example.expression),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Row(
+            children: [
+              Text(
+                context.l10n.guideExpressionLabel(''),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Math.tex(
+                  example.expression,
+                  mathStyle: MathStyle.text,
+                  textStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+                  onErrorFallback: (_) => Text(
+                    example.expression,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'monospace',
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           Text(

@@ -90,7 +90,8 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(12),
+        width: 60,
+        height: 44,
         decoration: BoxDecoration(
           gradient: isSelected
               ? LinearGradient(
@@ -114,12 +115,14 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 ]
               : null,
         ),
-        child: Icon(
-          icon,
-          color: isSelected
-              ? Colors.white
-              : Colors.grey.shade600,
-          size: 28,
+        child: Center(
+          child: Icon(
+            icon,
+            color: isSelected
+                ? Colors.white
+                : Colors.grey.shade600,
+            size: 28,
+          ),
         ),
       ),
     );

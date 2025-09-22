@@ -5,11 +5,39 @@ import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
 import '../providers/language_provider.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen>
+    with TickerProviderStateMixin {
+  bool _isLanguageDropdownOpen = false;
+  late AnimationController _dropdownController;
+  late Animation<double> _dropdownAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _dropdownController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _dropdownAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _dropdownController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _dropdownController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final languageState = ref.watch(languageStateProvider);
 
@@ -181,50 +209,35 @@ class SettingsScreen extends ConsumerWidget {
         border: Border.all(color: Colors.blue.shade200),
       ),
       child: Column(
-        children: AppLanguage.supportedLanguages.map((language) {
-          final isSelected = language.code == languageState.language.code;
-          return InkWell(
-            onTap: () => _onLanguageSelected(context, ref, language),
+        children: [
+          // 現在選択中の言語を表示するボタン
+          InkWell(
+            onTap: _toggleLanguageDropdown,
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.blue.shade50 : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
               child: Row(
                 children: [
-                  if (isSelected)
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.blue.shade700,
-                      size: 20,
-                    )
-                  else
-                    Icon(
-                      Icons.radio_button_unchecked,
-                      color: Colors.grey.shade400,
-                      size: 20,
-                    ),
+                  Icon(
+                    Icons.language,
+                    color: Colors.blue.shade700,
+                    size: 20,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          language.nativeName,
+                          languageState.language.nativeName,
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.w500,
-                            color: isSelected
-                                ? Colors.blue.shade800
-                                : Colors.black87,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade800,
                           ),
                         ),
                         Text(
-                          language.englishName,
+                          languageState.language.englishName,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -239,29 +252,143 @@ class SettingsScreen extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.blue.shade100
-                          : Colors.grey.shade100,
+                      color: Colors.blue.shade100,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      language.code.toUpperCase(),
+                      languageState.language.code.toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: isSelected
-                            ? Colors.blue.shade700
-                            : Colors.grey.shade600,
+                        color: Colors.blue.shade700,
                       ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  AnimatedRotation(
+                    turns: _isLanguageDropdownOpen ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.blue.shade700,
+                      size: 20,
                     ),
                   ),
                 ],
               ),
             ),
-          );
-        }).toList(),
+          ),
+          
+          // ドロップダウン選択肢（アニメーション付き）
+          AnimatedBuilder(
+            animation: _dropdownAnimation,
+            builder: (context, child) {
+              return SizeTransition(
+                sizeFactor: _dropdownAnimation,
+                child: FadeTransition(
+                  opacity: _dropdownAnimation,
+                  child: _isLanguageDropdownOpen
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(12),
+                              bottomRight: Radius.circular(12),
+                            ),
+                            border: Border(
+                              top: BorderSide(
+                                color: Colors.grey.shade300,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          child: Column(
+                            children: AppLanguage.supportedLanguages
+                                .where((language) => 
+                                    language.code != languageState.language.code)
+                                .map((language) {
+                              return InkWell(
+                                onTap: () => _onLanguageSelected(context, ref, language),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.radio_button_unchecked,
+                                        color: Colors.grey.shade400,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              language.nativeName,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            Text(
+                                              language.englishName,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          language.code.toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
+  }
+
+  void _toggleLanguageDropdown() {
+    setState(() {
+      _isLanguageDropdownOpen = !_isLanguageDropdownOpen;
+    });
+
+    if (_isLanguageDropdownOpen) {
+      _dropdownController.forward();
+    } else {
+      _dropdownController.reverse();
+    }
   }
 
   Widget _buildOtherSettingsSection(BuildContext context) {
@@ -351,6 +478,9 @@ class SettingsScreen extends ConsumerWidget {
   ) {
     final l10n = context.l10n;
     ref.read(languageStateProvider.notifier).setLanguage(language);
+    
+    // ドロップダウンを閉じる
+    _toggleLanguageDropdown();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

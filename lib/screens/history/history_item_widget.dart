@@ -1,48 +1,48 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+﻿import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../localization/localization_extensions.dart';
 import '../../providers/solution_storage_provider.dart';
 import '../../widgets/latex_preview.dart';
 import 'history_state.dart';
 
-/// 履歴項目を表示するウィジェット
+/// 陞ｻ・･雎・ｽｴ鬯・・蟯ｼ郢ｧ螳夲ｽ｡・ｨ驕会ｽｺ邵ｺ蜷ｶ・狗ｹｧ・ｦ郢ｧ・｣郢ｧ・ｸ郢ｧ・ｧ郢昴・繝ｨ
 class HistoryItemWidget extends StatelessWidget {
   const HistoryItemWidget({
     super.key,
     required this.item,
     required this.onView,
     required this.onDelete,
+    this.onCopyAndPaste,
   });
 
   final MathExpressionWithSolution item;
   final VoidCallback onView;
   final VoidCallback onDelete;
+  final VoidCallback? onCopyAndPaste;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppConstants.historyItemSpacing),
-      child: InkWell(
-        onTap: onView,
-        borderRadius: BorderRadius.circular(
-          AppConstants.historyItemBorderRadius,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppConstants.historyItemPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildExpressionPreview(),
-              const SizedBox(height: AppConstants.historyItemSpacing),
-              _buildExpressionText(context),
-              const SizedBox(height: 8),
-              if (item.solution.problemStatement != null)
-                _buildProblemStatement(),
-              const SizedBox(height: 8),
-              _buildFooter(context),
-            ],
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.grey.shade50],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+        ),
+        child: Column(
+          children: [
+            // 隰ｨ・ｰ陟台ｸ翫・郢晢ｽｬ郢晁侭ﾎ礼ｹ晢ｽｼ繝ｻ蛹ｻﾎ鍋ｹｧ・､郢晢ｽｳ鬩幢ｽｨ陋ｻ繝ｻ・ｼ繝ｻ
+            _buildExpressionPreview(),
+
+            // 郢ｧ・｢郢ｧ・ｯ郢ｧ・ｷ郢晢ｽｧ郢晢ｽｳ郢晄㈱縺｡郢晢ｽｳ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢
+            _buildActionButtons(context),
+          ],
         ),
       ),
     );
@@ -50,12 +50,20 @@ class HistoryItemWidget extends StatelessWidget {
 
   Widget _buildExpressionPreview() {
     return Container(
-      height: AppConstants.historyItemHeight,
+      height: 120,
       width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade50, Colors.purple.shade50],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        border: Border.all(color: Colors.blue.shade100, width: 1),
       ),
       child: Center(
         child: LatexPreview(expression: item.expression.latexExpression),
@@ -63,74 +71,88 @@ class HistoryItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildExpressionText(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            item.expression.calculatorSyntax,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'monospace',
+  Widget _buildActionButtons(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // 隴鯉ｽ･隴弱ｊ・｡・ｨ驕会ｽｺ
+          Expanded(
+            child: Text(
+              DateTimeFormatter.formatRelative(
+                item.expression.timestamp,
+                context.l10n,
+              ),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.copy, size: AppConstants.iconSize),
-          onPressed: () => _copyToClipboard(context),
-          tooltip: context.l10n.historyCopyTooltip,
-        ),
-      ],
-    );
-  }
 
-  Widget _buildProblemStatement() {
-    return Text(
-      item.solution.problemStatement!,
-      style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-      maxLines: AppConstants.maxHistoryItemLines,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
+          // 郢ｧ・｢郢ｧ・ｯ郢ｧ・ｷ郢晢ｽｧ郢晢ｽｳ郢晄㈱縺｡郢晢ｽｳ
+          Row(
+            children: [
+              // 闕ｳ・ｭ髴・ｽｫ郢ｧ螳夲ｽｦ荵晢ｽ狗ｹ晄㈱縺｡郢晢ｽｳ
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.visibility,
+                    color: Colors.blue.shade700,
+                    size: 20,
+                  ),
+                  onPressed: onView,
+                  tooltip: context.l10n.historyViewTooltip,
+                ),
+              ),
+              const SizedBox(width: 8),
 
-  Widget _buildFooter(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          DateTimeFormatter.formatRelative(
-            item.expression.timestamp,
-            context.l10n,
+              // 郢ｧ・ｳ郢晄鱒繝ｻ+郢晏｣ｹ繝ｻ郢ｧ・ｹ郢晏現繝ｻ郢ｧ・ｿ郢晢ｽｳ
+              if (onCopyAndPaste != null)
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green.shade200),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.content_copy,
+                      color: Colors.green.shade700,
+                      size: 20,
+                    ),
+                    onPressed: onCopyAndPaste,
+                    tooltip: context.l10n.historyCopyAndPasteTooltip,
+                  ),
+                ),
+              const SizedBox(width: 8),
+
+              // 陷台ｼ∝求郢晄㈱縺｡郢晢ｽｳ
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red.shade700,
+                    size: 20,
+                  ),
+                  onPressed: onDelete,
+                  tooltip: context.l10n.commonDeleteButton,
+                ),
+              ),
+            ],
           ),
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-        ),
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.visibility, size: AppConstants.iconSize),
-              onPressed: onView,
-              tooltip: context.l10n.historyViewTooltip,
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete, size: AppConstants.iconSize),
-              onPressed: onDelete,
-              tooltip: context.l10n.commonDeleteButton,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  void _copyToClipboard(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: item.expression.calculatorSyntax));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.l10n.historyCopySuccessMessage),
-        duration: const Duration(
-          seconds: AppConstants.maxSnackBarDurationSeconds,
-        ),
+        ],
       ),
     );
   }

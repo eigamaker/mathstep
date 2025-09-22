@@ -23,15 +23,11 @@ void main() async {
   }
 
   // Initialize AdMob.
-  await MobileAds.instance.initialize();
+  final mobileAds = MobileAds.instance;
+  await mobileAds.initialize();
 
-  // Configure test devices.
-  await MobileAds.instance.updateRequestConfiguration(
-    RequestConfiguration(testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82']),
-  );
-
-  // Enable debug friendly configuration.
-  await MobileAds.instance.updateRequestConfiguration(
+  // Configure a consistent debug-friendly request.
+  await mobileAds.updateRequestConfiguration(
     RequestConfiguration(
       testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'],
       tagForChildDirectedTreatment: TagForChildDirectedTreatment.unspecified,

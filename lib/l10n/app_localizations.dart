@@ -493,6 +493,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Detailed explanation:'**
   String get solutionStepDescriptionLabel;
+
+  /// No description provided for @guideAppBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the keypad'**
+  String get guideAppBarTitle;
+
+  /// No description provided for @guideCategoryExponentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exponents & radicals'**
+  String get guideCategoryExponentsTitle;
+
+  /// No description provided for @guideCategoryFractionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fractions & absolute values'**
+  String get guideCategoryFractionsTitle;
+
+  /// No description provided for @guideCategoryTrigLogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigonometric & logarithmic functions'**
+  String get guideCategoryTrigLogTitle;
+
+  /// No description provided for @guideCategorySeriesIntegralsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Series, integrals & products'**
+  String get guideCategorySeriesIntegralsTitle;
+
+  /// No description provided for @guideCategoryComplexTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complex numbers & combinations'**
+  String get guideCategoryComplexTitle;
+
+  /// No description provided for @guideExpressionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expression: {expression}'**
+  String guideExpressionLabel(String expression);
+
+  /// No description provided for @guideKeySequenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Key sequence:'**
+  String get guideKeySequenceLabel;
+
+  /// No description provided for @guideTipAutoParenthesis.
+  ///
+  /// In en, this message translates to:
+  /// **'Function keys (sin, cos, √, etc.) automatically insert an opening parenthesis.'**
+  String get guideTipAutoParenthesis;
+
+  /// No description provided for @guideTipExponentKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the x^y key for simple exponents and x^() when the exponent is an expression.'**
+  String get guideTipExponentKeys;
+
+  /// No description provided for @guideTipArrowKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the arrow keys (← →) to move the cursor.'**
+  String get guideTipArrowKeys;
+
+  /// No description provided for @guideTipDeleteKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Press DEL to delete the character to the left of the cursor.'**
+  String get guideTipDeleteKey;
+
+  /// No description provided for @guideTipSigmaPi.
+  ///
+  /// In en, this message translates to:
+  /// **'For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.'**
+  String get guideTipSigmaPi;
+
+  /// No description provided for @guideTipFractionKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the a/b key for fractions and separate the numerator and denominator with the comma key.'**
+  String get guideTipFractionKey;
+
+  /// No description provided for @guideTipCloseParenthesis.
+  ///
+  /// In en, this message translates to:
+  /// **'Close parentheses with the ) key whenever necessary.'**
+  String get guideTipCloseParenthesis;
+
+  /// No description provided for @homeSampleLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Loaded sample expression: {expression}'**
+  String homeSampleLoaded(String expression);
+
+  /// No description provided for @homeClipboardPasteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasted the expression from the clipboard.'**
+  String get homeClipboardPasteSuccess;
+
+  /// No description provided for @homeClipboardEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Clipboard is empty.'**
+  String get homeClipboardEmpty;
+
+  /// No description provided for @homeClipboardPasteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to paste from the clipboard.'**
+  String get homeClipboardPasteFailed;
+
+  /// No description provided for @homeSampleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Load a sample expression'**
+  String get homeSampleTooltip;
+
+  /// No description provided for @homePasteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get homePasteTooltip;
+
+  /// No description provided for @historyDeleteDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from history'**
+  String get historyDeleteDialogTitle;
+
+  /// No description provided for @historyCopyAndPasteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied the expression and pasted it into the input field.'**
+  String get historyCopyAndPasteMessage;
+
+  /// No description provided for @historyCopyAndPasteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy and paste into the input'**
+  String get historyCopyAndPasteTooltip;
+
+  /// No description provided for @settingsOtherSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Other settings'**
+  String get settingsOtherSettingsTitle;
+
+  /// No description provided for @settingsOtherSettingsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get settingsOtherSettingsComingSoon;
+
+  /// No description provided for @settingsOtherSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional options will be added in future updates.'**
+  String get settingsOtherSettingsDescription;
+
+  /// No description provided for @settingsLanguageChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Language changed to {language}'**
+  String settingsLanguageChanged(String language);
+
+  /// No description provided for @solutionAppBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Solution'**
+  String get solutionAppBarTitle;
+
+  /// No description provided for @solutionProblemLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Problem:'**
+  String get solutionProblemLabel;
+
+  /// No description provided for @solutionTabMain.
+  ///
+  /// In en, this message translates to:
+  /// **'Solution'**
+  String get solutionTabMain;
+
+  /// No description provided for @solutionTabAlternative.
+  ///
+  /// In en, this message translates to:
+  /// **'Alternatives & checks'**
+  String get solutionTabAlternative;
+
+  /// No description provided for @solutionAlternativeSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alternative solutions'**
+  String get solutionAlternativeSectionTitle;
+
+  /// No description provided for @solutionVerificationSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification & domain check'**
+  String get solutionVerificationSectionTitle;
+
+  /// No description provided for @solutionShareNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing will be available in a future update.'**
+  String get solutionShareNotAvailable;
+
+  /// No description provided for @solutionSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to history.'**
+  String get solutionSaveSuccess;
+
+  /// No description provided for @verificationDomainCheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Domain check'**
+  String get verificationDomainCheckTitle;
+
+  /// No description provided for @verificationVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get verificationVerificationTitle;
+
+  /// No description provided for @verificationCommonPitfallsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Common pitfalls'**
+  String get verificationCommonPitfallsTitle;
 }
 
 class _AppLocalizationsDelegate

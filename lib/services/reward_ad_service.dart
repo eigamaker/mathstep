@@ -36,6 +36,25 @@ class RewardAdService {
     _onStateChanged?.call();
   }
 
+  bool get _canAttemptLoad => !_isAdLoaded && !_isLoading && !_isDisposed;
+
+  void _resetLoadingFlags({bool notify = true}) {
+    _isLoading = false;
+    _isAdLoaded = false;
+    if (notify) {
+      _notifyStateChanged();
+    }
+  }
+
+  void _retryLoadAfter(Duration delay, String logMessage) {
+    debugPrint('RewardAdService: $logMessage');
+    Future.delayed(delay, () {
+      if (_canAttemptLoad) {
+        loadRewardedAd();
+      }
+    });
+  }
+
   /// 繝ｪ繝ｯ繝ｼ繝牙ｺ・相繧定ｪｭ縺ｿ霎ｼ繧
   Future<void> loadRewardedAd() async {
     if (_isDisposed) {
@@ -67,9 +86,8 @@ class RewardAdService {
     } catch (error, stackTrace) {
       debugPrint('RewardAdService: Error starting rewarded ad load: $error');
       debugPrint('$stackTrace');
-      _isAdLoaded = false;
-      _isLoading = false;
       _cancelLoadTimeoutTimer();
+      _resetLoadingFlags(notify: false);
       _completeLoadWithError(error);
     }
 
@@ -117,21 +135,16 @@ class RewardAdService {
 
       debugPrint('RewardAdService: ========== AD LOAD TIMEOUT ==========');
       debugPrint('RewardAdService: Timeout after 15 seconds');
-      _isLoading = false;
-      _isAdLoaded = false;
-      _notifyStateChanged();
+      _resetLoadingFlags();
       final timeoutException = TimeoutException(
         'Ad loading timeout',
         const Duration(seconds: 15),
       );
       _completeLoadWithError(timeoutException);
-
-      Future.delayed(const Duration(seconds: 3), () {
-        if (!_isAdLoaded && !_isLoading && !_isDisposed) {
-          debugPrint('RewardAdService: Retrying ad load after timeout...');
-          loadRewardedAd();
-        }
-      });
+      _retryLoadAfter(
+        const Duration(seconds: 3),
+        'Retrying ad load after timeout...',
+      );
     });
   }
 
@@ -182,17 +195,13 @@ class RewardAdService {
           );
           _cancelLoadTimeoutTimer();
           _rewardedAd = null;
-          _isAdLoaded = false;
-          _isLoading = false;
-          _notifyStateChanged();
+          _resetLoadingFlags();
 
           if (!_isDisposed && error.code == 0) {
-            debugPrint('RewardAdService: Retrying in 5 seconds...');
-            Future.delayed(const Duration(seconds: 5), () {
-              if (!_isAdLoaded && !_isLoading && !_isDisposed) {
-                loadRewardedAd();
-              }
-            });
+            _retryLoadAfter(
+              const Duration(seconds: 5),
+              'Retrying in 5 seconds...',
+            );
           } else {
             debugPrint(
               'RewardAdService: Not retrying due to error code: ${error.code}',
@@ -291,8 +300,6 @@ class RewardAdService {
     forceStopLoading();
     _rewardedAd?.dispose();
     _rewardedAd = null;
-    _isAdLoaded = false;
-    _isLoading = false;
   }
 
   /// 蠑ｷ蛻ｶ逧・↓隱ｭ縺ｿ霎ｼ縺ｿ繧貞●豁｢縺吶ｋ
@@ -303,8 +310,7 @@ class RewardAdService {
       _completeLoadWithError(StateError('Ad load force stopped'));
     }
     _loadCompleter = null;
-    _isLoading = false;
-    _isAdLoaded = false;
+    _resetLoadingFlags(notify: false);
   }
 
   /// 繝輔Ν繧ｹ繧ｯ繝ｪ繝ｼ繝ｳ繧ｳ繝ｳ繝・Φ繝・さ繝ｼ繝ｫ繝舌ャ繧ｯ繧定ｨｭ螳・

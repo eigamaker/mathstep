@@ -217,4 +217,129 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get solutionStepDescriptionLabel => '자세한 설명:';
+
+  @override
+  String get guideAppBarTitle => '키 사용법';
+
+  @override
+  String get guideCategoryExponentsTitle => '지수와 근';
+
+  @override
+  String get guideCategoryFractionsTitle => '분수와 절댓값';
+
+  @override
+  String get guideCategoryTrigLogTitle => '삼각함수와 로그';
+
+  @override
+  String get guideCategorySeriesIntegralsTitle => '수열·적분·곱셈';
+
+  @override
+  String get guideCategoryComplexTitle => '복소수와 조합';
+
+  @override
+  String guideExpressionLabel(String expression) {
+    return '수식: $expression';
+  }
+
+  @override
+  String get guideKeySequenceLabel => '입력 순서:';
+
+  @override
+  String get guideTipAutoParenthesis =>
+      '함수 키(sin, cos, √ 등)를 누르면 자동으로 \"(\"가 입력됩니다.';
+
+  @override
+  String get guideTipExponentKeys =>
+      'x^y 키는 간단한 지수에, x^() 키는 식 전체를 지수로 입력할 때 사용하세요.';
+
+  @override
+  String get guideTipArrowKeys => '← → 키로 커서를 이동할 수 있습니다.';
+
+  @override
+  String get guideTipDeleteKey => 'DEL 키로 커서 왼쪽 문자를 삭제합니다.';
+
+  @override
+  String get guideTipSigmaPi => 'Σ, Π, ∫ 키는 쉼표로 하한, 상한, 식을 구분해 입력합니다.';
+
+  @override
+  String get guideTipFractionKey => 'a/b 키로 분수를 입력하고 쉼표로 분자와 분모를 나눕니다.';
+
+  @override
+  String get guideTipCloseParenthesis => '필요할 때 ) 키로 괄호를 닫아 주세요.';
+
+  @override
+  String homeSampleLoaded(String expression) {
+    return '샘플 수식을 불러왔습니다: $expression';
+  }
+
+  @override
+  String get homeClipboardPasteSuccess => '클립보드에서 수식을 붙여넣었습니다.';
+
+  @override
+  String get homeClipboardEmpty => '클립보드가 비어 있습니다.';
+
+  @override
+  String get homeClipboardPasteFailed => '붙여넣기에 실패했습니다.';
+
+  @override
+  String get homeSampleTooltip => '샘플 수식 불러오기';
+
+  @override
+  String get homePasteTooltip => '클립보드에서 붙여넣기';
+
+  @override
+  String get historyDeleteDialogTitle => '기록에서 삭제';
+
+  @override
+  String get historyCopyAndPasteMessage => '수식을 복사하여 입력란에 붙여넣었습니다.';
+
+  @override
+  String get historyCopyAndPasteTooltip => '복사 후 입력란에 붙여넣기';
+
+  @override
+  String get settingsOtherSettingsTitle => '기타 설정';
+
+  @override
+  String get settingsOtherSettingsComingSoon => '준비 중';
+
+  @override
+  String get settingsOtherSettingsDescription => '추가 설정은 향후 업데이트에서 제공될 예정입니다.';
+
+  @override
+  String settingsLanguageChanged(String language) {
+    return '언어가 $language(으)로 변경되었습니다.';
+  }
+
+  @override
+  String get solutionAppBarTitle => '해설';
+
+  @override
+  String get solutionProblemLabel => '문제:';
+
+  @override
+  String get solutionTabMain => '해법';
+
+  @override
+  String get solutionTabAlternative => '대안·검산';
+
+  @override
+  String get solutionAlternativeSectionTitle => '대안 해법';
+
+  @override
+  String get solutionVerificationSectionTitle => '검산 및 정의역 확인';
+
+  @override
+  String get solutionShareNotAvailable => '공유 기능은 추후 업데이트에서 제공될 예정입니다.';
+
+  @override
+  String get solutionSaveSuccess => '기록에 저장했습니다.';
+
+  @override
+  String get verificationDomainCheckTitle => '정의역 확인';
+
+  @override
+  String get verificationVerificationTitle => '검산';
+
+  @override
+  String get verificationCommonPitfallsTitle => '자주 하는 실수';
 }

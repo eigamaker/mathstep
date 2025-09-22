@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
 import '../providers/language_provider.dart';
-import 'settings_screen.dart';
-import 'home_screen.dart';
-import 'history_screen.dart';
+import 'main_navigation_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +19,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late Animation<double> _logoAnimation;
   late Animation<double> _textAnimation;
   
-  bool _showLanguageSelection = false;
   AppLanguage _selectedLanguage = AppLanguage.defaultLanguage;
   bool _showLanguageDropdown = false;
   late AnimationController _dropdownController;
@@ -71,11 +68,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!languageState.hasSavedPreference) {
       // 言語設定がない場合は言語選択を表示
       setState(() {
-        _showLanguageSelection = true;
         _selectedLanguage = languageState.language;
       });
-      
-      // 初期選択位置は不要になったので削除
+    } else {
+      // 言語設定がある場合は直接メイン画面に遷移
+      _navigateToMain();
+      return;
     }
     
     // アニメーション開始
@@ -128,10 +126,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _confirmLanguageSelection() async {
     await ref.read(languageStateProvider.notifier).setLanguage(_selectedLanguage);
-    setState(() {
-      _showLanguageSelection = false;
-    });
-    _navigateToMain();
+    // 言語選択完了後、直接メイン画面に遷移（中間状態を表示しない）
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const MainNavigationScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 500),
+        ),
+      );
+    }
   }
 
   @override
@@ -146,125 +153,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF2196F3),
-      body: _showLanguageSelection ? _buildLanguageSelection() : _buildSplashContent(),
-    );
-  }
-
-  Widget _buildSplashContent() {
-    return GestureDetector(
-      onTap: _navigateToMain,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // ロゴ部分
-            AnimatedBuilder(
-              animation: _logoAnimation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _logoAnimation.value,
-                  child: Transform.rotate(
-                    angle: _logoAnimation.value * 0.1,
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(60),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.functions,
-                        size: 60,
-                        color: Color(0xFF2196F3),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 30),
-
-            // アプリ名
-            AnimatedBuilder(
-              animation: _textAnimation,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _textAnimation.value,
-                  child: Column(
-                    children: [
-                      Text(
-                        context.l10n.appTitle,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        context.l10n.splashTagline,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withValues(alpha: 0.9),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 50),
-
-            // タップを促すテキスト
-            AnimatedBuilder(
-              animation: _textAnimation,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _textAnimation.value,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          context.l10n.splashTapToStart,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      body: _buildLanguageSelection(),
     );
   }
 
@@ -273,73 +162,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // ロゴ部分（タップアイコン）
-          AnimatedBuilder(
-            animation: _logoAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _logoAnimation.value,
-                child: Transform.rotate(
-                  angle: _logoAnimation.value * 0.1,
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(60),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.functions,
-                      size: 60,
-                      color: Color(0xFF2196F3),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 40),
-
-          // アプリ名
-          AnimatedBuilder(
-            animation: _textAnimation,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _textAnimation.value,
-                child: Column(
-                  children: [
-                    Text(
-                      context.l10n.appTitle,
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      context.l10n.splashTagline,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withValues(alpha: 0.9),
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-
+          // 共通のロゴとアプリ名部分
+          _buildLogoAndTitle(),
           const SizedBox(height: 50),
 
           // 言語選択ドロップダウン
@@ -503,53 +327,77 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       ),
     );
   }
-}
 
-class MainNavigationScreen extends ConsumerStatefulWidget {
-  const MainNavigationScreen({super.key});
+  Widget _buildLogoAndTitle() {
+    return Column(
+      children: [
+        // ロゴ部分
+        AnimatedBuilder(
+          animation: _logoAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _logoAnimation.value,
+              child: Transform.rotate(
+                angle: _logoAnimation.value * 0.1,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(60),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.functions,
+                    size: 60,
+                    color: Color(0xFF2196F3),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
 
-  @override
-  ConsumerState<MainNavigationScreen> createState() =>
-      _MainNavigationScreenState();
-}
+        const SizedBox(height: 30),
 
-class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
-  int _currentIndex = 0;
-
-  late final List<Widget> _screens = [
-    const HomeScreen(),
-    const HistoryScreen(),
-    const SettingsScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.calculate),
-            label: l10n.navigationHome,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.history),
-            label: l10n.navigationHistory,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
-            label: l10n.navigationSettings,
-          ),
-        ],
-      ),
+        // アプリ名
+        AnimatedBuilder(
+          animation: _textAnimation,
+          builder: (context, child) {
+            return Opacity(
+              opacity: _textAnimation.value,
+              child: Column(
+                children: [
+                  Text(
+                    context.l10n.appTitle,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    context.l10n.splashTagline,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

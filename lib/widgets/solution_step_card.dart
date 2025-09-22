@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/solution.dart';
 import '../localization/localization_extensions.dart';
 import 'latex_preview.dart';
+import 'math_text_display.dart';
 
 class SolutionStepCard extends StatelessWidget {
   final SolutionStep step;
@@ -24,10 +25,9 @@ class SolutionStepCard extends StatelessWidget {
           step.title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        subtitle: Text(
-          step.description,
-          maxLines: isExpanded ? null : 2,
-          overflow: isExpanded ? null : TextOverflow.ellipsis,
+        subtitle: ReadableMathTextDisplay(
+          text: step.description,
+          textStyle: const TextStyle(fontSize: 14),
         ),
         trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
         onExpansionChanged: (expanded) {
@@ -66,7 +66,10 @@ class SolutionStepCard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                Text(step.description, style: const TextStyle(fontSize: 14)),
+                ReadableMathTextDisplay(
+                  text: step.description,
+                  textStyle: const TextStyle(fontSize: 14),
+                ),
               ],
             ),
           ),

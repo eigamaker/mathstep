@@ -240,4 +240,140 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get solutionStepDescriptionLabel => 'Detailed explanation:';
+
+  @override
+  String get guideAppBarTitle => 'Using the keypad';
+
+  @override
+  String get guideCategoryExponentsTitle => 'Exponents & radicals';
+
+  @override
+  String get guideCategoryFractionsTitle => 'Fractions & absolute values';
+
+  @override
+  String get guideCategoryTrigLogTitle =>
+      'Trigonometric & logarithmic functions';
+
+  @override
+  String get guideCategorySeriesIntegralsTitle =>
+      'Series, integrals & products';
+
+  @override
+  String get guideCategoryComplexTitle => 'Complex numbers & combinations';
+
+  @override
+  String guideExpressionLabel(String expression) {
+    return 'Expression: $expression';
+  }
+
+  @override
+  String get guideKeySequenceLabel => 'Key sequence:';
+
+  @override
+  String get guideTipAutoParenthesis =>
+      'Function keys (sin, cos, √, etc.) automatically insert an opening parenthesis.';
+
+  @override
+  String get guideTipExponentKeys =>
+      'Use the x^y key for simple exponents and x^() when the exponent is an expression.';
+
+  @override
+  String get guideTipArrowKeys =>
+      'Use the arrow keys (← →) to move the cursor.';
+
+  @override
+  String get guideTipDeleteKey =>
+      'Press DEL to delete the character to the left of the cursor.';
+
+  @override
+  String get guideTipSigmaPi =>
+      'For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.';
+
+  @override
+  String get guideTipFractionKey =>
+      'Use the a/b key for fractions and separate the numerator and denominator with the comma key.';
+
+  @override
+  String get guideTipCloseParenthesis =>
+      'Close parentheses with the ) key whenever necessary.';
+
+  @override
+  String homeSampleLoaded(String expression) {
+    return 'Loaded sample expression: $expression';
+  }
+
+  @override
+  String get homeClipboardPasteSuccess =>
+      'Pasted the expression from the clipboard.';
+
+  @override
+  String get homeClipboardEmpty => 'Clipboard is empty.';
+
+  @override
+  String get homeClipboardPasteFailed => 'Failed to paste from the clipboard.';
+
+  @override
+  String get homeSampleTooltip => 'Load a sample expression';
+
+  @override
+  String get homePasteTooltip => 'Paste from clipboard';
+
+  @override
+  String get historyDeleteDialogTitle => 'Remove from history';
+
+  @override
+  String get historyCopyAndPasteMessage =>
+      'Copied the expression and pasted it into the input field.';
+
+  @override
+  String get historyCopyAndPasteTooltip => 'Copy and paste into the input';
+
+  @override
+  String get settingsOtherSettingsTitle => 'Other settings';
+
+  @override
+  String get settingsOtherSettingsComingSoon => 'Coming soon';
+
+  @override
+  String get settingsOtherSettingsDescription =>
+      'Additional options will be added in future updates.';
+
+  @override
+  String settingsLanguageChanged(String language) {
+    return 'Language changed to $language';
+  }
+
+  @override
+  String get solutionAppBarTitle => 'Solution';
+
+  @override
+  String get solutionProblemLabel => 'Problem:';
+
+  @override
+  String get solutionTabMain => 'Solution';
+
+  @override
+  String get solutionTabAlternative => 'Alternatives & checks';
+
+  @override
+  String get solutionAlternativeSectionTitle => 'Alternative solutions';
+
+  @override
+  String get solutionVerificationSectionTitle => 'Verification & domain check';
+
+  @override
+  String get solutionShareNotAvailable =>
+      'Sharing will be available in a future update.';
+
+  @override
+  String get solutionSaveSuccess => 'Saved to history.';
+
+  @override
+  String get verificationDomainCheckTitle => 'Domain check';
+
+  @override
+  String get verificationVerificationTitle => 'Verification';
+
+  @override
+  String get verificationCommonPitfallsTitle => 'Common pitfalls';
 }

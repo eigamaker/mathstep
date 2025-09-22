@@ -217,6 +217,129 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get solutionStepDescriptionLabel => '详细说明：';
+
+  @override
+  String get guideAppBarTitle => '按键使用指南';
+
+  @override
+  String get guideCategoryExponentsTitle => '指数与根号';
+
+  @override
+  String get guideCategoryFractionsTitle => '分数与绝对值';
+
+  @override
+  String get guideCategoryTrigLogTitle => '三角与对数函数';
+
+  @override
+  String get guideCategorySeriesIntegralsTitle => '求和、积分与乘积';
+
+  @override
+  String get guideCategoryComplexTitle => '复数与组合';
+
+  @override
+  String guideExpressionLabel(String expression) {
+    return '表达式：$expression';
+  }
+
+  @override
+  String get guideKeySequenceLabel => '按键顺序：';
+
+  @override
+  String get guideTipAutoParenthesis => '按下函数键（sin、cos、√ 等）会自动输入“(”。';
+
+  @override
+  String get guideTipExponentKeys => 'x^y 键用于简单指数，x^() 键用于表达式作为指数。';
+
+  @override
+  String get guideTipArrowKeys => '使用 ← → 键移动光标。';
+
+  @override
+  String get guideTipDeleteKey => 'DEL 键可删除光标左侧的字符。';
+
+  @override
+  String get guideTipSigmaPi => 'Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。';
+
+  @override
+  String get guideTipFractionKey => '使用 a/b 键输入分数，并用逗号区分分子和分母。';
+
+  @override
+  String get guideTipCloseParenthesis => '需要时请使用 ) 键闭合括号。';
+
+  @override
+  String homeSampleLoaded(String expression) {
+    return '已载入示例表达式：$expression';
+  }
+
+  @override
+  String get homeClipboardPasteSuccess => '已从剪贴板粘贴表达式。';
+
+  @override
+  String get homeClipboardEmpty => '剪贴板为空。';
+
+  @override
+  String get homeClipboardPasteFailed => '粘贴失败。';
+
+  @override
+  String get homeSampleTooltip => '载入示例表达式';
+
+  @override
+  String get homePasteTooltip => '从剪贴板粘贴';
+
+  @override
+  String get historyDeleteDialogTitle => '从历史记录中删除';
+
+  @override
+  String get historyCopyAndPasteMessage => '已复制表达式并粘贴到输入框。';
+
+  @override
+  String get historyCopyAndPasteTooltip => '复制并粘贴到输入框';
+
+  @override
+  String get settingsOtherSettingsTitle => '其他设置';
+
+  @override
+  String get settingsOtherSettingsComingSoon => '即将推出';
+
+  @override
+  String get settingsOtherSettingsDescription => '更多设置选项将在后续更新中添加。';
+
+  @override
+  String settingsLanguageChanged(String language) {
+    return '语言已切换为 $language。';
+  }
+
+  @override
+  String get solutionAppBarTitle => '解答';
+
+  @override
+  String get solutionProblemLabel => '题目：';
+
+  @override
+  String get solutionTabMain => '解法';
+
+  @override
+  String get solutionTabAlternative => '其它解法与检验';
+
+  @override
+  String get solutionAlternativeSectionTitle => '其它解法';
+
+  @override
+  String get solutionVerificationSectionTitle => '检验与定义域检查';
+
+  @override
+  String get solutionShareNotAvailable => '分享功能将在未来更新中提供。';
+
+  @override
+  String get solutionSaveSuccess => '已保存到历史记录。';
+
+  @override
+  String get verificationDomainCheckTitle => '定义域检查';
+
+  @override
+  String get verificationVerificationTitle => '检验';
+
+  @override
+  String get verificationCommonPitfallsTitle => '常见误区';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -432,6 +555,129 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get solutionStepDescriptionLabel => '详细说明：';
+
+  @override
+  String get guideAppBarTitle => '按键使用指南';
+
+  @override
+  String get guideCategoryExponentsTitle => '指数与根号';
+
+  @override
+  String get guideCategoryFractionsTitle => '分数与绝对值';
+
+  @override
+  String get guideCategoryTrigLogTitle => '三角与对数函数';
+
+  @override
+  String get guideCategorySeriesIntegralsTitle => '求和、积分与乘积';
+
+  @override
+  String get guideCategoryComplexTitle => '复数与组合';
+
+  @override
+  String guideExpressionLabel(String expression) {
+    return '表达式：$expression';
+  }
+
+  @override
+  String get guideKeySequenceLabel => '按键顺序：';
+
+  @override
+  String get guideTipAutoParenthesis => '按下函数键（sin、cos、√ 等）会自动输入“(”。';
+
+  @override
+  String get guideTipExponentKeys => 'x^y 键用于简单指数，x^() 键用于表达式作为指数。';
+
+  @override
+  String get guideTipArrowKeys => '使用 ← → 键移动光标。';
+
+  @override
+  String get guideTipDeleteKey => 'DEL 键可删除光标左侧的字符。';
+
+  @override
+  String get guideTipSigmaPi => 'Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。';
+
+  @override
+  String get guideTipFractionKey => '使用 a/b 键输入分数，并用逗号区分分子和分母。';
+
+  @override
+  String get guideTipCloseParenthesis => '需要时请使用 ) 键闭合括号。';
+
+  @override
+  String homeSampleLoaded(String expression) {
+    return '已载入示例表达式：$expression';
+  }
+
+  @override
+  String get homeClipboardPasteSuccess => '已从剪贴板粘贴表达式。';
+
+  @override
+  String get homeClipboardEmpty => '剪贴板为空。';
+
+  @override
+  String get homeClipboardPasteFailed => '粘贴失败。';
+
+  @override
+  String get homeSampleTooltip => '载入示例表达式';
+
+  @override
+  String get homePasteTooltip => '从剪贴板粘贴';
+
+  @override
+  String get historyDeleteDialogTitle => '从历史记录中删除';
+
+  @override
+  String get historyCopyAndPasteMessage => '已复制表达式并粘贴到输入框。';
+
+  @override
+  String get historyCopyAndPasteTooltip => '复制并粘贴到输入框';
+
+  @override
+  String get settingsOtherSettingsTitle => '其他设置';
+
+  @override
+  String get settingsOtherSettingsComingSoon => '即将推出';
+
+  @override
+  String get settingsOtherSettingsDescription => '更多设置选项将在后续更新中添加。';
+
+  @override
+  String settingsLanguageChanged(String language) {
+    return '语言已切换为 $language。';
+  }
+
+  @override
+  String get solutionAppBarTitle => '解答';
+
+  @override
+  String get solutionProblemLabel => '题目：';
+
+  @override
+  String get solutionTabMain => '解法';
+
+  @override
+  String get solutionTabAlternative => '其它解法与检验';
+
+  @override
+  String get solutionAlternativeSectionTitle => '其它解法';
+
+  @override
+  String get solutionVerificationSectionTitle => '检验与定义域检查';
+
+  @override
+  String get solutionShareNotAvailable => '分享功能将在未来更新中提供。';
+
+  @override
+  String get solutionSaveSuccess => '已保存到历史记录。';
+
+  @override
+  String get verificationDomainCheckTitle => '定义域检查';
+
+  @override
+  String get verificationVerificationTitle => '检验';
+
+  @override
+  String get verificationCommonPitfallsTitle => '常见误区';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -647,4 +893,127 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get solutionStepDescriptionLabel => '詳細說明：';
+
+  @override
+  String get guideAppBarTitle => '按鍵使用指南';
+
+  @override
+  String get guideCategoryExponentsTitle => '指數與根號';
+
+  @override
+  String get guideCategoryFractionsTitle => '分數與絕對值';
+
+  @override
+  String get guideCategoryTrigLogTitle => '三角與對數函數';
+
+  @override
+  String get guideCategorySeriesIntegralsTitle => '總和、積分與乘積';
+
+  @override
+  String get guideCategoryComplexTitle => '複數與組合';
+
+  @override
+  String guideExpressionLabel(String expression) {
+    return '數式：$expression';
+  }
+
+  @override
+  String get guideKeySequenceLabel => '按鍵順序：';
+
+  @override
+  String get guideTipAutoParenthesis => '按下函式鍵（sin、cos、√ 等）會自動輸入「(」。';
+
+  @override
+  String get guideTipExponentKeys => 'x^y 鍵用於簡單指數，x^() 鍵用於整個式子作為指數。';
+
+  @override
+  String get guideTipArrowKeys => '使用 ← → 鍵移動游標。';
+
+  @override
+  String get guideTipDeleteKey => 'DEL 鍵可刪除游標左側的字元。';
+
+  @override
+  String get guideTipSigmaPi => 'Σ、Π、∫ 鍵使用逗號依序輸入下限、上限與數式。';
+
+  @override
+  String get guideTipFractionKey => '使用 a/b 鍵輸入分數，並以逗號區分分子與分母。';
+
+  @override
+  String get guideTipCloseParenthesis => '需要時請使用 ) 鍵關閉括號。';
+
+  @override
+  String homeSampleLoaded(String expression) {
+    return '已載入範例數式：$expression';
+  }
+
+  @override
+  String get homeClipboardPasteSuccess => '已從剪貼簿貼上數式。';
+
+  @override
+  String get homeClipboardEmpty => '剪貼簿為空。';
+
+  @override
+  String get homeClipboardPasteFailed => '貼上失敗。';
+
+  @override
+  String get homeSampleTooltip => '載入範例數式';
+
+  @override
+  String get homePasteTooltip => '從剪貼簿貼上';
+
+  @override
+  String get historyDeleteDialogTitle => '從歷史紀錄刪除';
+
+  @override
+  String get historyCopyAndPasteMessage => '已複製數式並貼到輸入欄位。';
+
+  @override
+  String get historyCopyAndPasteTooltip => '複製並貼到輸入欄';
+
+  @override
+  String get settingsOtherSettingsTitle => '其他設定';
+
+  @override
+  String get settingsOtherSettingsComingSoon => '敬請期待';
+
+  @override
+  String get settingsOtherSettingsDescription => '未來更新將加入更多設定項目。';
+
+  @override
+  String settingsLanguageChanged(String language) {
+    return '語言已變更為 $language。';
+  }
+
+  @override
+  String get solutionAppBarTitle => '解說';
+
+  @override
+  String get solutionProblemLabel => '題目：';
+
+  @override
+  String get solutionTabMain => '解法';
+
+  @override
+  String get solutionTabAlternative => '其它解法與檢算';
+
+  @override
+  String get solutionAlternativeSectionTitle => '其它解法';
+
+  @override
+  String get solutionVerificationSectionTitle => '檢算與定義域檢查';
+
+  @override
+  String get solutionShareNotAvailable => '分享功能將在未來更新提供。';
+
+  @override
+  String get solutionSaveSuccess => '已儲存到歷史紀錄。';
+
+  @override
+  String get verificationDomainCheckTitle => '定義域檢查';
+
+  @override
+  String get verificationVerificationTitle => '檢算';
+
+  @override
+  String get verificationCommonPitfallsTitle => '常見錯誤';
 }

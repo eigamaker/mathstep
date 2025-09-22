@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
 import '../localization/localization_extensions.dart';
-import '../constants/app_constants.dart';
 import '../providers/solution_storage_provider.dart';
+import '../providers/expression_provider.dart';
+import '../providers/navigation_provider.dart';
 import 'history/empty_history_placeholder.dart';
 import 'history/history_item_widget.dart';
 import 'history/history_state.dart';
@@ -25,17 +27,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final historyItemsAsync = ref.watch(historyItemsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.historyTitle),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.sort),
-            onPressed: _showSortDialog,
-            tooltip: context.l10n.historySortTooltip,
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: Column(
         children: [
           // 検索バー
@@ -79,6 +71,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             item: item,
                             onView: () => _viewExpression(item),
                             onDelete: () => _deleteExpression(item),
+                            onCopyAndPaste: () => _copyAndPasteExpression(item),
                           );
                         },
                       );
@@ -110,7 +103,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(AppConstants.deleteConfirmTitle),
+        title: Text(context.l10n.historyDeleteDialogTitle),
         content: Text(
           context.l10n.historyDeleteConfirmation(
             item.expression.calculatorSyntax,
@@ -143,6 +136,117 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         onStateChanged: (newState) {
           setState(() => _state = newState);
         },
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.history, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: Text(
+              context.l10n.historyTitle,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.surface,
+              Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.green.shade200, width: 1),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.sort, color: Colors.green.shade700),
+            onPressed: _showSortDialog,
+            tooltip: context.l10n.historySortTooltip,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _copyAndPasteExpression(MathExpressionWithSolution item) {
+    // クリップボードにコピー
+    Clipboard.setData(ClipboardData(text: item.expression.calculatorSyntax));
+
+    // プロバイダーに数式を設定
+    ref
+        .read(expressionProvider.notifier)
+        .updateInput(item.expression.calculatorSyntax);
+
+    // ホーム画面に切り替え
+    ref.read(navigationProvider.notifier).goToHome();
+
+    // 成功メッセージを表示
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.historyCopyAndPasteMessage),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/solution.dart';
+import '../localization/localization_extensions.dart';
+import 'math_text_display.dart';
 
 class VerificationSection extends StatelessWidget {
   final Verification verification;
@@ -8,6 +10,7 @@ class VerificationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -19,7 +22,7 @@ class VerificationSection extends StatelessWidget {
                 verification.domainCheck!.isNotEmpty) ...[
               _buildVerificationItem(
                 icon: Icons.domain_verification,
-                title: 'Domain check',
+                title: l10n.verificationDomainCheckTitle,
                 content: verification.domainCheck!,
                 color: Colors.blue,
               ),
@@ -31,7 +34,7 @@ class VerificationSection extends StatelessWidget {
                 verification.verification!.isNotEmpty) ...[
               _buildVerificationItem(
                 icon: Icons.verified,
-                title: 'Verification',
+                title: l10n.verificationVerificationTitle,
                 content: verification.verification!,
                 color: Colors.green,
               ),
@@ -43,7 +46,7 @@ class VerificationSection extends StatelessWidget {
                 verification.commonMistakes!.isNotEmpty) ...[
               _buildVerificationItem(
                 icon: Icons.warning,
-                title: 'Common pitfalls',
+                title: l10n.verificationCommonPitfallsTitle,
                 content: verification.commonMistakes!,
                 color: Colors.orange,
               ),
@@ -85,7 +88,10 @@ class VerificationSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(content, style: const TextStyle(fontSize: 14)),
+              ReadableMathTextDisplay(
+                text: content,
+                textStyle: const TextStyle(fontSize: 14),
+              ),
             ],
           ),
         ),

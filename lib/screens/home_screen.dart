@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
 import '../config/api_config.dart';
 import '../models/math_expression.dart';
@@ -14,6 +15,7 @@ import '../providers/reward_ad_provider.dart';
 import '../localization/localization_extensions.dart';
 import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
+import '../models/sample_expression.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -66,7 +68,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _textFieldFocus.requestFocus();
     }
   }
-
 
   void _insertText(String text) {
     _focusInput();
@@ -126,6 +127,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     final newPosition = (cursor + direction).clamp(0, value.text.length);
     _textController.selection = TextSelection.collapsed(offset: newPosition);
+  }
+
+  void _loadRandomSample() {
+    final sample = SampleExpressions.getRandom();
+    final l10n = context.l10n;
+
+    _textController.text = sample.expression;
+    _conditionController.text = sample.condition ?? '';
+
+    ref.read(expressionProvider.notifier).updateInput(sample.expression);
+
+    _showSnackBar(l10n.homeSampleLoaded(sample.expression));
+  }
+
+  Future<void> _pasteFromClipboard() async {
+    final l10n = context.l10n;
+    try {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+      if (clipboardData?.text != null && clipboardData!.text!.isNotEmpty) {
+        _textController.text = clipboardData.text!;
+        ref.read(expressionProvider.notifier).updateInput(clipboardData.text!);
+        _showSnackBar(l10n.homeClipboardPasteSuccess);
+      } else {
+        _showSnackBar(l10n.homeClipboardEmpty);
+      }
+    } catch (e) {
+      _showSnackBar(l10n.homeClipboardPasteFailed);
+    }
   }
 
   Future<void> _generateSolution() async {
@@ -320,23 +349,104 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return AppBar(
       title: Row(
         children: [
-          Icon(Icons.calculate, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 8),
-          const Text('MathStep'),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.functions, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: const Text(
+              'MathStep',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
         ],
       ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Colors.transparent,
       elevation: 0,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.surface,
+              Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+      ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.help_outline),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const GuideScreen()),
-            );
-          },
-          tooltip: 'Usage guide',
+        Container(
+          margin: const EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(
+            color: Colors.amber.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.amber.shade200, width: 1),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.auto_awesome, color: Colors.amber.shade700),
+            onPressed: _loadRandomSample,
+            tooltip: context.l10n.homeSampleTooltip,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blue.shade200, width: 1),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.help_outline, color: Colors.blue.shade700),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const GuideScreen()),
+              );
+            },
+            tooltip: 'Usage guide',
+          ),
         ),
       ],
     );
@@ -413,7 +523,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return TextField(
       controller: _textController,
       focusNode: _textFieldFocus,
-      keyboardType: TextInputType.none,
+      keyboardType: TextInputType.text,
       showCursor: true,
       decoration: InputDecoration(
         labelText: l10n.homeExpressionFieldLabel,
@@ -438,22 +548,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         hintText: l10n.homeExpressionHint,
         hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
         prefixIcon: Icon(Icons.calculate, color: Colors.blue.shade600),
-        suffixIcon: currentExpression.isNotEmpty
-            ? IconButton(
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ペーストボタン
+            IconButton(
+              icon: Icon(Icons.content_paste, color: Colors.green.shade600),
+              onPressed: _pasteFromClipboard,
+              tooltip: context.l10n.homePasteTooltip,
+            ),
+            // クリアボタン
+            if (currentExpression.isNotEmpty)
+              IconButton(
                 icon: Icon(Icons.clear, color: Colors.red.shade600),
                 onPressed: () {
                   _textController.clear();
                 },
                 tooltip: l10n.commonClear,
-              )
-            : null,
+              ),
+          ],
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
       ),
       onTap: _focusInput,
-      readOnly: true,
+      onChanged: (value) {
+        // テキストが変更されたときにプロバイダーを更新
+        ref.read(expressionProvider.notifier).updateInput(value);
+      },
     );
   }
 

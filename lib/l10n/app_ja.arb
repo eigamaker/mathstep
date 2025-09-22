@@ -109,5 +109,65 @@
         "type": "String"
       }
     }
+  },
+  "guideAppBarTitle": "キーの使い方",
+  "guideCategoryExponentsTitle": "指数・根号",
+  "guideCategoryFractionsTitle": "分数・絶対値",
+  "guideCategoryTrigLogTitle": "三角・対数関数",
+  "guideCategorySeriesIntegralsTitle": "総和・積分・積",
+  "guideCategoryComplexTitle": "複素数・組み合わせ",
+  "guideExpressionLabel": "数式: {expression}",
+  "guideKeySequenceLabel": "キーの順番:",
+  "guideTipAutoParenthesis": "関数キー（sin, cos, √ など）を押すと自動的に「(」が入力されます。",
+  "guideTipExponentKeys": "x^yキーで単純な指数を、x^()キーで式の指数を入力できます。",
+  "guideTipArrowKeys": "矢印キー（← →）でカーソルを移動できます。",
+  "guideTipDeleteKey": "DELキーでカーソルの左側を削除できます。",
+  "guideTipSigmaPi": "Σ, Π, ∫ キーはカンマ区切りで下限・上限・式を入力します。",
+  "guideTipFractionKey": "a/bキーで分数を入力し、カンマで分子と分母を区切ります。",
+  "guideTipCloseParenthesis": "必要に応じて ) キーで括弧を閉じてください。",
+  "homeSampleLoaded": "サンプル数式を読み込みました: {expression}",
+  "homeClipboardPasteSuccess": "クリップボードから数式を貼り付けました。",
+  "homeClipboardEmpty": "クリップボードが空です。",
+  "homeClipboardPasteFailed": "貼り付けに失敗しました。",
+  "homeSampleTooltip": "サンプル数式を読み込み",
+  "homePasteTooltip": "クリップボードから貼り付け",
+  "historyDeleteDialogTitle": "履歴から削除",
+  "historyCopyAndPasteMessage": "数式をコピーして入力欄に貼り付けました。",
+  "historyCopyAndPasteTooltip": "コピーして入力欄に貼り付け",
+  "settingsOtherSettingsTitle": "その他の設定",
+  "settingsOtherSettingsComingSoon": "準備中です",
+  "settingsOtherSettingsDescription": "今後、より多くの設定項目を追加予定です。",
+  "settingsLanguageChanged": "言語を{language}に変更しました。",
+  "solutionAppBarTitle": "解説",
+  "solutionProblemLabel": "問題:",
+  "solutionTabMain": "解法",
+  "solutionTabAlternative": "別解・検算",
+  "solutionAlternativeSectionTitle": "別解",
+  "solutionVerificationSectionTitle": "検算・定義域チェック",
+  "solutionShareNotAvailable": "共有機能は今後のアップデートで対応予定です。",
+  "solutionSaveSuccess": "履歴に保存しました。",
+  "verificationDomainCheckTitle": "定義域チェック",
+  "verificationVerificationTitle": "検算",
+  "verificationCommonPitfallsTitle": "よくある間違い",
+  "@guideExpressionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@homeSampleLoaded": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

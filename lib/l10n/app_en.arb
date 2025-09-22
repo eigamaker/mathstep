@@ -109,5 +109,65 @@
         "type": "String"
       }
     }
+  },
+  "guideAppBarTitle": "Using the keypad",
+  "guideCategoryExponentsTitle": "Exponents & radicals",
+  "guideCategoryFractionsTitle": "Fractions & absolute values",
+  "guideCategoryTrigLogTitle": "Trigonometric & logarithmic functions",
+  "guideCategorySeriesIntegralsTitle": "Series, integrals & products",
+  "guideCategoryComplexTitle": "Complex numbers & combinations",
+  "guideExpressionLabel": "Expression: {expression}",
+  "guideKeySequenceLabel": "Key sequence:",
+  "guideTipAutoParenthesis": "Function keys (sin, cos, √, etc.) automatically insert an opening parenthesis.",
+  "guideTipExponentKeys": "Use the x^y key for simple exponents and x^() when the exponent is an expression.",
+  "guideTipArrowKeys": "Use the arrow keys (← →) to move the cursor.",
+  "guideTipDeleteKey": "Press DEL to delete the character to the left of the cursor.",
+  "guideTipSigmaPi": "For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.",
+  "guideTipFractionKey": "Use the a/b key for fractions and separate the numerator and denominator with the comma key.",
+  "guideTipCloseParenthesis": "Close parentheses with the ) key whenever necessary.",
+  "homeSampleLoaded": "Loaded sample expression: {expression}",
+  "homeClipboardPasteSuccess": "Pasted the expression from the clipboard.",
+  "homeClipboardEmpty": "Clipboard is empty.",
+  "homeClipboardPasteFailed": "Failed to paste from the clipboard.",
+  "homeSampleTooltip": "Load a sample expression",
+  "homePasteTooltip": "Paste from clipboard",
+  "historyDeleteDialogTitle": "Remove from history",
+  "historyCopyAndPasteMessage": "Copied the expression and pasted it into the input field.",
+  "historyCopyAndPasteTooltip": "Copy and paste into the input",
+  "settingsOtherSettingsTitle": "Other settings",
+  "settingsOtherSettingsComingSoon": "Coming soon",
+  "settingsOtherSettingsDescription": "Additional options will be added in future updates.",
+  "settingsLanguageChanged": "Language changed to {language}",
+  "solutionAppBarTitle": "Solution",
+  "solutionProblemLabel": "Problem:",
+  "solutionTabMain": "Solution",
+  "solutionTabAlternative": "Alternatives & checks",
+  "solutionAlternativeSectionTitle": "Alternative solutions",
+  "solutionVerificationSectionTitle": "Verification & domain check",
+  "solutionShareNotAvailable": "Sharing will be available in a future update.",
+  "solutionSaveSuccess": "Saved to history.",
+  "verificationDomainCheckTitle": "Domain check",
+  "verificationVerificationTitle": "Verification",
+  "verificationCommonPitfallsTitle": "Common pitfalls",
+  "@guideExpressionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@homeSampleLoaded": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

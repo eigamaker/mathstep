@@ -217,4 +217,128 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get solutionStepDescriptionLabel => '詳細説明:';
+
+  @override
+  String get guideAppBarTitle => 'キーの使い方';
+
+  @override
+  String get guideCategoryExponentsTitle => '指数・根号';
+
+  @override
+  String get guideCategoryFractionsTitle => '分数・絶対値';
+
+  @override
+  String get guideCategoryTrigLogTitle => '三角・対数関数';
+
+  @override
+  String get guideCategorySeriesIntegralsTitle => '総和・積分・積';
+
+  @override
+  String get guideCategoryComplexTitle => '複素数・組み合わせ';
+
+  @override
+  String guideExpressionLabel(String expression) {
+    return '数式: $expression';
+  }
+
+  @override
+  String get guideKeySequenceLabel => 'キーの順番:';
+
+  @override
+  String get guideTipAutoParenthesis =>
+      '関数キー（sin, cos, √ など）を押すと自動的に「(」が入力されます。';
+
+  @override
+  String get guideTipExponentKeys => 'x^yキーで単純な指数を、x^()キーで式の指数を入力できます。';
+
+  @override
+  String get guideTipArrowKeys => '矢印キー（← →）でカーソルを移動できます。';
+
+  @override
+  String get guideTipDeleteKey => 'DELキーでカーソルの左側を削除できます。';
+
+  @override
+  String get guideTipSigmaPi => 'Σ, Π, ∫ キーはカンマ区切りで下限・上限・式を入力します。';
+
+  @override
+  String get guideTipFractionKey => 'a/bキーで分数を入力し、カンマで分子と分母を区切ります。';
+
+  @override
+  String get guideTipCloseParenthesis => '必要に応じて ) キーで括弧を閉じてください。';
+
+  @override
+  String homeSampleLoaded(String expression) {
+    return 'サンプル数式を読み込みました: $expression';
+  }
+
+  @override
+  String get homeClipboardPasteSuccess => 'クリップボードから数式を貼り付けました。';
+
+  @override
+  String get homeClipboardEmpty => 'クリップボードが空です。';
+
+  @override
+  String get homeClipboardPasteFailed => '貼り付けに失敗しました。';
+
+  @override
+  String get homeSampleTooltip => 'サンプル数式を読み込み';
+
+  @override
+  String get homePasteTooltip => 'クリップボードから貼り付け';
+
+  @override
+  String get historyDeleteDialogTitle => '履歴から削除';
+
+  @override
+  String get historyCopyAndPasteMessage => '数式をコピーして入力欄に貼り付けました。';
+
+  @override
+  String get historyCopyAndPasteTooltip => 'コピーして入力欄に貼り付け';
+
+  @override
+  String get settingsOtherSettingsTitle => 'その他の設定';
+
+  @override
+  String get settingsOtherSettingsComingSoon => '準備中です';
+
+  @override
+  String get settingsOtherSettingsDescription => '今後、より多くの設定項目を追加予定です。';
+
+  @override
+  String settingsLanguageChanged(String language) {
+    return '言語を$languageに変更しました。';
+  }
+
+  @override
+  String get solutionAppBarTitle => '解説';
+
+  @override
+  String get solutionProblemLabel => '問題:';
+
+  @override
+  String get solutionTabMain => '解法';
+
+  @override
+  String get solutionTabAlternative => '別解・検算';
+
+  @override
+  String get solutionAlternativeSectionTitle => '別解';
+
+  @override
+  String get solutionVerificationSectionTitle => '検算・定義域チェック';
+
+  @override
+  String get solutionShareNotAvailable => '共有機能は今後のアップデートで対応予定です。';
+
+  @override
+  String get solutionSaveSuccess => '履歴に保存しました。';
+
+  @override
+  String get verificationDomainCheckTitle => '定義域チェック';
+
+  @override
+  String get verificationVerificationTitle => '検算';
+
+  @override
+  String get verificationCommonPitfallsTitle => 'よくある間違い';
 }

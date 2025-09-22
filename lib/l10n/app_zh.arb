@@ -109,5 +109,65 @@
         "type": "String"
       }
     }
+  },
+  "guideAppBarTitle": "按键使用指南",
+  "guideCategoryExponentsTitle": "指数与根号",
+  "guideCategoryFractionsTitle": "分数与绝对值",
+  "guideCategoryTrigLogTitle": "三角与对数函数",
+  "guideCategorySeriesIntegralsTitle": "求和、积分与乘积",
+  "guideCategoryComplexTitle": "复数与组合",
+  "guideExpressionLabel": "表达式：{expression}",
+  "guideKeySequenceLabel": "按键顺序：",
+  "guideTipAutoParenthesis": "按下函数键（sin、cos、√ 等）会自动输入“(”。",
+  "guideTipExponentKeys": "x^y 键用于简单指数，x^() 键用于表达式作为指数。",
+  "guideTipArrowKeys": "使用 ← → 键移动光标。",
+  "guideTipDeleteKey": "DEL 键可删除光标左侧的字符。",
+  "guideTipSigmaPi": "Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。",
+  "guideTipFractionKey": "使用 a/b 键输入分数，并用逗号区分分子和分母。",
+  "guideTipCloseParenthesis": "需要时请使用 ) 键闭合括号。",
+  "homeSampleLoaded": "已载入示例表达式：{expression}",
+  "homeClipboardPasteSuccess": "已从剪贴板粘贴表达式。",
+  "homeClipboardEmpty": "剪贴板为空。",
+  "homeClipboardPasteFailed": "粘贴失败。",
+  "homeSampleTooltip": "载入示例表达式",
+  "homePasteTooltip": "从剪贴板粘贴",
+  "historyDeleteDialogTitle": "从历史记录中删除",
+  "historyCopyAndPasteMessage": "已复制表达式并粘贴到输入框。",
+  "historyCopyAndPasteTooltip": "复制并粘贴到输入框",
+  "settingsOtherSettingsTitle": "其他设置",
+  "settingsOtherSettingsComingSoon": "即将推出",
+  "settingsOtherSettingsDescription": "更多设置选项将在后续更新中添加。",
+  "settingsLanguageChanged": "语言已切换为 {language}。",
+  "solutionAppBarTitle": "解答",
+  "solutionProblemLabel": "题目：",
+  "solutionTabMain": "解法",
+  "solutionTabAlternative": "其它解法与检验",
+  "solutionAlternativeSectionTitle": "其它解法",
+  "solutionVerificationSectionTitle": "检验与定义域检查",
+  "solutionShareNotAvailable": "分享功能将在未来更新中提供。",
+  "solutionSaveSuccess": "已保存到历史记录。",
+  "verificationDomainCheckTitle": "定义域检查",
+  "verificationVerificationTitle": "检验",
+  "verificationCommonPitfallsTitle": "常见误区",
+  "@guideExpressionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@homeSampleLoaded": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

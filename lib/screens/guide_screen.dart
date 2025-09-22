@@ -7,9 +7,140 @@ class GuideScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    final categories = <_GuideCategory>[
+      _GuideCategory(
+        title: l10n.guideCategoryExponentsTitle,
+        examples: const [
+          _GuideExample(expression: 'x^2', keySequence: ['x', 'x^y', '2']),
+          _GuideExample(
+            expression: '2^{x+1}',
+            keySequence: ['2', 'x^()', 'x', '+', '1', ')'],
+          ),
+          _GuideExample(
+            expression: 'e^{x^2}',
+            keySequence: ['e', 'x^()', 'x', 'x^y', '2', ')'],
+          ),
+          _GuideExample(expression: '\\sqrt{9}', keySequence: ['√', '9', ')']),
+          _GuideExample(
+            expression: '\\sqrt[3]{8}',
+            keySequence: ['∛', '8', ')'],
+          ),
+          _GuideExample(
+            expression: '\\sqrt[4]{16}',
+            keySequence: ['ⁿ√', '4', ',', '16', ')'],
+          ),
+        ],
+      ),
+      _GuideCategory(
+        title: l10n.guideCategoryFractionsTitle,
+        examples: const [
+          _GuideExample(
+            expression: '\\frac{1}{2}',
+            keySequence: ['a/b', '1', ',', '2', ')'],
+          ),
+          _GuideExample(
+            expression: '\\frac{x+1}{x-1}',
+            keySequence: ['a/b', 'x', '+', '1', ',', 'x', '-', '1', ')'],
+          ),
+          _GuideExample(expression: '|x|', keySequence: ['|x|', 'x', ')']),
+          _GuideExample(
+            expression: '|3+4i|',
+            keySequence: ['|x|', '3', '+', '4', 'i', ')'],
+          ),
+        ],
+      ),
+      _GuideCategory(
+        title: l10n.guideCategoryTrigLogTitle,
+        examples: const [
+          _GuideExample(
+            expression: '\\sin(x)',
+            keySequence: ['sin(', 'x', ')'],
+          ),
+          _GuideExample(
+            expression: '\\cos(x)',
+            keySequence: ['cos(', 'x', ')'],
+          ),
+          _GuideExample(
+            expression: '\\tan(x)',
+            keySequence: ['tan(', 'x', ')'],
+          ),
+          _GuideExample(expression: '\\ln(e)', keySequence: ['ln(', 'e', ')']),
+          _GuideExample(
+            expression: '\\log(100)',
+            keySequence: ['log(', '1', '0', '0', ')'],
+          ),
+        ],
+      ),
+      _GuideCategory(
+        title: l10n.guideCategorySeriesIntegralsTitle,
+        examples: const [
+          _GuideExample(
+            expression: '\\sum_{1}^{5} x',
+            keySequence: ['Σ', '1', ',', '5', ',', 'x', ')'],
+          ),
+          _GuideExample(
+            expression: '\\prod_{1}^{4} x',
+            keySequence: ['Π', '1', ',', '4', ',', 'x', ')'],
+          ),
+          _GuideExample(
+            expression: '\\int_{0}^{1} x^2 \\, dx',
+            keySequence: [
+              '∫',
+              '0',
+              ',',
+              '1',
+              ',',
+              'x',
+              'x^y',
+              '2',
+              ',',
+              'x',
+              ')',
+            ],
+          ),
+          _GuideExample(
+            expression: '\\int \\sin(x) \\, dx',
+            keySequence: ['∫', 'sin(', 'x', ')', ',', 'x', ')'],
+          ),
+        ],
+      ),
+      _GuideCategory(
+        title: l10n.guideCategoryComplexTitle,
+        examples: const [
+          _GuideExample(expression: '3+4i', keySequence: ['3', '+', '4', 'i']),
+          _GuideExample(
+            expression: '\\overline{z}',
+            keySequence: ['z*', 'z', ')'],
+          ),
+          _GuideExample(expression: '\\Re(z)', keySequence: ['Re', 'z', ')']),
+          _GuideExample(expression: '\\Im(z)', keySequence: ['Im', 'z', ')']),
+          _GuideExample(
+            expression: 'P_{3}^{5}',
+            keySequence: ['P', '5', ',', '3', ')'],
+          ),
+          _GuideExample(
+            expression: 'C_{3}^{5}',
+            keySequence: ['C', '5', ',', '3', ')'],
+          ),
+        ],
+      ),
+    ];
+
+    final tips = [
+      l10n.guideTipAutoParenthesis,
+      l10n.guideTipExponentKeys,
+      l10n.guideTipArrowKeys,
+      l10n.guideTipDeleteKey,
+      l10n.guideTipSigmaPi,
+      l10n.guideTipFractionKey,
+      l10n.guideTipCloseParenthesis,
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('\u30ad\u30fc\u306e\u4f7f\u3044\u65b9'),
+        title: Text(l10n.guideAppBarTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: SingleChildScrollView(
@@ -17,114 +148,24 @@ class GuideScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCategory('\u6307\u6570\u30fb\u6839\u53f7', [
-              _buildExample('x^2', ['x', 'x^y', '2']),
-              _buildExample('2^{x+1}', ['2', 'x^()', 'x', '+', '1', ')']),
-              _buildExample('e^{x^2}', ['e', 'x^()', 'x', 'x^y', '2', ')']),
-              _buildExample('\\sqrt{9}', ['\u221a', '9', ')']),
-              _buildExample('\\sqrt[3]{8}', ['\u221b', '8', ')']),
-              _buildExample('\\sqrt[4]{16}', [
-                '\u207f\u221a',
-                '4',
-                ',',
-                '16',
-                ')',
-              ]),
-            ]),
-            const SizedBox(height: 24),
-            _buildCategory('\u5206\u6570\u30fb\u7d76\u5bfe\u5024', [
-              _buildExample('\\frac{1}{2}', ['a/b', '1', ',', '2', ')']),
-              _buildExample('\\frac{x+1}{x-1}', [
-                'a/b',
-                'x',
-                '+',
-                '1',
-                ',',
-                'x',
-                '-',
-                '1',
-                ')',
-              ]),
-              _buildExample('|x|', ['|x|', 'x', ')']),
-              _buildExample('|3+4i|', ['|x|', '3', '+', '4', 'i', ')']),
-            ]),
-            const SizedBox(height: 24),
-            _buildCategory('\u4e09\u89d2\u30fb\u5bfe\u6570\u95a2\u6570', [
-              _buildExample('\\sin(x)', ['sin(', 'x', ')']),
-              _buildExample('\\cos(x)', ['cos(', 'x', ')']),
-              _buildExample('\\tan(x)', ['tan(', 'x', ')']),
-              _buildExample('\\ln(e)', ['ln(', 'e', ')']),
-              _buildExample('\\log(100)', ['log(', '1', '0', '0', ')']),
-            ]),
-            const SizedBox(height: 24),
-            _buildCategory('\u7dcf\u548c\u30fb\u7a4d\u5206\u30fb\u7a4d', [
-              _buildExample('\\sum_{1}^{5} x', [
-                '\u03a3',
-                '1',
-                ',',
-                '5',
-                ',',
-                'x',
-                ')',
-              ]),
-              _buildExample('\\prod_{1}^{4} x', [
-                '\u03a0',
-                '1',
-                ',',
-                '4',
-                ',',
-                'x',
-                ')',
-              ]),
-              _buildExample('\\int_{0}^{1} x^2 \\, dx', [
-                '\u222b',
-                '0',
-                ',',
-                '1',
-                ',',
-                'x',
-                'x^y',
-                '2',
-                ',',
-                'x',
-                ')',
-              ]),
-              _buildExample('\\int \\sin(x) \\, dx', [
-                '\u222b',
-                'sin(',
-                'x',
-                ')',
-                ',',
-                'x',
-                ')',
-              ]),
-            ]),
-            const SizedBox(height: 24),
-            _buildCategory(
-              '\u8907\u7d20\u6570\u30fb\u7d44\u307f\u5408\u308f\u305b',
-              [
-                _buildExample('3+4i', ['3', '+', '4', 'i']),
-                _buildExample('\\overline{z}', ['z*', 'z', ')']),
-                _buildExample('\\Re(z)', ['Re', 'z', ')']),
-                _buildExample('\\Im(z)', ['Im', 'z', ')']),
-                _buildExample('P_{3}^{5}', ['P', '5', ',', '3', ')']),
-                _buildExample('C_{3}^{5}', ['C', '5', ',', '3', ')']),
-              ],
-            ),
-            const SizedBox(height: 32),
-            _buildTipsSection(context),
+            for (final category in categories) ...[
+              _buildCategory(context, category),
+              const SizedBox(height: 24),
+            ],
+            SizedBox(height: categories.isEmpty ? 0 : 8),
+            _buildTipsSection(context, tips),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCategory(String title, List<Widget> examples) {
+  Widget _buildCategory(BuildContext context, _GuideCategory category) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
+          category.title,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -132,12 +173,13 @@ class GuideScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        ...examples,
+        for (final example in category.examples)
+          _buildExample(context, example),
       ],
     );
   }
 
-  Widget _buildExample(String expression, List<String> keySequence) {
+  Widget _buildExample(BuildContext context, _GuideExample example) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -150,12 +192,12 @@ class GuideScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '\u6570\u5f0f: $expression',
+            context.l10n.guideExpressionLabel(example.expression),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
-            '\u30ad\u30fc\u306e\u9806\u756a:',
+            context.l10n.guideKeySequenceLabel,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -166,7 +208,7 @@ class GuideScreen extends StatelessWidget {
           Wrap(
             spacing: 4,
             runSpacing: 4,
-            children: keySequence.map((key) => _buildKeyChip(key)).toList(),
+            children: example.keySequence.map(_buildKeyChip).toList(),
           ),
         ],
       ),
@@ -192,17 +234,7 @@ class GuideScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTipsSection(BuildContext context) {
-    final tips = <String>[
-      '\u95a2\u6570\u30ad\u30fc\uff08sin, cos, \u221a \u306a\u3069\uff09\u3092\u62bc\u3059\u3068\u81ea\u52d5\u7684\u306b\u300c(\u300d\u304c\u5165\u529b\u3055\u308c\u307e\u3059\u3002',
-      'x^y\u30ad\u30fc\u3067\u7c21\u5358\u306a\u6307\u6570\u3092\u3001x^()\u30ad\u30fc\u3067\u5f0f\u306e\u6307\u6570\u3092\u5165\u529b\u3067\u304d\u307e\u3059\u3002',
-      '\u77e2\u5370\u30ad\u30fc\uff08\u2190 \u2192\uff09\u3067\u30ab\u30fc\u30bd\u30eb\u3092\u79fb\u52d5\u3067\u304d\u307e\u3059\u3002',
-      'DEL\u30ad\u30fc\u3067\u30ab\u30fc\u30bd\u30eb\u306e\u5de6\u5074\u3092\u524a\u9664\u3067\u304d\u307e\u3059\u3002',
-      '\u03a3, \u03a0, \u222b \u30ad\u30fc\u306f\u30ab\u30f3\u30de\u533a\u5207\u308a\u3067\u4e0b\u9650\u30fb\u4e0a\u9650\u30fb\u5f0f\u3092\u5165\u529b\u3057\u307e\u3059\u3002',
-      'a/b\u30ad\u30fc\u3067\u5206\u6570\u3092\u5165\u529b\u3057\u3001\u30ab\u30f3\u30de\u3067\u5206\u5b50\u3068\u5206\u6bcd\u3092\u533a\u5207\u308a\u307e\u3059\u3002',
-      '\u5fc5\u8981\u306b\u5fdc\u3058\u3066 ) \u30ad\u30fc\u3067\u62ec\u5f27\u3092\u9589\u3058\u3066\u304f\u3060\u3055\u3044\u3002',
-    ];
-
+  Widget _buildTipsSection(BuildContext context, List<String> tips) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -222,17 +254,30 @@ class GuideScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          ...tips.map(
-            (tip) => Padding(
+          for (final tip in tips)
+            Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
-                '\u2022 $tip',
+                '• $tip',
                 style: TextStyle(fontSize: 14, color: Colors.blue.shade700),
               ),
             ),
-          ),
         ],
       ),
     );
   }
+}
+
+class _GuideCategory {
+  const _GuideCategory({required this.title, required this.examples});
+
+  final String title;
+  final List<_GuideExample> examples;
+}
+
+class _GuideExample {
+  const _GuideExample({required this.expression, required this.keySequence});
+
+  final String expression;
+  final List<String> keySequence;
 }

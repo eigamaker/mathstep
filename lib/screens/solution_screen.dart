@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../models/math_expression.dart';
 import '../models/solution.dart';
+import '../localization/localization_extensions.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/solution_step_card.dart';
 import '../widgets/alternative_solution_tab.dart';
@@ -50,15 +51,13 @@ class _SolutionScreenState extends State<SolutionScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('解説'),
+        title: Text(l10n.solutionAppBarTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: _shareSolution,
-          ),
+          IconButton(icon: const Icon(Icons.share), onPressed: _shareSolution),
           IconButton(
             icon: const Icon(Icons.bookmark_add),
             onPressed: _saveToHistory,
@@ -67,25 +66,20 @@ class _SolutionScreenState extends State<SolutionScreen>
       ),
       body: Column(
         children: [
-          // 元の数式表示
+          // 蜈・・謨ｰ蠑剰｡ｨ遉ｺ
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: Border(
-                bottom: BorderSide(color: Colors.grey.shade300),
-              ),
+              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '問題:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                Text(
+                  l10n.solutionProblemLabel,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
                 if (widget.solution.problemStatement != null) ...[
@@ -102,24 +96,24 @@ class _SolutionScreenState extends State<SolutionScreen>
               ],
             ),
           ),
-          
-          // タブ
+
+          // 繧ｿ繝・
           TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(text: '解法'),
-              Tab(text: '別解・検算'),
+            tabs: [
+              Tab(text: l10n.solutionTabMain),
+              Tab(text: l10n.solutionTabAlternative),
             ],
           ),
-          
-          // タブコンテンツ
+
+          // 繧ｿ繝悶さ繝ｳ繝・Φ繝・
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                // 解法タブ
+                // 隗｣豕輔ち繝・
                 _buildSolutionTab(),
-                // 別解・検算タブ
+                // 蛻･隗｣繝ｻ讀懃ｮ励ち繝・
                 _buildAlternativeTab(),
               ],
             ),
@@ -136,7 +130,7 @@ class _SolutionScreenState extends State<SolutionScreen>
       itemBuilder: (context, index) {
         final step = widget.solution.steps[index];
         final isExpanded = _expandedSteps.any((s) => s.id == step.id);
-        
+
         return SolutionStepCard(
           step: step,
           isExpanded: isExpanded,
@@ -152,38 +146,29 @@ class _SolutionScreenState extends State<SolutionScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 別解セクション
+          // 蛻･隗｣繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ
           if (widget.solution.alternativeSolutions != null &&
               widget.solution.alternativeSolutions!.isNotEmpty) ...[
-            const Text(
-              '別解',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Text(
+              context.l10n.solutionAlternativeSectionTitle,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ...widget.solution.alternativeSolutions!.map(
-              (altSolution) => AlternativeSolutionTab(
-                alternativeSolution: altSolution,
-              ),
+              (altSolution) =>
+                  AlternativeSolutionTab(alternativeSolution: altSolution),
             ),
             const SizedBox(height: 24),
           ],
-          
-          // 検算・定義域チェックセクション
+
+          // 讀懃ｮ励・螳夂ｾｩ蝓溘メ繧ｧ繝・け繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ
           if (widget.solution.verification != null) ...[
-            const Text(
-              '検算・定義域チェック',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Text(
+              context.l10n.solutionVerificationSectionTitle,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            VerificationSection(
-              verification: widget.solution.verification!,
-            ),
+            VerificationSection(verification: widget.solution.verification!),
           ],
         ],
       ),
@@ -191,16 +176,16 @@ class _SolutionScreenState extends State<SolutionScreen>
   }
 
   void _shareSolution() {
-    // 共有機能の実装
+    // 蜈ｱ譛画ｩ溯・縺ｮ螳溯｣・
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('共有機能は今後実装予定です')),
+      SnackBar(content: Text(context.l10n.solutionShareNotAvailable)),
     );
   }
 
   void _saveToHistory() {
-    // 履歴保存機能の実装
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('履歴に保存しました')),
-    );
+    // 螻･豁ｴ菫晏ｭ俶ｩ溯・縺ｮ螳溯｣・
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.solutionSaveSuccess)));
   }
 }

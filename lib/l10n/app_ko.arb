@@ -109,5 +109,65 @@
         "type": "String"
       }
     }
+  },
+  "guideAppBarTitle": "키 사용법",
+  "guideCategoryExponentsTitle": "지수와 근",
+  "guideCategoryFractionsTitle": "분수와 절댓값",
+  "guideCategoryTrigLogTitle": "삼각함수와 로그",
+  "guideCategorySeriesIntegralsTitle": "수열·적분·곱셈",
+  "guideCategoryComplexTitle": "복소수와 조합",
+  "guideExpressionLabel": "수식: {expression}",
+  "guideKeySequenceLabel": "입력 순서:",
+  "guideTipAutoParenthesis": "함수 키(sin, cos, √ 등)를 누르면 자동으로 \"(\"가 입력됩니다.",
+  "guideTipExponentKeys": "x^y 키는 간단한 지수에, x^() 키는 식 전체를 지수로 입력할 때 사용하세요.",
+  "guideTipArrowKeys": "← → 키로 커서를 이동할 수 있습니다.",
+  "guideTipDeleteKey": "DEL 키로 커서 왼쪽 문자를 삭제합니다.",
+  "guideTipSigmaPi": "Σ, Π, ∫ 키는 쉼표로 하한, 상한, 식을 구분해 입력합니다.",
+  "guideTipFractionKey": "a/b 키로 분수를 입력하고 쉼표로 분자와 분모를 나눕니다.",
+  "guideTipCloseParenthesis": "필요할 때 ) 키로 괄호를 닫아 주세요.",
+  "homeSampleLoaded": "샘플 수식을 불러왔습니다: {expression}",
+  "homeClipboardPasteSuccess": "클립보드에서 수식을 붙여넣었습니다.",
+  "homeClipboardEmpty": "클립보드가 비어 있습니다.",
+  "homeClipboardPasteFailed": "붙여넣기에 실패했습니다.",
+  "homeSampleTooltip": "샘플 수식 불러오기",
+  "homePasteTooltip": "클립보드에서 붙여넣기",
+  "historyDeleteDialogTitle": "기록에서 삭제",
+  "historyCopyAndPasteMessage": "수식을 복사하여 입력란에 붙여넣었습니다.",
+  "historyCopyAndPasteTooltip": "복사 후 입력란에 붙여넣기",
+  "settingsOtherSettingsTitle": "기타 설정",
+  "settingsOtherSettingsComingSoon": "준비 중",
+  "settingsOtherSettingsDescription": "추가 설정은 향후 업데이트에서 제공될 예정입니다.",
+  "settingsLanguageChanged": "언어가 {language}(으)로 변경되었습니다.",
+  "solutionAppBarTitle": "해설",
+  "solutionProblemLabel": "문제:",
+  "solutionTabMain": "해법",
+  "solutionTabAlternative": "대안·검산",
+  "solutionAlternativeSectionTitle": "대안 해법",
+  "solutionVerificationSectionTitle": "검산 및 정의역 확인",
+  "solutionShareNotAvailable": "공유 기능은 추후 업데이트에서 제공될 예정입니다.",
+  "solutionSaveSuccess": "기록에 저장했습니다.",
+  "verificationDomainCheckTitle": "정의역 확인",
+  "verificationVerificationTitle": "검산",
+  "verificationCommonPitfallsTitle": "자주 하는 실수",
+  "@guideExpressionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@homeSampleLoaded": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

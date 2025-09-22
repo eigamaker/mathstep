@@ -109,5 +109,65 @@
         "type": "String"
       }
     }
+  },
+  "guideAppBarTitle": "按鍵使用指南",
+  "guideCategoryExponentsTitle": "指數與根號",
+  "guideCategoryFractionsTitle": "分數與絕對值",
+  "guideCategoryTrigLogTitle": "三角與對數函數",
+  "guideCategorySeriesIntegralsTitle": "總和、積分與乘積",
+  "guideCategoryComplexTitle": "複數與組合",
+  "guideExpressionLabel": "數式：{expression}",
+  "guideKeySequenceLabel": "按鍵順序：",
+  "guideTipAutoParenthesis": "按下函式鍵（sin、cos、√ 等）會自動輸入「(」。",
+  "guideTipExponentKeys": "x^y 鍵用於簡單指數，x^() 鍵用於整個式子作為指數。",
+  "guideTipArrowKeys": "使用 ← → 鍵移動游標。",
+  "guideTipDeleteKey": "DEL 鍵可刪除游標左側的字元。",
+  "guideTipSigmaPi": "Σ、Π、∫ 鍵使用逗號依序輸入下限、上限與數式。",
+  "guideTipFractionKey": "使用 a/b 鍵輸入分數，並以逗號區分分子與分母。",
+  "guideTipCloseParenthesis": "需要時請使用 ) 鍵關閉括號。",
+  "homeSampleLoaded": "已載入範例數式：{expression}",
+  "homeClipboardPasteSuccess": "已從剪貼簿貼上數式。",
+  "homeClipboardEmpty": "剪貼簿為空。",
+  "homeClipboardPasteFailed": "貼上失敗。",
+  "homeSampleTooltip": "載入範例數式",
+  "homePasteTooltip": "從剪貼簿貼上",
+  "historyDeleteDialogTitle": "從歷史紀錄刪除",
+  "historyCopyAndPasteMessage": "已複製數式並貼到輸入欄位。",
+  "historyCopyAndPasteTooltip": "複製並貼到輸入欄",
+  "settingsOtherSettingsTitle": "其他設定",
+  "settingsOtherSettingsComingSoon": "敬請期待",
+  "settingsOtherSettingsDescription": "未來更新將加入更多設定項目。",
+  "settingsLanguageChanged": "語言已變更為 {language}。",
+  "solutionAppBarTitle": "解說",
+  "solutionProblemLabel": "題目：",
+  "solutionTabMain": "解法",
+  "solutionTabAlternative": "其它解法與檢算",
+  "solutionAlternativeSectionTitle": "其它解法",
+  "solutionVerificationSectionTitle": "檢算與定義域檢查",
+  "solutionShareNotAvailable": "分享功能將在未來更新提供。",
+  "solutionSaveSuccess": "已儲存到歷史紀錄。",
+  "verificationDomainCheckTitle": "定義域檢查",
+  "verificationVerificationTitle": "檢算",
+  "verificationCommonPitfallsTitle": "常見錯誤",
+  "@guideExpressionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@homeSampleLoaded": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

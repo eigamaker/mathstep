@@ -54,7 +54,7 @@ class AppLanguage {
   ];
 
   static AppLanguage get defaultLanguage =>
-      supportedLanguages.firstWhere((language) => language.code == 'ja');
+      supportedLanguages.firstWhere((language) => language.code == 'en');
 
   static AppLanguage fromCode(String code) {
     return supportedLanguages.firstWhere(

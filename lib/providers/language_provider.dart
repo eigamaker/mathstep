@@ -51,8 +51,17 @@ class LanguageNotifier extends StateNotifier<LanguageState> {
         hasSavedPreference: true,
       );
     } else {
-      state = state.copyWith(isInitialized: true, hasSavedPreference: false);
+      // 初回起動時は英語をデフォルトとして設定
+      state = state.copyWith(
+        language: AppLanguage.defaultLanguage,
+        isInitialized: true,
+        hasSavedPreference: false,
+      );
     }
+  }
+
+  Future<void> loadLanguage() async {
+    await _load();
   }
 
   Future<void> setLanguage(AppLanguage language) async {

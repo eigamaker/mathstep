@@ -63,18 +63,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void _checkLanguageAndStartAnimations() async {
+    // 言語設定の初期化が完了するまで待機
+    await ref.read(languageStateProvider.notifier).loadLanguage();
     final languageState = ref.read(languageStateProvider);
     
-    if (!languageState.hasSavedPreference) {
-      // 言語設定がない場合は言語選択を表示
-      setState(() {
-        _selectedLanguage = languageState.language;
-      });
-    } else {
-      // 言語設定がある場合は直接メイン画面に遷移
-      _navigateToMain();
-      return;
-    }
+    // 常に言語選択を表示し、現在の言語設定をデフォルトとして設定
+    setState(() {
+      _selectedLanguage = languageState.language;
+    });
     
     // アニメーション開始
     _startAnimations();
@@ -87,21 +83,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // 少し遅れてテキストアニメーション開始
     await Future.delayed(const Duration(milliseconds: 500));
     _textController.forward();
-  }
-
-  Future<void> _navigateToMain() async {
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const MainNavigationScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 500),
-      ),
-    );
   }
 
   void _onLanguageSelected(AppLanguage language) {
@@ -190,6 +171,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2196F3),
                   ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
                 const SizedBox(height: 20),
                 
@@ -210,14 +194,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          '${_selectedLanguage.nativeName} (${_selectedLanguage.englishName})',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF2196F3),
+                        Expanded(
+                          child: Text(
+                            '${_selectedLanguage.nativeName} (${_selectedLanguage.englishName})',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF2196F3),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Icon(
                           _showLanguageDropdown ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                           color: const Color(0xFF2196F3),
@@ -275,10 +264,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                                   child: Text(
                                                     '${language.nativeName} (${language.englishName})',
                                                     style: TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 14,
                                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                                       color: isSelected ? const Color(0xFF2196F3) : Colors.black87,
                                                     ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 1,
                                                   ),
                                                 ),
                                               ],
@@ -317,6 +308,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ),
@@ -376,12 +370,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 children: [
                   Text(
                     context.l10n.appTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       letterSpacing: 2,
                     ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -391,6 +388,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       color: Colors.white.withValues(alpha: 0.9),
                       letterSpacing: 1,
                     ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ],
               ),

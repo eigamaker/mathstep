@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 
 enum CalculatorKeyType { input, delete, moveLeft, moveRight }
 
@@ -121,7 +122,7 @@ class CalculatorKeypad extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.all(1.5),
-      height: 60,
+      height: 48, // キーボタンの高さを適切に調整
       child: Material(
         color: background,
         borderRadius: BorderRadius.circular(8),
@@ -156,17 +157,17 @@ class CalculatorKeypad extends StatelessWidget {
   Color _backgroundColorFor(CalculatorKeyType type, String value) {
     switch (type) {
       case CalculatorKeyType.delete:
-        return Colors.red.withValues(alpha: 0.1);
+        return AppColors.errorContainer;
       case CalculatorKeyType.moveLeft:
       case CalculatorKeyType.moveRight:
-        return Colors.blue.withValues(alpha: 0.1);
+        return AppColors.primaryContainer;
       case CalculatorKeyType.input:
         switch (value) {
           case '+':
           case '-':
           case '*':
           case '/':
-            return Colors.orange.withValues(alpha: 0.1);
+            return AppColors.warningContainer;
           case '0':
           case '1':
           case '2':
@@ -178,31 +179,31 @@ class CalculatorKeypad extends StatelessWidget {
           case '8':
           case '9':
           case '.':
-            return Colors.blue.withValues(alpha: 0.1);
+            return AppColors.primaryContainer;
           case 'sin(':
           case 'cos(':
           case 'tan(':
           case 'ln(':
           case 'log(':
           case 'pow(':
-            return Colors.purple.withValues(alpha: 0.1);
+            return AppColors.infoContainer;
           case 'sqrt(':
           case 'cbrt(':
           case 'root(':
-            return Colors.teal.withValues(alpha: 0.1);
+            return AppColors.infoContainer;
           case 'n!':
-            return Colors.orange.withValues(alpha: 0.1);
+            return AppColors.warningContainer;
           case 'int(':
           case 'sum(':
           case 'prod(':
           case 'f(':
-            return Colors.indigo.withValues(alpha: 0.1);
+            return AppColors.secondaryContainer;
           case 'n':
-            return Colors.blue.withValues(alpha: 0.1);
+            return AppColors.primaryContainer;
           case '=':
-            return Colors.green.withValues(alpha: 0.2);
+            return AppColors.successContainer;
           default:
-            return Colors.grey.withValues(alpha: 0.08);
+            return AppColors.neutralContainer;
         }
     }
   }
@@ -210,17 +211,17 @@ class CalculatorKeypad extends StatelessWidget {
   Color _textColorFor(CalculatorKeyType type, String value) {
     switch (type) {
       case CalculatorKeyType.delete:
-        return Colors.red.shade700;
+        return AppColors.error;
       case CalculatorKeyType.moveLeft:
       case CalculatorKeyType.moveRight:
-        return Colors.blue.shade700;
+        return AppColors.primary;
       case CalculatorKeyType.input:
         switch (value) {
           case '+':
           case '-':
           case '*':
           case '/':
-            return Colors.orange.shade700;
+            return AppColors.warning;
           case '0':
           case '1':
           case '2':
@@ -232,31 +233,31 @@ class CalculatorKeypad extends StatelessWidget {
           case '8':
           case '9':
           case '.':
-            return Colors.blue.shade700;
+            return AppColors.primary;
           case 'sin(':
           case 'cos(':
           case 'tan(':
           case 'ln(':
           case 'log(':
           case 'pow(':
-            return Colors.purple.shade700;
+            return AppColors.info;
           case 'sqrt(':
           case 'cbrt(':
           case 'root(':
-            return Colors.teal.shade700;
+            return AppColors.info;
           case 'n!':
-            return Colors.orange.shade700;
+            return AppColors.warning;
           case 'int(':
           case 'sum(':
           case 'prod(':
           case 'f(':
-            return Colors.indigo.shade700;
+            return AppColors.secondary;
           case 'n':
-            return Colors.blue.shade700;
+            return AppColors.primary;
           case '=':
-            return Colors.green.shade700;
+            return AppColors.success;
           default:
-            return Colors.grey.shade700;
+            return AppColors.neutral;
         }
     }
   }

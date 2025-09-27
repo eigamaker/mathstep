@@ -1,150 +1,267 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 import '../constants/app_constants.dart';
 
-/// 繝ｪ繝ｯ繝ｼ繝牙ｺ・相繧堤ｮ｡逅・☆繧九し繝ｼ繝薙せ
 class RewardAdService {
   static final RewardAdService _instance = RewardAdService._internal();
   factory RewardAdService() => _instance;
   RewardAdService._internal();
 
   RewardedAd? _rewardedAd;
-  bool _isAdLoaded = false;
   bool _isLoading = false;
   bool _isDisposed = false;
-  Completer<void>? _loadCompleter;
+  Completer<void>? _loadingCompleter;
   Timer? _loadTimeoutTimer;
-  
-  // 状態変更のコールバック
+  Timer? _scheduledRetryTimer;
   VoidCallback? _onStateChanged;
 
-  /// 蠎・相縺瑚ｪｭ縺ｿ霎ｼ縺ｾ繧後※縺・ｋ縺九←縺・°
-  bool get isAdLoaded => _isAdLoaded;
-
-  /// 蠎・相繧定ｪｭ縺ｿ霎ｼ縺ｿ荳ｭ縺九←縺・°
+  bool get isAdLoaded => !_isDisposed && _rewardedAd != null;
   bool get isLoading => _isLoading;
 
-  /// 状態変更のコールバックを設定
   void setOnStateChanged(VoidCallback? callback) {
     _onStateChanged = callback;
   }
 
-  /// 状態変更を通知
   void _notifyStateChanged() {
     _onStateChanged?.call();
   }
 
-  bool get _canAttemptLoad => !_isAdLoaded && !_isLoading && !_isDisposed;
-
-  void _resetLoadingFlags({bool notify = true}) {
-    _isLoading = false;
-    _isAdLoaded = false;
-    if (notify) {
-      _notifyStateChanged();
-    }
-  }
-
-  void _retryLoadAfter(Duration delay, String logMessage) {
-    debugPrint('RewardAdService: $logMessage');
-    Future.delayed(delay, () {
-      if (_canAttemptLoad) {
-        loadRewardedAd();
-      }
-    });
-  }
-
-  /// 繝ｪ繝ｯ繝ｼ繝牙ｺ・相繧定ｪｭ縺ｿ霎ｼ繧
-  Future<void> loadRewardedAd() async {
+  Future<void> loadRewardedAd({bool forceReload = false}) async {
     if (_isDisposed) {
-      debugPrint('RewardAdService: Service is disposed, cannot load ad');
+      debugPrint('RewardAdService: Service disposed. Skipping load.');
       return;
     }
 
-    if (_isLoading || _isAdLoaded) {
-      debugPrint(
-        'RewardAdService: Already loading or loaded. isLoading: $_isLoading, isAdLoaded: $_isAdLoaded',
-      );
+    if (_rewardedAd != null && !forceReload) {
+      debugPrint('RewardAdService: Ad already available. Skipping load.');
       return;
     }
 
-    _isLoading = true;
-    _notifyStateChanged();
-    debugPrint('RewardAdService: ========== STARTING AD LOAD ==========');
-    debugPrint('RewardAdService: Loading rewarded ad...');
-    debugPrint('RewardAdService: Ad Unit ID: ${_getAdUnitId()}');
-    debugPrint('RewardAdService: Debug mode: $kDebugMode');
-    debugPrint('RewardAdService: Platform: ${Platform.operatingSystem}');
-
-    final completer = Completer<void>();
-    _loadCompleter = completer;
-    _startLoadTimeoutTimer();
-
-    try {
-      _loadRewardedAdInternal();
-    } catch (error, stackTrace) {
-      debugPrint('RewardAdService: Error starting rewarded ad load: $error');
-      debugPrint('$stackTrace');
-      _cancelLoadTimeoutTimer();
-      _resetLoadingFlags(notify: false);
-      _completeLoadWithError(error);
-    }
-
-    try {
-      await completer.future;
-    } catch (error) {
-      debugPrint('RewardAdService: ========== EXCEPTION IN AD LOAD ==========');
-      debugPrint('RewardAdService: Exception type: ${error.runtimeType}');
-      debugPrint('RewardAdService: Exception message: $error');
-
-      if (error is TimeoutException) {
-        debugPrint(
-          'RewardAdService: Ad loading timeout. Current state - isLoading: $_isLoading, isAdLoaded: $_isAdLoaded',
-        );
-      } else if (error is StateError) {
-        debugPrint(
-          'RewardAdService: Ad loading was force stopped or service disposed.',
-        );
+    if (_isLoading) {
+      debugPrint('RewardAdService: Load already in progress. Waiting for completion.');
+      try {
+        await _loadingCompleter?.future;
+      } catch (error) {
+        debugPrint('RewardAdService: Previous load finished with error: $error');
       }
-    } finally {
-      _cancelLoadTimeoutTimer();
-      _loadCompleter = null;
-    }
-  }
 
-  void _completeLoadSuccessfully() {
-    if (_loadCompleter != null && !_loadCompleter!.isCompleted) {
-      _loadCompleter!.complete();
-    }
-  }
-
-  void _completeLoadWithError(Object error) {
-    if (_loadCompleter != null && !_loadCompleter!.isCompleted) {
-      _loadCompleter!.completeError(error);
-    }
-  }
-
-  void _startLoadTimeoutTimer() {
-    _cancelLoadTimeoutTimer();
-    _loadTimeoutTimer = Timer(const Duration(seconds: 15), () {
-      _loadTimeoutTimer = null;
-      if (_loadCompleter == null || _loadCompleter!.isCompleted) {
+      if (_isDisposed) {
         return;
       }
 
-      debugPrint('RewardAdService: ========== AD LOAD TIMEOUT ==========');
-      debugPrint('RewardAdService: Timeout after 15 seconds');
-      _resetLoadingFlags();
-      final timeoutException = TimeoutException(
-        'Ad loading timeout',
-        const Duration(seconds: 15),
+      if (_rewardedAd != null && !forceReload) {
+        debugPrint('RewardAdService: Ad became available while waiting.');
+        return;
+      }
+
+      debugPrint('RewardAdService: Retrying rewarded ad load.');
+    }
+
+    if (forceReload) {
+      _disposeAd();
+    }
+
+    _scheduledRetryTimer?.cancel();
+    _scheduledRetryTimer = null;
+
+    _isLoading = true;
+    _notifyStateChanged();
+
+    debugPrint('RewardAdService: Starting rewarded ad load.');
+    debugPrint('RewardAdService: Ad Unit ID: ${_getAdUnitId()}');
+    debugPrint('RewardAdService: Platform: ${Platform.operatingSystem}');
+    debugPrint('RewardAdService: Debug mode: $kDebugMode');
+
+    final completer = Completer<void>();
+    _loadingCompleter = completer;
+    _startLoadTimeoutTimer(completer);
+
+    try {
+      RewardedAd.load(
+        adUnitId: _getAdUnitId(),
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            if (_shouldIgnoreLoadCallback(completer)) {
+              debugPrint('RewardAdService: Loaded ad ignored (stale or disposed).');
+              ad.dispose();
+              return;
+            }
+
+            debugPrint('RewardAdService: Rewarded ad loaded successfully.');
+            _cancelLoadTimeoutTimer();
+            _rewardedAd = ad;
+            _isLoading = false;
+            _loadingCompleter = null;
+            _notifyStateChanged();
+            completer.complete();
+          },
+          onAdFailedToLoad: (error) {
+            if (_shouldIgnoreLoadCallback(completer)) {
+              debugPrint('RewardAdService: Ignoring stale load failure.');
+              return;
+            }
+
+            debugPrint(
+              'RewardAdService: Failed to load rewarded ad. Code: ${error.code}, '
+              'Message: ${error.message}, Domain: ${error.domain}',
+            );
+            _cancelLoadTimeoutTimer();
+            _isLoading = false;
+            _rewardedAd = null;
+            _loadingCompleter = null;
+            _notifyStateChanged();
+            completer.completeError(error);
+            _scheduleRetry();
+          },
+        ),
       );
-      _completeLoadWithError(timeoutException);
-      _retryLoadAfter(
-        const Duration(seconds: 3),
-        'Retrying ad load after timeout...',
+
+      await completer.future;
+    } catch (error, stackTrace) {
+      _cancelLoadTimeoutTimer();
+      if (_loadingCompleter == completer) {
+        _loadingCompleter = null;
+      }
+      _isLoading = false;
+      _rewardedAd = null;
+      _notifyStateChanged();
+      _scheduleRetry();
+      debugPrint('RewardAdService: Exception while loading rewarded ad: $error');
+      debugPrint('$stackTrace');
+    }
+  }
+
+  Future<bool> showRewardedAd() async {
+    if (_isDisposed) {
+      debugPrint('RewardAdService: Service disposed. Cannot show ad.');
+      return false;
+    }
+
+    if (_rewardedAd == null) {
+      debugPrint('RewardAdService: No ad preloaded. Attempting to load before show.');
+      try {
+        await loadRewardedAd();
+      } catch (error) {
+        debugPrint('RewardAdService: Preload before show failed: $error');
+      }
+    }
+
+    final ad = _rewardedAd;
+    if (ad == null) {
+      debugPrint('RewardAdService: Show aborted. Ad unavailable after load attempt.');
+      return false;
+    }
+
+    _rewardedAd = null;
+    _notifyStateChanged();
+
+    final resultCompleter = Completer<bool>();
+    var rewardEarned = false;
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        debugPrint('RewardAdService: Ad showed full screen content.');
+      },
+      onAdDismissedFullScreenContent: (ad) {
+        debugPrint('RewardAdService: Ad dismissed full screen content.');
+        ad.dispose();
+        if (!resultCompleter.isCompleted) {
+          resultCompleter.complete(rewardEarned);
+        }
+        if (!_isDisposed) {
+          loadRewardedAd();
+        }
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        debugPrint('RewardAdService: Ad failed to show full screen content: $error');
+        ad.dispose();
+        if (!resultCompleter.isCompleted) {
+          resultCompleter.complete(false);
+        }
+        if (!_isDisposed) {
+          loadRewardedAd();
+        }
+      },
+    );
+
+    try {
+      await ad.show(
+        onUserEarnedReward: (ad, reward) {
+          debugPrint('RewardAdService: User earned reward: ${reward.amount} ${reward.type}');
+          rewardEarned = true;
+        },
       );
+    } catch (error, stackTrace) {
+      debugPrint('RewardAdService: Error while showing rewarded ad: $error');
+      debugPrint('$stackTrace');
+      ad.dispose();
+      if (!resultCompleter.isCompleted) {
+        resultCompleter.complete(false);
+      }
+      if (!_isDisposed) {
+        loadRewardedAd();
+      }
+    }
+
+    return resultCompleter.future;
+  }
+
+  void forceStopLoading() {
+    if (!_isLoading) {
+      _scheduledRetryTimer?.cancel();
+      _scheduledRetryTimer = null;
+      return;
+    }
+
+    debugPrint('RewardAdService: Force stopping current ad load.');
+    _cancelLoadTimeoutTimer();
+    _scheduledRetryTimer?.cancel();
+    _scheduledRetryTimer = null;
+    final completer = _loadingCompleter;
+    _loadingCompleter = null;
+    _isLoading = false;
+    _notifyStateChanged();
+    completer?.completeError(StateError('Ad load cancelled'));
+  }
+
+  void dispose() {
+    if (_isDisposed) {
+      return;
+    }
+
+    debugPrint('RewardAdService: Disposing service.');
+    _isDisposed = true;
+    forceStopLoading();
+    _disposeAd();
+    _onStateChanged = null;
+  }
+
+  bool _shouldIgnoreLoadCallback(Completer<void> completer) {
+    return _isDisposed || _loadingCompleter != completer;
+  }
+
+  void _startLoadTimeoutTimer(Completer<void> completer) {
+    _cancelLoadTimeoutTimer();
+    _loadTimeoutTimer = Timer(const Duration(seconds: 30), () {
+      if (_shouldIgnoreLoadCallback(completer)) {
+        return;
+      }
+
+      debugPrint('RewardAdService: Rewarded ad load timed out.');
+      _cancelLoadTimeoutTimer();
+      _isLoading = false;
+      _loadingCompleter = null;
+      _disposeAd();
+      _notifyStateChanged();
+      completer.completeError(
+        TimeoutException('Rewarded ad load timed out', const Duration(seconds: 30)),
+      );
+      _scheduleRetry();
     });
   }
 
@@ -153,212 +270,35 @@ class RewardAdService {
     _loadTimeoutTimer = null;
   }
 
-  void _loadRewardedAdInternal() {
-    debugPrint('RewardAdService: Calling RewardedAd.load()...');
-
-    RewardedAd.load(
-      adUnitId: _getAdUnitId(),
-      request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
-          debugPrint(
-            'RewardAdService: ========== AD LOADED SUCCESSFULLY ==========',
-          );
-          debugPrint('RewardAdService: Ad ID: ${ad.adUnitId}');
-          debugPrint(
-            'RewardAdService: Ad Response ID: ${ad.responseInfo?.responseId}',
-          );
-          debugPrint(
-            'RewardAdService: Ad Network: ${ad.responseInfo?.mediationAdapterClassName}',
-          );
-          _cancelLoadTimeoutTimer();
-          _rewardedAd = ad;
-          _isAdLoaded = true;
-          _isLoading = false;
-          _notifyStateChanged();
-          _setFullScreenContentCallback();
-          _completeLoadSuccessfully();
-        },
-        onAdFailedToLoad: (error) {
-          debugPrint('RewardAdService: ========== AD LOAD FAILED ==========');
-          debugPrint('RewardAdService: Error code: ${error.code}');
-          debugPrint('RewardAdService: Error message: ${error.message}');
-          debugPrint('RewardAdService: Error domain: ${error.domain}');
-          debugPrint(
-            'RewardAdService: Response ID: ${error.responseInfo?.responseId}',
-          );
-          debugPrint(
-            'RewardAdService: Mediation Adapter: ${error.responseInfo?.mediationAdapterClassName}',
-          );
-          debugPrint(
-            'RewardAdService: Adapter Responses: ${error.responseInfo?.adapterResponses?.length}',
-          );
-          _cancelLoadTimeoutTimer();
-          _rewardedAd = null;
-          _resetLoadingFlags();
-
-          if (!_isDisposed && error.code == 0) {
-            _retryLoadAfter(
-              const Duration(seconds: 5),
-              'Retrying in 5 seconds...',
-            );
-          } else {
-            debugPrint(
-              'RewardAdService: Not retrying due to error code: ${error.code}',
-            );
-          }
-
-          _completeLoadWithError(error);
-        },
-      ),
-    );
-  }
-
-  /// 繝ｪ繝ｯ繝ｼ繝牙ｺ・相繧定｡ｨ遉ｺ縺吶ｋ
-  Future<bool> showRewardedAd() async {
-    if (!_isAdLoaded || _rewardedAd == null) {
-      debugPrint('RewardAdService: No ad loaded');
-      return false;
+  void _scheduleRetry() {
+    if (_isDisposed) {
+      return;
     }
 
-    final completer = Completer<bool>();
-    var rewardEarned = false;
-
-    // 一時的にコールバックを保存
-    final originalCallback = _rewardedAd!.fullScreenContentCallback;
-    
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (ad) {
-        debugPrint('RewardAdService: Ad showed full screen content');
-        if (originalCallback?.onAdShowedFullScreenContent != null) {
-          originalCallback!.onAdShowedFullScreenContent!(ad);
-        }
-      },
-      onAdDismissedFullScreenContent: (ad) {
-        debugPrint('RewardAdService: Ad dismissed full screen content');
-        ad.dispose();
-        _rewardedAd = null;
-        _isAdLoaded = false;
-        _notifyStateChanged();
-        
-        // 報酬が獲得されたかどうかを返す
-        if (!completer.isCompleted) {
-          completer.complete(rewardEarned);
-        }
-        
-        // 元のコールバックを復元して次の広告を読み込み
-        if (originalCallback?.onAdDismissedFullScreenContent != null) {
-          originalCallback!.onAdDismissedFullScreenContent!(ad);
-        } else {
-          // 次の広告を読み込み
-          loadRewardedAd();
-        }
-      },
-      onAdFailedToShowFullScreenContent: (ad, error) {
-        debugPrint(
-          'RewardAdService: Ad failed to show full screen content: $error',
-        );
-        ad.dispose();
-        _rewardedAd = null;
-        _isAdLoaded = false;
-        _notifyStateChanged();
-        
-        if (!completer.isCompleted) {
-          completer.complete(false);
-        }
-        
-        if (originalCallback?.onAdFailedToShowFullScreenContent != null) {
-          originalCallback!.onAdFailedToShowFullScreenContent!(ad, error);
-        }
-      },
-    );
-
-    try {
-      await _rewardedAd!.show(
-        onUserEarnedReward: (ad, reward) {
-          debugPrint(
-            'RewardAdService: User earned reward: ${reward.amount} ${reward.type}',
-          );
-          rewardEarned = true;
-        },
-      );
-      
-      return await completer.future;
-    } catch (e) {
-      debugPrint('RewardAdService: Error showing rewarded ad: $e');
-      if (!completer.isCompleted) {
-        completer.complete(false);
+    _scheduledRetryTimer?.cancel();
+    _scheduledRetryTimer = Timer(const Duration(seconds: 5), () {
+      _scheduledRetryTimer = null;
+      if (_isDisposed || _isLoading || _rewardedAd != null) {
+        return;
       }
-      return false;
-    }
+      loadRewardedAd();
+    });
   }
 
-  /// 蠎・相繧堤ｴ譽・☆繧・
-  void dispose() {
-    debugPrint('RewardAdService: Disposing service...');
-    _isDisposed = true;
-    forceStopLoading();
+  void _disposeAd() {
     _rewardedAd?.dispose();
     _rewardedAd = null;
   }
 
-  /// 蠑ｷ蛻ｶ逧・↓隱ｭ縺ｿ霎ｼ縺ｿ繧貞●豁｢縺吶ｋ
-  void forceStopLoading() {
-    debugPrint('RewardAdService: Force stopping ad loading...');
-    _cancelLoadTimeoutTimer();
-    if (_loadCompleter != null && !_loadCompleter!.isCompleted) {
-      _completeLoadWithError(StateError('Ad load force stopped'));
-    }
-    _loadCompleter = null;
-    _resetLoadingFlags(notify: false);
-  }
-
-  /// 繝輔Ν繧ｹ繧ｯ繝ｪ繝ｼ繝ｳ繧ｳ繝ｳ繝・Φ繝・さ繝ｼ繝ｫ繝舌ャ繧ｯ繧定ｨｭ螳・
-  void _setFullScreenContentCallback() {
-    _rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (ad) {
-        debugPrint('RewardAdService: Ad showed full screen content');
-      },
-      onAdDismissedFullScreenContent: (ad) {
-        debugPrint('RewardAdService: Ad dismissed full screen content');
-        ad.dispose();
-        _rewardedAd = null;
-        _isAdLoaded = false;
-        _notifyStateChanged();
-        // 谺｡縺ｮ蠎・相繧剃ｺ句燕隱ｭ縺ｿ霎ｼ縺ｿ
-        loadRewardedAd();
-      },
-      onAdFailedToShowFullScreenContent: (ad, error) {
-        debugPrint(
-          'RewardAdService: Ad failed to show full screen content: $error',
-        );
-        ad.dispose();
-        _rewardedAd = null;
-        _isAdLoaded = false;
-        _notifyStateChanged();
-      },
-    );
-  }
-
-  /// 繝励Λ繝・ヨ繝輔か繝ｼ繝縺ｫ蠢懊§縺溷ｺ・相繝ｦ繝九ャ繝・D繧貞叙蠕・
   String _getAdUnitId() {
-    // 繝・せ繝育畑繧貞ｼｷ蛻ｶ菴ｿ逕ｨ・域悽逡ｪ逕ｨ縺ｯ繧ｳ繝｡繝ｳ繝医い繧ｦ繝茨ｼ・
-    return AppConstants.testRewardedAdUnitId;
-
-    // 譛ｬ逡ｪ逕ｨ縺ｫ蛻・ｊ譖ｿ縺医ｋ蝣ｴ蜷医・莉･荳九・繧ｳ繝｡繝ｳ繝医ｒ螟悶☆
-    // if (kDebugMode) {
-    //   return AppConstants.testRewardedAdUnitId;
-    // }
-    // return AppConstants.productionRewardedAdUnitId;
+    return AppConstants.getRewardedAdUnitId();
   }
 }
 
-/// 繝ｪ繝ｯ繝ｼ繝牙ｺ・相縺ｮ迥ｶ諷九ｒ邂｡逅・☆繧九・繝ｭ繝舌う繝繝ｼ
 class RewardAdNotifier extends ChangeNotifier {
   final RewardAdService _adService = RewardAdService();
 
   RewardAdNotifier() {
-    // 状態変更のコールバックを設定
     _adService.setOnStateChanged(() {
       notifyListeners();
     });
@@ -367,22 +307,16 @@ class RewardAdNotifier extends ChangeNotifier {
   bool get isAdLoaded => _adService.isAdLoaded;
   bool get isLoading => _adService.isLoading;
 
-  /// 蠎・相繧定ｪｭ縺ｿ霎ｼ繧
-  Future<void> loadAd() async {
-    await _adService.loadRewardedAd();
-    // 状態変更はコールバックで自動的に通知される
+  Future<void> loadAd({bool forceReload = false}) async {
+    await _adService.loadRewardedAd(forceReload: forceReload);
   }
 
-  /// 蠎・相繧定｡ｨ遉ｺ縺吶ｋ
   Future<bool> showAd() async {
-    return await _adService.showRewardedAd();
-    // 状態変更はコールバックで自動的に通知される
+    return _adService.showRewardedAd();
   }
 
-  /// 蠑ｷ蛻ｶ逧・↓隱ｭ縺ｿ霎ｼ縺ｿ繧貞●豁｢縺吶ｋ
   void forceStopLoading() {
     _adService.forceStopLoading();
-    // 状態変更はコールバックで自動的に通知される
   }
 
   @override

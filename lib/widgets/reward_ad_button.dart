@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../localization/localization_extensions.dart';
 import '../providers/reward_ad_provider.dart';
 import '../services/reward_ad_service.dart';
+import '../constants/app_colors.dart';
 
 class RewardAdButton extends ConsumerStatefulWidget {
   const RewardAdButton({
@@ -29,7 +30,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
 
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 56, // 他のフィールドと統一
       child: ElevatedButton.icon(
         onPressed: _isShowingAd || widget.isLoading
             ? null
@@ -94,39 +95,47 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
 
   Color _getButtonColor(RewardAdState adState) {
     if (_isShowingAd || widget.isLoading || adState.isLoading) {
-      return Colors.grey;
+      return AppColors.neutral;
     }
 
     if (adState.isAdLoaded) {
-      return Colors.blue;
+      return AppColors.primary;
     }
 
-    return Colors.orange;
+    return AppColors.warning;
   }
 
   Future<void> _showRewardAd(RewardAdNotifier adNotifier) async {
     if (_isShowingAd || widget.isLoading) {
+      debugPrint('RewardAdButton: Cannot show ad - _isShowingAd: $_isShowingAd, isLoading: ${widget.isLoading}');
       return;
     }
 
+    debugPrint('RewardAdButton: Starting to show reward ad...');
     setState(() => _isShowingAd = true);
 
     try {
       if (!adNotifier.isAdLoaded) {
+        debugPrint('RewardAdButton: Ad not loaded, loading ad...');
         await adNotifier.loadAd();
       }
 
       if (!mounted) {
+        debugPrint('RewardAdButton: Widget not mounted after loading');
         return;
       }
 
       if (!adNotifier.isAdLoaded) {
+        debugPrint('RewardAdButton: Ad still not loaded after loading attempt');
         _showErrorSnackBar(context.l10n.adLoadFailedMessage);
         return;
       }
 
+      debugPrint('RewardAdButton: Ad loaded, showing ad...');
       final rewarded = await adNotifier.showAd();
       if (!mounted) return;
+      
+      debugPrint('RewardAdButton: Ad shown, rewarded: $rewarded');
       if (rewarded) {
         _showSuccessSnackBar(context.l10n.adRewardMessage);
         widget.onRewardEarned();
@@ -138,6 +147,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
       if (!mounted) return;
       _showErrorSnackBar(context.l10n.adLoadFailedMessage);
     } finally {
+      debugPrint('RewardAdButton: Ad showing process completed');
       if (mounted) {
         setState(() => _isShowingAd = false);
       } else {
@@ -150,7 +160,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.success,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -160,7 +170,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.error,
         duration: const Duration(seconds: 3),
       ),
     );

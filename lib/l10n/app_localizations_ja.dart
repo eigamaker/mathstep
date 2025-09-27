@@ -310,6 +310,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get settingsLegalDocumentsTitle => '法的文書';
+
+  @override
+  String get settingsLegalDocumentsDescription => 'プライバシーポリシーと利用規約をご確認ください。';
+
+  @override
+  String get privacyPolicyTitle => 'プライバシーポリシー';
+
+  @override
+  String get termsOfServiceTitle => '利用規約';
+
+  @override
   String get solutionAppBarTitle => '解説';
 
   @override

@@ -311,6 +311,18 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get settingsLegalDocumentsTitle => '법적 문서';
+
+  @override
+  String get settingsLegalDocumentsDescription => '개인정보처리방침과 이용약관을 확인해 주세요.';
+
+  @override
+  String get privacyPolicyTitle => '개인정보처리방침';
+
+  @override
+  String get termsOfServiceTitle => '이용약관';
+
+  @override
   String get solutionAppBarTitle => '해설';
 
   @override

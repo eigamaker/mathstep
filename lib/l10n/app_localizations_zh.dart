@@ -309,6 +309,18 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get settingsLegalDocumentsTitle => '法律文件';
+
+  @override
+  String get settingsLegalDocumentsDescription => '请查看我们的隐私政策和服务条款。';
+
+  @override
+  String get privacyPolicyTitle => '隐私政策';
+
+  @override
+  String get termsOfServiceTitle => '服务条款';
+
+  @override
   String get solutionAppBarTitle => '解答';
 
   @override
@@ -647,6 +659,18 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   }
 
   @override
+  String get settingsLegalDocumentsTitle => '法律文件';
+
+  @override
+  String get settingsLegalDocumentsDescription => '请查看我们的隐私政策和服务条款。';
+
+  @override
+  String get privacyPolicyTitle => '隐私政策';
+
+  @override
+  String get termsOfServiceTitle => '服务条款';
+
+  @override
   String get solutionAppBarTitle => '解答';
 
   @override
@@ -983,6 +1007,18 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String settingsLanguageChanged(String language) {
     return '語言已變更為 $language。';
   }
+
+  @override
+  String get settingsLegalDocumentsTitle => '法律文件';
+
+  @override
+  String get settingsLegalDocumentsDescription => '請查看我們的隱私政策和服務條款。';
+
+  @override
+  String get privacyPolicyTitle => '隱私政策';
+
+  @override
+  String get termsOfServiceTitle => '服務條款';
 
   @override
   String get solutionAppBarTitle => '解說';

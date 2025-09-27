@@ -344,6 +344,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get settingsLegalDocumentsTitle => 'Legal Documents';
+
+  @override
+  String get settingsLegalDocumentsDescription =>
+      'Please review our Privacy Policy and Terms of Service.';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get termsOfServiceTitle => 'Terms of Service';
+
+  @override
   String get solutionAppBarTitle => 'Solution';
 
   @override

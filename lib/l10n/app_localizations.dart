@@ -662,6 +662,30 @@ abstract class AppLocalizations {
   /// **'Language changed to {language}'**
   String settingsLanguageChanged(String language);
 
+  /// No description provided for @settingsLegalDocumentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Documents'**
+  String get settingsLegalDocumentsTitle;
+
+  /// No description provided for @settingsLegalDocumentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please review our Privacy Policy and Terms of Service.'**
+  String get settingsLegalDocumentsDescription;
+
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @termsOfServiceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfServiceTitle;
+
   /// No description provided for @solutionAppBarTitle.
   ///
   /// In en, this message translates to:

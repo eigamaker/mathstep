@@ -20,6 +20,29 @@ class HistoryItemWidget extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback? onCopyAndPaste;
 
+  /// 履歴画面のプレビューエリアの高さを計算
+  double _calculateHistoryPreviewHeight(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // 履歴画面では少し小さめに設定
+    final minHeight = 100.0;
+    final maxHeight = 200.0;
+    final heightRatio = screenHeight > 800 ? 0.15 : 0.20; // 履歴では小さめに
+    
+    double calculatedHeight = screenHeight * heightRatio;
+    
+    // 最小・最大値でクランプ
+    calculatedHeight = calculatedHeight.clamp(minHeight, maxHeight);
+    
+    // 横画面の場合は少し小さく
+    if (screenWidth > screenHeight) {
+      calculatedHeight *= 0.7;
+    }
+    
+    return calculatedHeight;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -38,7 +61,7 @@ class HistoryItemWidget extends StatelessWidget {
         child: Column(
           children: [
             // 隰ｨ・ｰ陟台ｸ翫・郢晢ｽｬ郢晁侭ﾎ礼ｹ晢ｽｼ繝ｻ蛹ｻﾎ鍋ｹｧ・､郢晢ｽｳ鬩幢ｽｨ陋ｻ繝ｻ・ｼ繝ｻ
-            _buildExpressionPreview(),
+            _buildExpressionPreview(context),
 
             // 郢ｧ・｢郢ｧ・ｯ郢ｧ・ｷ郢晢ｽｧ郢晢ｽｳ郢晄㈱縺｡郢晢ｽｳ郢ｧ・ｨ郢晢ｽｪ郢ｧ・｢
             _buildActionButtons(context),
@@ -48,9 +71,9 @@ class HistoryItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildExpressionPreview() {
+  Widget _buildExpressionPreview(BuildContext context) {
     return Container(
-      height: 120,
+      height: _calculateHistoryPreviewHeight(context),
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

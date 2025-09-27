@@ -268,6 +268,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).showSnackBar(SnackBar(content: Text(message), duration: duration));
   }
 
+  /// デバイスサイズに応じてプレビューエリアの高さを計算
+  double _calculatePreviewHeight(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // 画面の高さに基づいて動的に計算
+    // 最小150px、最大300px、画面高さの25-35%の範囲で調整
+    final minHeight = 150.0;
+    final maxHeight = 300.0;
+    final heightRatio = screenHeight > 800 ? 0.25 : 0.35; // 大きな画面では小さめに
+    
+    double calculatedHeight = screenHeight * heightRatio;
+    
+    // 最小・最大値でクランプ
+    calculatedHeight = calculatedHeight.clamp(minHeight, maxHeight);
+    
+    // 横画面の場合は少し小さく
+    if (screenWidth > screenHeight) {
+      calculatedHeight *= 0.8;
+    }
+    
+    // デバッグ用ログ
+    debugPrint('Preview height calculation: screenHeight=$screenHeight, calculatedHeight=$calculatedHeight');
+    
+    return calculatedHeight;
+  }
+
   void _showErrorDialog(String message, {String? title}) {
     showDialog<void>(
       context: context,
@@ -295,11 +322,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: _buildAppBar(),
       body: Column(
         children: [
-          // プレビューエリア（固定高さ）
-          Container(
-            height: 200,
-            margin: const EdgeInsets.all(16),
-            child: _buildLatexPreview(expressionState.latex),
+          // プレビューエリア（動的高さ）
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final previewHeight = _calculatePreviewHeight(context);
+              return Container(
+                height: previewHeight,
+                margin: const EdgeInsets.all(16),
+                child: _buildLatexPreview(expressionState.latex),
+              );
+            },
           ),
           // 入力フィールドエリア
           Padding(
@@ -626,7 +658,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             : null,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 12,
+          vertical: 16,
         ),
       ),
       onTap: () {

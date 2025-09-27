@@ -16,7 +16,7 @@ class AppConstants {
   static const double historyItemSpacing = 12.0;
   static const double largeIconSize = 64.0;
 
-  // AdMob configuration
+  // AdMob configuration (Rewarded Ad only)
   static const String testRewardedAdUnitId =
       'ca-app-pub-3940256099942544/5224354917';
   static const String productionRewardedAdUnitId =

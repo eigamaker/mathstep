@@ -38,16 +38,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     _textController.addListener(_onTextChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _textFieldFocus.requestFocus();
+      // キーボードの自動表示を無効化
+      // _textFieldFocus.requestFocus();
       // AdMob初期化後に広告を読み込み
       _loadAdAfterDelay();
     });
   }
 
   Future<void> _loadAdAfterDelay() async {
-    // AdMob初期化を待つ
-    await Future.delayed(const Duration(seconds: 2));
-    ref.read(rewardAdProvider).loadAd();
+    // AdMob初期化を待つ（短縮）
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    // 既に広告が読み込まれている場合は再読み込みしない
+    final adState = ref.read(rewardAdStateProvider);
+    if (!adState.isAdLoaded && !adState.isLoading) {
+      debugPrint('HomeScreen: Starting ad load...');
+      ref.read(rewardAdProvider).loadAd();
+    } else {
+      debugPrint('HomeScreen: Ad already loaded or loading. Skipping...');
+    }
   }
 
   @override
@@ -568,7 +577,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         controller: _textController,
         focusNode: _textFieldFocus,
         keyboardType: TextInputType.text,
-        showCursor: true,
+        showCursor: false, // カーソルを非表示にしてキーボードの自動表示を防ぐ
+        readOnly: true, // 読み取り専用にしてキーボードの表示を防ぐ
         decoration: InputDecoration(
         labelText: l10n.homeExpressionFieldLabel,
         labelStyle: TextStyle(
@@ -637,6 +647,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         textInputAction: TextInputAction.newline,
         enableSuggestions: true,
         autocorrect: true,
+        showCursor: true, // 条件入力ではカーソルを表示
         maxLines: 2,
         minLines: 1,
         decoration: InputDecoration(

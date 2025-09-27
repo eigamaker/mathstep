@@ -66,7 +66,7 @@ class _SolutionScreenState extends State<SolutionScreen>
       ),
       body: Column(
         children: [
-          // 蜈・・謨ｰ蠑剰｡ｨ遉ｺ
+          // 問題文エリア
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -97,7 +97,7 @@ class _SolutionScreenState extends State<SolutionScreen>
             ),
           ),
 
-          // 繧ｿ繝・
+          // タブ
           TabBar(
             controller: _tabController,
             tabs: [
@@ -106,14 +106,14 @@ class _SolutionScreenState extends State<SolutionScreen>
             ],
           ),
 
-          // 繧ｿ繝悶さ繝ｳ繝・Φ繝・
+          // タブコンテンツ
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                // 隗｣豕輔ち繝・
+                // メインタブ
                 _buildSolutionTab(),
-                // 蛻･隗｣繝ｻ讀懃ｮ励ち繝・
+                // 代替解法タブ
                 _buildAlternativeTab(),
               ],
             ),
@@ -146,7 +146,7 @@ class _SolutionScreenState extends State<SolutionScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 蛻･隗｣繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ
+          // 代替解法
           if (widget.solution.alternativeSolutions != null &&
               widget.solution.alternativeSolutions!.isNotEmpty) ...[
             Text(
@@ -161,7 +161,7 @@ class _SolutionScreenState extends State<SolutionScreen>
             const SizedBox(height: 24),
           ],
 
-          // 讀懃ｮ励・螳夂ｾｩ蝓溘メ繧ｧ繝・け繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ
+          // 検証・確認セクション
           if (widget.solution.verification != null) ...[
             Text(
               context.l10n.solutionVerificationSectionTitle,
@@ -176,14 +176,14 @@ class _SolutionScreenState extends State<SolutionScreen>
   }
 
   void _shareSolution() {
-    // 蜈ｱ譛画ｩ溯・縺ｮ螳溯｣・
+    // 共有機能の実装
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.solutionShareNotAvailable)),
     );
   }
 
   void _saveToHistory() {
-    // 螻･豁ｴ菫晏ｭ俶ｩ溯・縺ｮ螳溯｣・
+    // 履歴保存の実装
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.solutionSaveSuccess)));

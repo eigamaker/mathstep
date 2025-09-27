@@ -1,3 +1,7 @@
+﻿import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+
 /// Application-wide constants that are not user facing.
 class AppConstants {
   // Storage keys
@@ -19,8 +23,28 @@ class AppConstants {
   // AdMob configuration (Rewarded Ad only)
   static const String testRewardedAdUnitId =
       'ca-app-pub-3940256099942544/5224354917';
-  static const String productionRewardedAdUnitId =
-      'ca-app-pub-1998641949557439~5856126902';
+
+  static const String productionRewardedAdUnitIdAndroid =
+      'ca-app-pub-1998641949557439/3057244181';
+
+  static const String productionRewardedAdUnitIdIOS =
+      'ca-app-pub-1998641949557439/4530086849';
+
+  static String getRewardedAdUnitId() {
+    if (kDebugMode) {
+      return testRewardedAdUnitId;
+    }
+
+    if (Platform.isIOS) {
+      return productionRewardedAdUnitIdIOS;
+    }
+
+    if (Platform.isAndroid) {
+      return productionRewardedAdUnitIdAndroid;
+    }
+
+    return productionRewardedAdUnitIdAndroid;
+  }
 
   // Default identifiers
   static const String unknownId = 'unknown';

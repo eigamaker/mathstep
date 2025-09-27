@@ -107,27 +107,35 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
 
   Future<void> _showRewardAd(RewardAdNotifier adNotifier) async {
     if (_isShowingAd || widget.isLoading) {
+      debugPrint('RewardAdButton: Cannot show ad - _isShowingAd: $_isShowingAd, isLoading: ${widget.isLoading}');
       return;
     }
 
+    debugPrint('RewardAdButton: Starting to show reward ad...');
     setState(() => _isShowingAd = true);
 
     try {
       if (!adNotifier.isAdLoaded) {
+        debugPrint('RewardAdButton: Ad not loaded, loading ad...');
         await adNotifier.loadAd();
       }
 
       if (!mounted) {
+        debugPrint('RewardAdButton: Widget not mounted after loading');
         return;
       }
 
       if (!adNotifier.isAdLoaded) {
+        debugPrint('RewardAdButton: Ad still not loaded after loading attempt');
         _showErrorSnackBar(context.l10n.adLoadFailedMessage);
         return;
       }
 
+      debugPrint('RewardAdButton: Ad loaded, showing ad...');
       final rewarded = await adNotifier.showAd();
       if (!mounted) return;
+      
+      debugPrint('RewardAdButton: Ad shown, rewarded: $rewarded');
       if (rewarded) {
         _showSuccessSnackBar(context.l10n.adRewardMessage);
         widget.onRewardEarned();
@@ -139,6 +147,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
       if (!mounted) return;
       _showErrorSnackBar(context.l10n.adLoadFailedMessage);
     } finally {
+      debugPrint('RewardAdButton: Ad showing process completed');
       if (mounted) {
         setState(() => _isShowingAd = false);
       } else {

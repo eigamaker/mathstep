@@ -16,6 +16,7 @@ import '../localization/localization_extensions.dart';
 import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
 import '../models/sample_expression.dart';
+import '../constants/app_colors.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -273,11 +274,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     
-    // 画面の高さに基づいて動的に計算
-    // 最小150px、最大300px、画面高さの25-35%の範囲で調整
-    final minHeight = 150.0;
-    final maxHeight = 300.0;
-    final heightRatio = screenHeight > 800 ? 0.25 : 0.35; // 大きな画面では小さめに
+    // 柔軟な動的サイズ計算
+    // 画面の高さに基づいて適切な比率で計算
+    double heightRatio;
+    if (screenHeight > 900) {
+      heightRatio = 0.20; // 大きな画面では20%
+    } else if (screenHeight > 700) {
+      heightRatio = 0.25; // 中程度の画面では25%
+    } else {
+      heightRatio = 0.30; // 小さな画面では30%
+    }
+    
+    // 最小・最大値を設定
+    final minHeight = 120.0;
+    final maxHeight = 200.0;
     
     double calculatedHeight = screenHeight * heightRatio;
     
@@ -328,7 +338,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               final previewHeight = _calculatePreviewHeight(context);
               return Container(
                 height: previewHeight,
-                margin: const EdgeInsets.all(16),
+                margin: const EdgeInsets.all(16), // マージンを適切に調整
                 child: _buildLatexPreview(expressionState.latex),
               );
             },
@@ -338,7 +348,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildExpressionField(expressionState.input),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildConditionField(),
@@ -452,12 +462,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Container(
           margin: const EdgeInsets.only(right: 8),
           decoration: BoxDecoration(
-            color: Colors.amber.shade50,
+            color: AppColors.warningContainer,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.amber.shade200, width: 1),
+            border: Border.all(color: AppColors.warningLight, width: 1),
           ),
           child: IconButton(
-            icon: Icon(Icons.auto_awesome, color: Colors.amber.shade700),
+            icon: Icon(Icons.auto_awesome, color: AppColors.warning),
             onPressed: _loadRandomSample,
             tooltip: context.l10n.homeSampleTooltip,
           ),
@@ -465,12 +475,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Container(
           margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
+            color: AppColors.primaryContainer,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue.shade200, width: 1),
+            border: Border.all(color: AppColors.primaryLight, width: 1),
           ),
           child: IconButton(
-            icon: Icon(Icons.help_outline, color: Colors.blue.shade700),
+            icon: Icon(Icons.help_outline, color: AppColors.primary),
             onPressed: () {
               Navigator.push(
                 context,
@@ -489,7 +499,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade50, Colors.purple.shade50],
+          colors: AppColors.primaryGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -505,9 +515,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.blue.shade100, width: 1),
+          border: Border.all(color: AppColors.primaryLight, width: 1),
         ),
         child: hasExpression
             ? LatexPreview(expression: latexExpression)
@@ -525,24 +535,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: AppColors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.functions, size: 48, color: Colors.blue.shade300),
+            child: Icon(Icons.functions, size: 40, color: AppColors.primaryLight),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Text(
             l10n.homePlaceholderTitle,
             style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 18,
+              color: AppColors.textSecondary,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.homePlaceholderSubtitle,
-            style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+            style: TextStyle(color: AppColors.textHint, fontSize: 14),
             textAlign: TextAlign.center,
           ),
         ],
@@ -552,118 +562,124 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildExpressionField(String currentExpression) {
     final l10n = context.l10n;
-    return TextField(
-      controller: _textController,
-      focusNode: _textFieldFocus,
-      keyboardType: TextInputType.text,
-      showCursor: true,
-      decoration: InputDecoration(
+    return SizedBox(
+      height: 56, // 適切な高さに調整
+      child: TextField(
+        controller: _textController,
+        focusNode: _textFieldFocus,
+        keyboardType: TextInputType.text,
+        showCursor: true,
+        decoration: InputDecoration(
         labelText: l10n.homeExpressionFieldLabel,
         labelStyle: TextStyle(
-          color: Colors.blue.shade600,
+          color: AppColors.primary,
           fontWeight: FontWeight.w500,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: AppColors.surface,
         hintText: l10n.homeExpressionHint,
-        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-        prefixIcon: Icon(Icons.calculate, color: Colors.blue.shade600),
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ペーストボタン
-            IconButton(
-              icon: Icon(Icons.content_paste, color: Colors.green.shade600),
-              onPressed: _pasteFromClipboard,
-              tooltip: context.l10n.homePasteTooltip,
-            ),
-            // クリアボタン
-            if (currentExpression.isNotEmpty)
+        hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
+        prefixIcon: Icon(Icons.calculate, color: AppColors.primary),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ペーストボタン
               IconButton(
-                icon: Icon(Icons.clear, color: Colors.red.shade600),
-                onPressed: () {
-                  _textController.clear();
-                },
-                tooltip: l10n.commonClear,
+                icon: Icon(Icons.content_paste, color: AppColors.success),
+                onPressed: _pasteFromClipboard,
+                tooltip: context.l10n.homePasteTooltip,
               ),
-          ],
+              // クリアボタン
+              if (currentExpression.isNotEmpty)
+                IconButton(
+                  icon: Icon(Icons.clear, color: AppColors.error),
+                  onPressed: () {
+                    _textController.clear();
+                  },
+                  tooltip: l10n.commonClear,
+                ),
+            ],
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
+        onTap: _focusInput,
+        onChanged: (value) {
+          // テキストが変更されたときにプロバイダーを更新
+          ref.read(expressionProvider.notifier).updateInput(value);
+        },
       ),
-      onTap: _focusInput,
-      onChanged: (value) {
-        // テキストが変更されたときにプロバイダーを更新
-        ref.read(expressionProvider.notifier).updateInput(value);
-      },
     );
   }
 
   Widget _buildConditionField() {
     final l10n = context.l10n;
-    return TextField(
-      controller: _conditionController,
-      focusNode: _conditionFieldFocus,
-      keyboardType: TextInputType.multiline,
-      textInputAction: TextInputAction.newline,
-      enableSuggestions: true,
-      autocorrect: true,
-      maxLines: 2,
-      minLines: 1,
-      decoration: InputDecoration(
+    return SizedBox(
+      height: 56, // 適切な高さに調整
+      child: TextField(
+        controller: _conditionController,
+        focusNode: _conditionFieldFocus,
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.newline,
+        enableSuggestions: true,
+        autocorrect: true,
+        maxLines: 2,
+        minLines: 1,
+        decoration: InputDecoration(
         labelText: l10n.homeConditionFieldLabel,
         labelStyle: TextStyle(
-          color: Colors.green.shade600,
+          color: AppColors.secondary,
           fontWeight: FontWeight.w500,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.green.shade400, width: 2),
+          borderSide: BorderSide(color: AppColors.secondary, width: 2),
         ),
         filled: true,
-        fillColor: Colors.green.shade50,
+        fillColor: AppColors.secondaryContainer,
         hintText: l10n.homeConditionHint,
-        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-        prefixIcon: Icon(Icons.help_outline, color: Colors.green.shade600),
-        suffixIcon: _conditionController.text.isNotEmpty
-            ? IconButton(
-                icon: Icon(Icons.clear, color: Colors.red.shade600),
-                onPressed: () {
-                  _conditionController.clear();
-                },
-                tooltip: l10n.commonClear,
-              )
-            : null,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+        hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
+        prefixIcon: Icon(Icons.help_outline, color: AppColors.secondary),
+          suffixIcon: _conditionController.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: AppColors.error),
+                  onPressed: () {
+                    _conditionController.clear();
+                  },
+                  tooltip: l10n.commonClear,
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
         ),
+        onTap: () {
+          _conditionFieldFocus.requestFocus();
+        },
       ),
-      onTap: () {
-        _conditionFieldFocus.requestFocus();
-      },
     );
   }
 
@@ -678,7 +694,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.grey.shade50, Colors.grey.shade100],
+          colors: AppColors.surfaceGradient,
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -694,7 +710,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(14),
         ),
         child: CalculatorKeypad(

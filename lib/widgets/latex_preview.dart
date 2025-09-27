@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'simple_math_display.dart';
+import '../constants/app_colors.dart';
 
 class LatexPreview extends StatelessWidget {
   final String expression;
@@ -14,11 +15,12 @@ class LatexPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      height: double.infinity, // 親の高さ制約を尊重
+      padding: const EdgeInsets.all(12), // 適切なパディングに調整
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.border),
       ),
       child: SingleChildScrollView(
         child: SingleChildScrollView(

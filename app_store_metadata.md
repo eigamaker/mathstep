@@ -86,3 +86,4 @@ Support your mathematical understanding and build confidence in problem-solving.
 - ギャンブル: なし
 - アルコール・タバコ・ドラッグ: なし
 
+

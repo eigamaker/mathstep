@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../localization/localization_extensions.dart';
 import '../providers/reward_ad_provider.dart';
 import '../services/reward_ad_service.dart';
+import '../constants/app_colors.dart';
 
 class RewardAdButton extends ConsumerStatefulWidget {
   const RewardAdButton({
@@ -29,7 +30,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
 
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 56, // 他のフィールドと統一
       child: ElevatedButton.icon(
         onPressed: _isShowingAd || widget.isLoading
             ? null
@@ -94,14 +95,14 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
 
   Color _getButtonColor(RewardAdState adState) {
     if (_isShowingAd || widget.isLoading || adState.isLoading) {
-      return Colors.grey;
+      return AppColors.neutral;
     }
 
     if (adState.isAdLoaded) {
-      return Colors.blue;
+      return AppColors.primary;
     }
 
-    return Colors.orange;
+    return AppColors.warning;
   }
 
   Future<void> _showRewardAd(RewardAdNotifier adNotifier) async {
@@ -150,7 +151,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.success,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -160,7 +161,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.error,
         duration: const Duration(seconds: 3),
       ),
     );

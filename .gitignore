@@ -46,3 +46,4 @@ app.*.map.json
 
 # Environment Variables (contains sensitive keys)
 .env
+.env.production

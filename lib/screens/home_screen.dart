@@ -185,7 +185,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     try {
+      debugPrint('HomeScreen: Checking API configuration...');
+      debugPrint('HomeScreen: ApiConfig.isConfigured = ${ApiConfig.isConfigured}');
+      debugPrint('HomeScreen: ApiConfig.openaiApiKey length = ${ApiConfig.openaiApiKey.length}');
+      
       if (!ApiConfig.isConfigured) {
+        debugPrint('HomeScreen: API key not configured, showing error');
         _showSnackBar(l10n.homeApiKeyMissingSnack);
         _showErrorDialog(
           l10n.homeApiKeyMissingDialogMessage,
@@ -216,9 +221,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         timestamp: DateTime.now(),
       );
 
+      debugPrint('HomeScreen: Saving solution to storage...');
+      debugPrint('HomeScreen: MathExpression ID: ${mathExpression.id}');
+      debugPrint('HomeScreen: Solution ID: ${solution.id}');
+      debugPrint('HomeScreen: Solution steps count: ${solution.steps.length}');
+
       ref
           .read(solutionStorageProvider.notifier)
           .addSolution(mathExpression, solution);
+
+      debugPrint('HomeScreen: Solution saved successfully, navigating to SolutionScreen');
 
       Navigator.push(
         context,

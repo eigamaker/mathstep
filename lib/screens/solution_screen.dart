@@ -1,21 +1,22 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+import '../localization/localization_extensions.dart';
 import '../models/math_expression.dart';
 import '../models/solution.dart';
-import '../localization/localization_extensions.dart';
+import '../widgets/alternative_solution_tab.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/solution_step_card.dart';
-import '../widgets/alternative_solution_tab.dart';
 import '../widgets/verification_section.dart';
 
 class SolutionScreen extends StatefulWidget {
-  final MathExpression mathExpression;
-  final Solution solution;
-
   const SolutionScreen({
     super.key,
     required this.mathExpression,
     required this.solution,
   });
+
+  final MathExpression mathExpression;
+  final Solution solution;
 
   @override
   State<SolutionScreen> createState() => _SolutionScreenState();
@@ -23,8 +24,7 @@ class SolutionScreen extends StatefulWidget {
 
 class _SolutionScreenState extends State<SolutionScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final List<SolutionStep> _expandedSteps = [];
+  late final TabController _tabController;
 
   @override
   void initState() {
@@ -38,20 +38,10 @@ class _SolutionScreenState extends State<SolutionScreen>
     super.dispose();
   }
 
-  void _toggleStepExpansion(String stepId) {
-    setState(() {
-      if (_expandedSteps.any((step) => step.id == stepId)) {
-        _expandedSteps.removeWhere((step) => step.id == stepId);
-      } else {
-        final step = widget.solution.steps.firstWhere((s) => s.id == stepId);
-        _expandedSteps.add(step);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.solutionAppBarTitle),
@@ -63,59 +53,24 @@ class _SolutionScreenState extends State<SolutionScreen>
             onPressed: _saveToHistory,
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: l10n.solutionTabMain),
+            Tab(text: l10n.solutionTabAlternative),
+          ],
+        ),
       ),
       body: Column(
         children: [
-          // 問題文エリア
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.solutionProblemLabel,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                if (widget.solution.problemStatement != null) ...[
-                  Text(
-                    widget.solution.problemStatement!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                LatexPreview(expression: widget.mathExpression.latexExpression),
-              ],
-            ),
+          _ProblemSummary(
+            problemStatement: widget.solution.problemStatement,
+            latexExpression: widget.mathExpression.latexExpression,
           ),
-
-          // タブ
-          TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab(text: l10n.solutionTabMain),
-              Tab(text: l10n.solutionTabAlternative),
-            ],
-          ),
-
-          // タブコンテンツ
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                // メインタブ
-                _buildSolutionTab(),
-                // 代替解法タブ
-                _buildAlternativeTab(),
-              ],
+              children: [_buildStepsTab(), _buildAlternativeTab()],
             ),
           ),
         ],
@@ -123,69 +78,147 @@ class _SolutionScreenState extends State<SolutionScreen>
     );
   }
 
-  Widget _buildSolutionTab() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: widget.solution.steps.length,
-      itemBuilder: (context, index) {
-        final step = widget.solution.steps[index];
-        final isExpanded = _expandedSteps.any((s) => s.id == step.id);
+  Widget _buildStepsTab() {
+    final steps = widget.solution.steps;
+    if (steps.isEmpty) {
+      return const _EmptyState(message: 'No steps were returned by the API.');
+    }
 
-        return SolutionStepCard(
-          step: step,
-          isExpanded: isExpanded,
-          onToggleExpansion: () => _toggleStepExpansion(step.id),
-        );
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: steps.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final step = steps[index];
+        return SolutionStepCard(step: step, index: index);
       },
     );
   }
 
   Widget _buildAlternativeTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 代替解法
-          if (widget.solution.alternativeSolutions != null &&
-              widget.solution.alternativeSolutions!.isNotEmpty) ...[
-            Text(
-              context.l10n.solutionAlternativeSectionTitle,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ...widget.solution.alternativeSolutions!.map(
-              (altSolution) =>
-                  AlternativeSolutionTab(alternativeSolution: altSolution),
-            ),
-            const SizedBox(height: 24),
-          ],
+    final alternativeSolutions = widget.solution.alternativeSolutions;
+    final verification = widget.solution.verification;
 
-          // 検証・確認セクション
-          if (widget.solution.verification != null) ...[
-            Text(
-              context.l10n.solutionVerificationSectionTitle,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            VerificationSection(verification: widget.solution.verification!),
-          ],
+    if ((alternativeSolutions == null || alternativeSolutions.isEmpty) &&
+        verification == null) {
+      return const _EmptyState(message: 'No additional material yet.');
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (alternativeSolutions != null &&
+            alternativeSolutions.isNotEmpty) ...[
+          Text(
+            context.l10n.solutionAlternativeSectionTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          ...alternativeSolutions.map(
+            (alt) => AlternativeSolutionTab(alternativeSolution: alt),
+          ),
+          const SizedBox(height: 24),
         ],
-      ),
+        if (verification != null) ...[
+          Text(
+            context.l10n.solutionVerificationSectionTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          VerificationSection(verification: verification),
+        ],
+      ],
     );
   }
 
   void _shareSolution() {
-    // 共有機能の実装
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.solutionShareNotAvailable)),
     );
   }
 
   void _saveToHistory() {
-    // 履歴保存の実装
+    if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.solutionSaveSuccess)));
+  }
+}
+
+class _ProblemSummary extends StatelessWidget {
+  const _ProblemSummary({
+    required this.problemStatement,
+    required this.latexExpression,
+  });
+
+  final String? problemStatement;
+  final String latexExpression;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceVariant,
+        border: Border(bottom: BorderSide(color: theme.dividerColor)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.solutionProblemLabel,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          if (problemStatement != null &&
+              problemStatement!.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(problemStatement!, style: theme.textTheme.bodyLarge),
+          ],
+          const SizedBox(height: 12),
+          LatexPreview(expression: latexExpression),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 48,
+              color: Theme.of(context).hintColor,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

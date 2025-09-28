@@ -58,6 +58,7 @@ class ChatGptService {
               latexExpression,
               condition: condition,
               language: language,
+              outputMode: 'json',
             ),
           },
         ],
@@ -85,27 +86,41 @@ class ChatGptService {
       }
 
       final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      debugPrint('API Response payload: $payload');
+      
       final choices = payload['choices'] as List<dynamic>?;
+      debugPrint('API Response choices: $choices');
+      
       final firstChoice = (choices != null && choices.isNotEmpty)
           ? choices.first as Map<String, dynamic>
           : null;
+      debugPrint('API Response firstChoice: $firstChoice');
+      
       final message = firstChoice?['message'] as Map<String, dynamic>?;
+      debugPrint('API Response message: $message');
+      
       final content = message?['content'] as String?;
+      debugPrint('API Response content: $content');
 
       if (content == null || content.isEmpty) {
+        debugPrint('Empty content received from API');
         throw const ChatGptException(
           ChatGptErrorType.emptyResponse,
           'Empty response from API',
         );
       }
 
+      debugPrint('Parsing solution from content...');
       final solution = JsonParser.parseSolutionResponse(content);
       if (solution == null) {
+        debugPrint('Failed to parse solution JSON from content: $content');
         throw const ChatGptException(
           ChatGptErrorType.jsonParse,
           'Failed to parse solution JSON',
         );
       }
+      
+      debugPrint('Solution parsed successfully: ${solution.steps.length} steps');
       return solution;
     } catch (error, stackTrace) {
       debugPrint('ChatGptService error: $error\n$stackTrace');

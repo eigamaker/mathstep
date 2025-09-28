@@ -80,12 +80,16 @@ class ReadableMathTextDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('ReadableMathTextDisplay: Building with text: "$text"');
+    
     if (text.isEmpty) {
+      debugPrint('ReadableMathTextDisplay: Text is empty, returning SizedBox.shrink()');
       return const SizedBox.shrink();
     }
 
     // 数式を含まない場合は通常のテキストとして表示
     if (!MathTextProcessor.containsMath(text)) {
+      debugPrint('ReadableMathTextDisplay: No math found, displaying as regular text');
       return Text(
         text,
         style: textStyle ?? const TextStyle(fontSize: 14),

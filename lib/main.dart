@@ -14,11 +14,14 @@ void main() async {
 
   // Load .env file when available.
   try {
-    await dotenv.load(fileName: '.env');
+    await dotenv.load();
     debugPrint('Successfully loaded .env file');
+    debugPrint('Loaded environment variables: ${dotenv.env.keys.toList()}');
+    debugPrint('OPENAI_API_KEY length: ${dotenv.env['OPENAI_API_KEY']?.length ?? 0}');
   } catch (e) {
     // When .env is not found, proceed with defaults.
     debugPrint('Warning: .env file not found. Using default configuration.');
+    debugPrint('Error details: $e');
     dotenv.testLoad(fileInput: '');
   }
 

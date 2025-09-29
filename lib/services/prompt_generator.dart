@@ -17,10 +17,10 @@ STRICT STYLE RULES:
   4) Common pitfalls (箇条書き 2–4個)
   5) 30-second drill (小問 2〜3問と短い答え)
   6) Self-check (短く結論だけ：定義域/端点/増減/数値の再確認)
-- Steps: 4〜7個。各ステップは最大2文・最大1式。式はLaTeXを簡潔に。
+- Steps: 4〜7個。各ステップは最大2文・最大1式。式はAsciiMath形式で記述。
 - Prefer tangible metaphors before formulas.
 - Use bullets, headers, clear breaks.
-- LaTeX safety: escape with double backslashes. Use simple commands only.
+- Math notation: Use AsciiMath format (e.g., x^2, sqrt(x), (a)/(b), sin(x)).
 
 JARGON REWRITE TABLE (must follow):
 - 導関数 → "増え方のサイン（変化の向き）"
@@ -38,11 +38,12 @@ MODES:
 When output_mode="json", follow this JSON shape:
 {
   "problemStatement": "...",
-  "steps": [{"id":"step1","title":"...","description":"...","latexExpression":"..."}],
+  "steps": [{"id":"step1","title":"...","description":"...","asciiMathExpression":"..."}],
   "alternativeSolutions": [...],
   "verification": {"domainCheck":"...","verification":"...","commonMistakes":"..."}
 }
 Keep the same style constraints inside JSON fields.
+Use AsciiMath format for all mathematical expressions.
 
 Always write in ${language.chatGptLanguageName}. Keep it casual, kind, and concise.
 Do NOT reveal internal reasoning; only output the final formatted content.
@@ -50,7 +51,7 @@ Do NOT reveal internal reasoning; only output the final formatted content.
   }
 
   static String buildUserPrompt(
-    String latexExpression, {
+    String asciiMathExpression, {
     String? condition,
     required AppLanguage language,
     String outputMode = 'friendly',
@@ -67,7 +68,7 @@ Do NOT reveal internal reasoning; only output the final formatted content.
       ..writeln('show_alt: $showAlt         # set true to add one alternative approach')
       ..writeln()
       ..writeln('Problem:')
-      ..writeln('\\[ $latexExpression \\]');
+      ..writeln('$asciiMathExpression');
 
     if (condition != null && condition.trim().isNotEmpty) {
       buffer
@@ -85,10 +86,10 @@ Do NOT reveal internal reasoning; only output the final formatted content.
       ..writeln()
       ..writeln('Requirements:')
       ..writeln('- Start with an "intuition" section that predicts the graph/behavior in plain words.')
-      ..writeln('- Then present 4–7 short steps, each with a short title, ≤2 sentences, and ≤1 simple LaTeX formula.')
+      ..writeln('- Then present 4–7 short steps, each with a short title, ≤2 sentences, and ≤1 simple AsciiMath formula.')
       ..writeln('- Use the JARGON REWRITE TABLE rules from the system prompt.')
       ..writeln('- End with: "Key takeaway", "Common pitfalls", "30-second drill (with answers)", and "Self-check" (brief).')
-      ..writeln('- Keep LaTeX simple and escaped (double backslashes). No advanced macros.')
+      ..writeln('- Use AsciiMath format for all mathematical expressions (e.g., x^2, sqrt(x), (a)/(b)).')
       ..writeln('- Keep all explanations at a middle-school friendly level.');
 
     return buffer.toString();

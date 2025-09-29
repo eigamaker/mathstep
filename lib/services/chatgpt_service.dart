@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../models/solution.dart';
 import '../localization/app_language.dart';
+import '../utils/asciimath_converter.dart';
 import 'json_parser.dart';
 import 'prompt_generator.dart';
 
@@ -32,7 +33,7 @@ class ChatGptService {
   final http.Client? _client;
 
   Future<Solution> generateSolution(
-    String latexExpression, {
+    String asciiMathExpression, {
     String? condition,
     required AppLanguage language,
   }) async {
@@ -55,7 +56,7 @@ class ChatGptService {
           {
             'role': 'user',
             'content': PromptGenerator.buildUserPrompt(
-              latexExpression,
+              asciiMathExpression,
               condition: condition,
               language: language,
               outputMode: 'json',
@@ -120,8 +121,11 @@ class ChatGptService {
         );
       }
       
-      debugPrint('Solution parsed successfully: ${solution.steps.length} steps');
-      return solution;
+      // AsciiMath応答を正規化
+      final normalizedSolution = _normalizeSolution(solution);
+      
+      debugPrint('Solution parsed and normalized successfully: ${normalizedSolution.steps.length} steps');
+      return normalizedSolution;
     } catch (error, stackTrace) {
       debugPrint('ChatGptService error: $error\n$stackTrace');
       if (error is ChatGptException) {
@@ -136,5 +140,68 @@ class ChatGptService {
         client.close();
       }
     }
+  }
+
+  /// ソリューションのAsciiMath表現を正規化
+  Solution _normalizeSolution(Solution solution) {
+    final normalizedSteps = solution.steps.map((step) {
+      final normalizedExpression = step.latexExpression != null
+          ? AsciiMathConverter.normalizeChatGptResponse(step.latexExpression!)
+          : null;
+      
+      return SolutionStep(
+        id: step.id,
+        title: step.title,
+        description: step.description,
+        latexExpression: normalizedExpression,
+      );
+    }).toList();
+
+    final normalizedAlternativeSolutions = solution.alternativeSolutions?.map((alt) {
+      final normalizedAltSteps = alt.steps.map((step) {
+        final normalizedExpression = step.latexExpression != null
+            ? AsciiMathConverter.normalizeChatGptResponse(step.latexExpression!)
+            : null;
+        
+        return SolutionStep(
+          id: step.id,
+          title: step.title,
+          description: step.description,
+          latexExpression: normalizedExpression,
+        );
+      }).toList();
+
+      return AlternativeSolution(
+        id: alt.id,
+        title: alt.title,
+        steps: normalizedAltSteps,
+      );
+    }).toList();
+
+    final normalizedVerification = solution.verification != null
+        ? Verification(
+            domainCheck: solution.verification!.domainCheck != null
+                ? AsciiMathConverter.normalizeChatGptResponse(solution.verification!.domainCheck!)
+                : null,
+            verification: solution.verification!.verification != null
+                ? AsciiMathConverter.normalizeChatGptResponse(solution.verification!.verification!)
+                : null,
+            commonMistakes: solution.verification!.commonMistakes != null
+                ? AsciiMathConverter.normalizeChatGptResponse(solution.verification!.commonMistakes!)
+                : null,
+          )
+        : null;
+
+    return Solution(
+      id: solution.id,
+      mathExpressionId: solution.mathExpressionId,
+      problemStatement: solution.problemStatement != null
+          ? AsciiMathConverter.normalizeChatGptResponse(solution.problemStatement!)
+          : null,
+      steps: normalizedSteps,
+      alternativeSolutions: normalizedAlternativeSolutions,
+      verification: normalizedVerification,
+      timestamp: solution.timestamp,
+    );
   }
 }

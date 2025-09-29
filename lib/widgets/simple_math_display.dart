@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
 import '../localization/localization_extensions.dart';
+import '../utils/asciimath_converter.dart';
 
 class SimpleMathDisplay extends StatelessWidget {
   const SimpleMathDisplay({super.key, required this.expression});
@@ -25,7 +26,9 @@ class SimpleMathDisplay extends StatelessWidget {
       );
     }
 
-    final prepared = _prepareForDisplay(trimmed);
+    // AsciiMath形式をLaTeX形式に変換
+    final latexExpression = AsciiMathConverter.asciiMathToLatex(trimmed);
+    final prepared = _prepareForDisplay(latexExpression);
 
     return Center(
       child: Math.tex(

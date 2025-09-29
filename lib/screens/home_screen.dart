@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../config/api_config.dart';
 import '../models/math_expression.dart';
-import '../utils/syntax_converter.dart';
+import '../utils/asciimath_converter.dart';
 import '../widgets/calculator_keypad.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/reward_ad_button.dart';
@@ -202,12 +202,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _showSnackBar(l10n.homeSendingToChatGpt);
 
       final chatGptService = ref.read(chatGptServiceProvider);
-      final latexExpression = SyntaxConverter.calculatorToLatex(input);
+      final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(input);
       final conditionRaw = _conditionController.text.trim();
       final condition = conditionRaw.isEmpty ? null : conditionRaw;
 
       final solution = await chatGptService.generateSolution(
-        latexExpression,
+        asciiMathExpression,
         condition: condition,
         language: language,
       );
@@ -217,7 +217,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final mathExpression = MathExpression(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         calculatorSyntax: input,
-        latexExpression: latexExpression,
+        latexExpression: AsciiMathConverter.asciiMathToLatex(asciiMathExpression),
         timestamp: DateTime.now(),
       );
 

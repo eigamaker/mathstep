@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/math_text_processor.dart';
+import '../utils/asciimath_converter.dart';
 import 'latex_preview.dart';
 
 /// 数式とテキストを適切に表示するウィジェット
@@ -52,6 +53,9 @@ class MathTextDisplay extends StatelessWidget {
   }
 
   Widget _buildMathWidget(String mathExpression) {
+    // AsciiMath形式をLaTeX形式に変換して表示
+    final latexExpression = AsciiMathConverter.asciiMathToLatex(mathExpression);
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -61,7 +65,7 @@ class MathTextDisplay extends StatelessWidget {
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 40),
-        child: LatexPreview(expression: mathExpression),
+        child: LatexPreview(expression: latexExpression),
       ),
     );
   }

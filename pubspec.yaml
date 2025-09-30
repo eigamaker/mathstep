@@ -44,6 +44,9 @@ dependencies:
   # LaTeX Rendering
   flutter_math_fork: ^0.7.2
   
+  # Graph Plotting
+  fl_chart: ^0.69.0
+  
   
   # HTTP and API
   http: ^1.2.1

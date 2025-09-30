@@ -72,6 +72,18 @@ void main() {
           equals('(x^2 + (1))/(() sqrt(x))'),
         );
       });
+
+      test('3乗根の変換', () {
+        expect(
+          AsciiMathConverter.calculatorToAsciiMath('root(3, x2)'),
+          equals('root(3, x^2)'),
+        );
+        
+        expect(
+          AsciiMathConverter.calculatorToAsciiMath('sqrt(2x) + 3*root(3, x2)'),
+          equals('sqrt(2x) + 3root(3, x^2)'),
+        );
+      });
     });
 
     group('asciiMathToLatex', () {
@@ -136,6 +148,18 @@ void main() {
         expect(
           AsciiMathConverter.asciiMathToLatex('inf'),
           equals('\\infty'),
+        );
+      });
+
+      test('3乗根の変換', () {
+        expect(
+          AsciiMathConverter.asciiMathToLatex('root(3, x^2)'),
+          equals('\\sqrt[3]{x^{2}}'),
+        );
+        
+        expect(
+          AsciiMathConverter.asciiMathToLatex('sqrt(x) + root(3, x)'),
+          equals('\\sqrt{x} + \\sqrt[3]{x}'),
         );
       });
     });

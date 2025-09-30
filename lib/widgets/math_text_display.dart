@@ -106,21 +106,20 @@ class ReadableMathTextDisplay extends StatelessWidget {
     return Wrap(
       children: segments.map((segment) {
         if (segment.type == MathTextType.math) {
+          // AsciiMath形式をLaTeX形式に変換して表示
+          final latexExpression = AsciiMathConverter.asciiMathToLatex(segment.content);
+          
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 2),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.grey.shade300, width: 1),
+              border: Border.all(color: Colors.blue.shade200, width: 1),
             ),
-            child: Text(
-              MathTextProcessor.mathToReadableText(segment.content),
-              style: TextStyle(
-                fontSize: (textStyle?.fontSize ?? 14) * 0.9,
-                fontFamily: 'monospace',
-                color: Colors.grey.shade700,
-              ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 30),
+              child: LatexPreview(expression: latexExpression),
             ),
           );
         } else {

@@ -3,8 +3,9 @@ class MathTextProcessor {
   MathTextProcessor._();
 
   /// Matches inline/blocked LaTeX as well as standalone commands like \sqrt{...}.
+  /// Also matches AsciiMath patterns like sqrt(x), root(n,x), x^2, etc.
   static final RegExp _mathSegmentPattern = RegExp(
-    r'(\\\[.*?\\\]|\\\(.*?\\\)|\$\$.*?\$\$|\$.*?\$|\\[a-zA-Z]+(?:\{[^}]*\})*)',
+    r'(\\\[.*?\\\]|\\\(.*?\\\)|\$\$.*?\$\$|\$.*?\$|\\[a-zA-Z]+(?:\{[^}]*\})*|sqrt\([^)]+\)|root\(\d+,\s*[^)]+\)|[a-zA-Z]\^[a-zA-Z0-9]+|\([^)]+\)/[^)]+\)|sin\([^)]+\)|cos\([^)]+\)|tan\([^)]+\)|log\([^)]+\)|ln\([^)]+\)|exp\([^)]+\))',
     dotAll: true,
   );
 

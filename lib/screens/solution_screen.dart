@@ -7,6 +7,8 @@ import '../widgets/alternative_solution_tab.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/solution_step_card.dart';
 import '../widgets/verification_section.dart';
+import '../widgets/math_graph_display.dart';
+import '../utils/asciimath_converter.dart';
 
 class SolutionScreen extends StatefulWidget {
   const SolutionScreen({
@@ -29,7 +31,7 @@ class _SolutionScreenState extends State<SolutionScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -58,6 +60,7 @@ class _SolutionScreenState extends State<SolutionScreen>
           tabs: [
             Tab(text: l10n.solutionTabMain),
             Tab(text: l10n.solutionTabAlternative),
+            const Tab(text: 'グラフ'),
           ],
         ),
       ),
@@ -70,7 +73,7 @@ class _SolutionScreenState extends State<SolutionScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [_buildStepsTab(), _buildAlternativeTab()],
+              children: [_buildStepsTab(), _buildAlternativeTab(), _buildGraphTab()],
             ),
           ),
         ],
@@ -132,6 +135,45 @@ class _SolutionScreenState extends State<SolutionScreen>
           VerificationSection(verification: verification),
         ],
       ],
+    );
+  }
+
+  Widget _buildGraphTab() {
+    // 元の数式をAsciiMath形式に変換
+    final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(
+      widget.mathExpression.calculatorSyntax,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '関数のグラフ',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'f(x) = $asciiMathExpression',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontFamily: 'monospace',
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: MathGraphDisplay(
+              asciiMathExpression: asciiMathExpression,
+              minX: -5.0,
+              maxX: 5.0,
+              minY: -10.0,
+              maxY: 10.0,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

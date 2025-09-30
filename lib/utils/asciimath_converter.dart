@@ -71,6 +71,12 @@ class AsciiMathConverter {
       (match) => '\\sqrt{${match.group(1)}}',
     );
 
+    // n乗根: root(n, x) → \sqrt[n]{x}
+    latex = latex.replaceAllMapped(
+      RegExp(r'root\(([^,]+),\s*([^)]+)\)'),
+      (match) => '\\sqrt[${match.group(1)}]{${match.group(2)}}',
+    );
+
     // 累乗: x^2 → x^{2}
     latex = latex.replaceAllMapped(
       RegExp(r'(\w+)\^(\w+)'),
@@ -278,6 +284,21 @@ class AsciiMathConverter {
     );
 
     // root(n, x) → root(n, x) (そのまま)
+    // ただし、x2のような表記をx^2に変換
+    result = result.replaceAllMapped(
+      RegExp(r'root\(([^,]+),\s*([^)]+)\)'),
+      (match) {
+        final n = match.group(1)!.trim();
+        final x = match.group(2)!.trim();
+        // x2のような表記をx^2に変換
+        final convertedX = x.replaceAllMapped(
+          RegExp(r'([a-zA-Z])(\d+)'),
+          (m) => '${m.group(1)}^${m.group(2)}',
+        );
+        return 'root($n, $convertedX)';
+      },
+    );
+
     return result;
   }
 

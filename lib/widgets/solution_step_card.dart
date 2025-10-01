@@ -23,25 +23,187 @@ class SolutionStepCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Step ${index + 1}: ${step.title}',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            ReadableMathTextDisplay(
-              text: step.description,
-              textStyle: theme.textTheme.bodyMedium,
-            ),
-            if (step.latexExpression != null &&
-                step.latexExpression!.trim().isNotEmpty) ...[
-              const SizedBox(height: 12),
-              LatexPreview(expression: step.latexExpression!),
-            ],
+            // ステップタイトル
+            _buildStepTitle(theme),
+            const SizedBox(height: 12),
+            // 統合された説明と数式表示
+            _buildIntegratedContent(theme),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildStepTitle(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        'Step ${index + 1}: ${step.title}',
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onPrimaryContainer,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIntegratedContent(ThemeData theme) {
+    // 説明文と数式を統合して表示
+    final hasLatex = step.latexExpression != null && 
+                     step.latexExpression!.trim().isNotEmpty;
+    
+    if (!hasLatex) {
+      // 数式がない場合は説明文のみ
+      return _buildEnhancedDescription(step.description, theme);
+    }
+
+    // 数式がある場合は統合表示
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 説明文（改善されたスタイル）
+          _buildEnhancedDescription(step.description, theme),
+          const SizedBox(height: 16),
+          // 数式表示（区切り線付き）
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: theme.colorScheme.outline.withOpacity(0.2),
+          ),
+          const SizedBox(height: 12),
+          // 数式プレビュー
+          _buildMathExpression(theme),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedDescription(String description, ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 説明文のアイコン
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                size: 18,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '解説',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // 説明文（読みやすいスタイル）
+          ReadableMathTextDisplay(
+            text: _enhanceDescription(description),
+            textStyle: theme.textTheme.bodyLarge?.copyWith(
+              height: 1.6,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMathExpression(ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.functions,
+                size: 16,
+                color: theme.colorScheme.secondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '数式',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.secondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: 50, // 最小高さを設定
+              maxHeight: 100, // 最大高さを設定
+            ),
+            child: LatexPreview(
+              expression: step.latexExpression!,
+              showBorder: false,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _enhanceDescription(String description) {
+    // 説明文をより分かりやすくするための改善
+    var enhanced = description;
+    
+    // 数学的な表現をより親しみやすく
+    enhanced = enhanced.replaceAll('である', 'です');
+    enhanced = enhanced.replaceAll('である。', 'です。');
+    enhanced = enhanced.replaceAll('である。', 'です。');
+    
+    // ステップバイステップの説明を強調
+    if (enhanced.contains('まず') || enhanced.contains('次に')) {
+      enhanced = '📝 $enhanced';
+    }
+    
+    // 重要なポイントを強調
+    if (enhanced.contains('重要') || enhanced.contains('注意')) {
+      enhanced = '⚠️ $enhanced';
+    }
+    
+    // 結果を強調
+    if (enhanced.contains('結果') || enhanced.contains('答え')) {
+      enhanced = '✅ $enhanced';
+    }
+    
+    return enhanced;
   }
 }

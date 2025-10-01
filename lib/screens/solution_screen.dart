@@ -6,6 +6,7 @@ import '../models/solution.dart';
 import '../widgets/alternative_solution_tab.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/solution_step_card.dart';
+import '../widgets/math_expansion_display.dart';
 import '../widgets/verification_section.dart';
 import '../widgets/math_graph_display.dart';
 import '../utils/asciimath_converter.dart';
@@ -87,14 +88,22 @@ class _SolutionScreenState extends State<SolutionScreen>
       return const _EmptyState(message: 'No steps were returned by the API.');
     }
 
-    return ListView.separated(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      itemCount: steps.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final step = steps[index];
-        return SolutionStepCard(step: step, index: index);
-      },
+      children: [
+        // 数式展開型の解法表示
+        MathExpansionDisplay(steps: steps),
+        const SizedBox(height: 16),
+        // 従来のステップカードも表示（詳細な説明用）
+        ...steps.asMap().entries.map((entry) {
+          final index = entry.key;
+          final step = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SolutionStepCard(step: step, index: index),
+          );
+        }),
+      ],
     );
   }
 

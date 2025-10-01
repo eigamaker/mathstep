@@ -83,11 +83,15 @@ class AsciiMathConverter {
       (match) => '${match.group(1)}^{${match.group(2)}}',
     );
 
-    // 関数の変換
+    // 累乗: x^(y) → x^{y}
+    latex = latex.replaceAllMapped(
+      RegExp(r'(\w+)\^\(([^)]+)\)'),
+      (match) => '${match.group(1)}^{${match.group(2)}}',
+    );
+
+    // 関数の変換（LaTeX形式に変換）
+    // 三角関数はそのままにして、flutter_mathパッケージに任せる
     const functionMap = {
-      'sin': '\\sin',
-      'cos': '\\cos',
-      'tan': '\\tan',
       'log': '\\log',
       'ln': '\\ln',
       'exp': '\\exp',
@@ -100,16 +104,72 @@ class AsciiMathConverter {
       );
     }
 
+    // 積分: int_a^b f(x) dx → \int_a^b f(x) dx
+    latex = latex.replaceAllMapped(
+      RegExp(r'int_([^{]+)\^([^{]+)\s+([^d]+)\s+dx'),
+      (match) => '\\int_{${match.group(1)}}^{${match.group(2)}} ${match.group(3)} dx',
+    );
+
+    // 積分: int_a^{b} f(x) dx → \int_a^{b} f(x) dx
+    latex = latex.replaceAllMapped(
+      RegExp(r'int_([^{]+)\^\{([^}]+)\}\s+([^d]+)\s+dx'),
+      (match) => '\\int_{${match.group(1)}}^{${match.group(2)}} ${match.group(3)} dx',
+    );
+
+    // 積分: int f(x) dx → \int f(x) dx
+    latex = latex.replaceAllMapped(
+      RegExp(r'int\s+([^d]+)\s+dx'),
+      (match) => '\\int ${match.group(1)} dx',
+    );
+
     // 積分: int(f(x), x) → \int f(x) dx
     latex = latex.replaceAllMapped(
       RegExp(r'int\(([^,]+),\s*([^)]+)\)'),
       (match) => '\\int ${match.group(1)} d${match.group(2)}',
     );
 
+    // 積分: integral f(x) dx → \int f(x) dx (integralがそのままの場合)
+    latex = latex.replaceAllMapped(
+      RegExp(r'integral\s+([^d]+)\s+dx'),
+      (match) => '\\int ${match.group(1)} dx',
+    );
+
+    // 微分: d/dx[f(x)] → \frac{d}{dx}[f(x)]
+    latex = latex.replaceAllMapped(
+      RegExp(r'd/dx\[([^\]]+)\]'),
+      (match) {
+        final content = match.group(1)!;
+        // 微分記号内の三角関数を変換
+        String convertedContent = content
+            .replaceAllMapped(RegExp(r'sin\(([^)]+)\)'), (m) => '\\sin(${m.group(1)})')
+            .replaceAllMapped(RegExp(r'cos\(([^)]+)\)'), (m) => '\\cos(${m.group(1)})')
+            .replaceAllMapped(RegExp(r'tan\(([^)]+)\)'), (m) => '\\tan(${m.group(1)})');
+        return '\\frac{d}{dx}[$convertedContent]';
+      },
+    );
+
+    // 極限: limit_{x->a} f(x) → \lim_{x \to a} f(x)
+    latex = latex.replaceAllMapped(
+      RegExp(r'limit_\{([^}]+)->([^}]+)\}\s+([^}]+)'),
+      (match) => '\\lim_{${match.group(1)} \\to ${match.group(2)}} ${match.group(3)}',
+    );
+
     // 総和: sum(i=1, n, f(i)) → \sum_{i=1}^{n} f(i)
     latex = latex.replaceAllMapped(
       RegExp(r'sum\(([^=]+)=([^,]+),\s*([^,]+),\s*([^)]+)\)'),
       (match) => '\\sum_{${match.group(1)}=${match.group(2)}}^{${match.group(3)}} ${match.group(4)}',
+    );
+
+    // 総積: prod(i=1, n, f(i)) → \prod_{i=1}^{n} f(i)
+    latex = latex.replaceAllMapped(
+      RegExp(r'prod\(([^=]+)=([^,]+),\s*([^,]+),\s*([^)]+)\)'),
+      (match) => '\\prod_{${match.group(1)}=${match.group(2)}}^{${match.group(3)}} ${match.group(4)}',
+    );
+
+    // 絶対値: abs(x) → |x|
+    latex = latex.replaceAllMapped(
+      RegExp(r'abs\(([^)]+)\)'),
+      (match) => '|${match.group(1)}|',
     );
 
     // 数学記号の変換
@@ -190,8 +250,18 @@ class AsciiMathConverter {
     normalized = normalized.replaceAll('÷', '/');
     normalized = normalized.replaceAll('＝', '=');
 
-    // 乗算記号の除去（AsciiMathでは不要）
-    normalized = normalized.replaceAll('*', '');
+    // 乗算記号の除去（AsciiMathでは不要、ただし関数内では保持）
+    // pow(2, 3)のような関数内のカンマの前後では除去しない
+    normalized = normalized.replaceAllMapped(
+      RegExp(r'(\w+)\*(\w+)'),
+      (match) => '${match.group(1)}${match.group(2)}',
+    );
+    
+    // 関数内のカンマの前後の空白を正規化
+    normalized = normalized.replaceAllMapped(
+      RegExp(r'(\w+)\s*,\s*(\w+)'),
+      (match) => '${match.group(1)},${match.group(2)}',
+    );
 
     return normalized;
   }
@@ -199,6 +269,12 @@ class AsciiMathConverter {
   /// 分数の変換
   static String _convertFractions(String input) {
     String result = input;
+
+    // frac{a}{b} → (a)/(b)
+    result = result.replaceAllMapped(
+      RegExp(r'frac\{([^}]+)\}\{([^}]+)\}'),
+      (match) => '(${match.group(1)})/(${match.group(2)})',
+    );
 
     // frac(a,b) → (a)/(b)
     result = result.replaceAllMapped(
@@ -263,6 +339,18 @@ class AsciiMathConverter {
       (match) => '${match.group(1)}^${match.group(2)}',
     );
 
+    // e^{ln(x)} → e^(ln(x))
+    result = result.replaceAllMapped(
+      RegExp(r'e\^\{([^}]+)\}'),
+      (match) => 'e^(${match.group(1)})',
+    );
+
+    // x^{y} → x^(y)
+    result = result.replaceAllMapped(
+      RegExp(r'(\w+)\^\{([^}]+)\}'),
+      (match) => '${match.group(1)}^(${match.group(2)})',
+    );
+
     // x^() → x^()
     result = result.replaceAllMapped(
       RegExp(r'\^\(([^)]+)\)'),
@@ -305,6 +393,24 @@ class AsciiMathConverter {
   /// 積分の変換
   static String _convertIntegrals(String input) {
     String result = input;
+
+    // integral_a^b f(x) dx → int_a^b f(x) dx
+    result = result.replaceAllMapped(
+      RegExp(r'integral_([^{]+)\^([^{]+)\s+([^d]+)\s+dx'),
+      (match) => 'int_${match.group(1)}^${match.group(2)} ${match.group(3)} dx',
+    );
+
+    // integral_a^{b} f(x) dx → int_a^{b} f(x) dx
+    result = result.replaceAllMapped(
+      RegExp(r'integral_([^{]+)\^\{([^}]+)\}\s+([^d]+)\s+dx'),
+      (match) => 'int_${match.group(1)}^{${match.group(2)}} ${match.group(3)} dx',
+    );
+
+    // integral f(x) dx → int f(x) dx
+    result = result.replaceAllMapped(
+      RegExp(r'integral\s+([^d]+)\s+dx'),
+      (match) => 'int ${match.group(1)} dx',
+    );
 
     // integral(a, b, f(x), x) → int(f(x), x) from a to b
     result = result.replaceAllMapped(

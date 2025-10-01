@@ -34,7 +34,7 @@ class SimpleMathDisplay extends StatelessWidget {
       child: Math.tex(
         prepared,
         mathStyle: MathStyle.display,
-        textStyle: const TextStyle(fontSize: 24, color: Colors.black87),
+        textStyle: const TextStyle(fontSize: 18, color: Colors.black87),
         onErrorFallback: (_) => _buildFallback(trimmed),
       ),
     );
@@ -57,6 +57,7 @@ class SimpleMathDisplay extends StatelessWidget {
   String _prepareForDisplay(String input) {
     var result = input;
 
+    // 積分記号の処理
     if (result.contains('∫')) {
       result = result.replaceAll('∫', r'\\int');
       result = result.replaceAllMapped(
@@ -64,6 +65,12 @@ class SimpleMathDisplay extends StatelessWidget {
         (match) => r'\\int\\limits',
       );
     }
+
+    // 累乗の処理
+    result = result.replaceAllMapped(
+      RegExp(r'(\w+)\^\{([^}]+)\}'),
+      (match) => '${match.group(1)}^{${match.group(2)}}',
+    );
 
     return result;
   }

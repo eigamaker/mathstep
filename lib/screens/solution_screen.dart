@@ -230,17 +230,18 @@ class _ProblemSummary extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (problemStatement != null &&
-              problemStatement!.trim().isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(problemStatement!, style: theme.textTheme.bodyLarge),
-          ],
           const SizedBox(height: 12),
-          LatexPreview(expression: latexExpression),
+          Container(
+            constraints: const BoxConstraints(
+              minHeight: 80, // 分数表示のための最小高さを設定
+            ),
+            child: LatexPreview(expression: latexExpression),
+          ),
         ],
       ),
     );
   }
+
 }
 
 class _EmptyState extends StatelessWidget {

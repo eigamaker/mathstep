@@ -24,6 +24,9 @@ class LatexPreview extends StatelessWidget {
 
     return Container(
       width: double.infinity,
+      constraints: const BoxConstraints(
+        minHeight: 60, // 分数表示のための最小高さを設定
+      ),
       padding: padding,
       decoration: showBorder ? BoxDecoration(
         color: AppColors.surface,
@@ -32,10 +35,7 @@ class LatexPreview extends StatelessWidget {
       ) : null,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SimpleMathDisplay(expression: trimmed),
-        ),
+        child: SimpleMathDisplay(expression: trimmed),
       ),
     );
   }

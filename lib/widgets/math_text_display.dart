@@ -64,7 +64,10 @@ class MathTextDisplay extends StatelessWidget {
         border: Border.all(color: Colors.blue.shade200, width: 1),
       ),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 40),
+        constraints: const BoxConstraints(
+          minHeight: 50, // 分数表示のための最小高さを設定
+          maxHeight: 80, // 最大高さも増加
+        ),
         child: LatexPreview(expression: latexExpression),
       ),
     );
@@ -118,7 +121,10 @@ class ReadableMathTextDisplay extends StatelessWidget {
               border: Border.all(color: Colors.blue.shade200, width: 1),
             ),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 30),
+              constraints: const BoxConstraints(
+                minHeight: 40, // 分数表示のための最小高さを設定
+                maxHeight: 60, // 最大高さも増加
+              ),
               child: LatexPreview(expression: latexExpression),
             ),
           );

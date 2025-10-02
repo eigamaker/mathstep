@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/solution.dart';
 import 'latex_preview.dart';
-import 'math_text_display.dart';
 
 class SolutionStepCard extends StatelessWidget {
   const SolutionStepCard({super.key, required this.step, required this.index});
@@ -118,10 +117,10 @@ class SolutionStepCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // 説明文（読みやすいスタイル）
-          ReadableMathTextDisplay(
-            text: _enhanceDescription(description),
-            textStyle: theme.textTheme.bodyLarge?.copyWith(
+          // 説明文（数式表現を除去してプレーンなテキストのみ）
+          Text(
+            _cleanDescription(description),
+            style: theme.textTheme.bodyLarge?.copyWith(
               height: 1.6,
               color: theme.colorScheme.onSurface,
             ),
@@ -134,6 +133,9 @@ class SolutionStepCard extends StatelessWidget {
   Widget _buildMathExpression(ThemeData theme) {
     return Container(
       width: double.infinity,
+      constraints: const BoxConstraints(
+        minHeight: 100, // 分数表示のための最小高さを設定
+      ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -164,46 +166,51 @@ class SolutionStepCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 50, // 最小高さを設定
-              maxHeight: 100, // 最大高さを設定
-            ),
-            child: LatexPreview(
-              expression: step.latexExpression!,
-              showBorder: false,
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-            ),
+          LatexPreview(
+            expression: step.latexExpression!,
+            showBorder: false,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
           ),
         ],
       ),
     );
   }
 
-  String _enhanceDescription(String description) {
-    // 説明文をより分かりやすくするための改善
-    var enhanced = description;
+  String _cleanDescription(String description) {
+    // 説明文から数式表現を除去してプレーンなテキストにする
+    var cleaned = description;
+    
+    // 数式パターンを除去
+    cleaned = cleaned.replaceAll(RegExp(r'sqrt\([^)]+\)'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\b(abs|sin|cos|tan|log|ln|sqrt|integral|sum|prod|limit|d/dx)\s*\([^)]+\)'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\b\w+\^\w+'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\b\w+/\w+'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'integral[^a-zA-Z]*'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'limit[^a-zA-Z]*'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'd/dx[^a-zA-Z]*'), '');
+    
+    // 余分な空白を整理
+    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
     
     // 数学的な表現をより親しみやすく
-    enhanced = enhanced.replaceAll('である', 'です');
-    enhanced = enhanced.replaceAll('である。', 'です。');
-    enhanced = enhanced.replaceAll('である。', 'です。');
+    cleaned = cleaned.replaceAll('である', 'です');
+    cleaned = cleaned.replaceAll('である。', 'です。');
     
     // ステップバイステップの説明を強調
-    if (enhanced.contains('まず') || enhanced.contains('次に')) {
-      enhanced = '📝 $enhanced';
+    if (cleaned.contains('まず') || cleaned.contains('次に')) {
+      cleaned = '📝 $cleaned';
     }
     
     // 重要なポイントを強調
-    if (enhanced.contains('重要') || enhanced.contains('注意')) {
-      enhanced = '⚠️ $enhanced';
+    if (cleaned.contains('重要') || cleaned.contains('注意')) {
+      cleaned = '⚠️ $cleaned';
     }
     
     // 結果を強調
-    if (enhanced.contains('結果') || enhanced.contains('答え')) {
-      enhanced = '✅ $enhanced';
+    if (cleaned.contains('結果') || cleaned.contains('答え')) {
+      cleaned = '✅ $cleaned';
     }
     
-    return enhanced;
+    return cleaned;
   }
 }

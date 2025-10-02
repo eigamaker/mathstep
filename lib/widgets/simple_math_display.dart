@@ -34,7 +34,7 @@ class SimpleMathDisplay extends StatelessWidget {
       child: Math.tex(
         prepared,
         mathStyle: MathStyle.display,
-        textStyle: const TextStyle(fontSize: 18, color: Colors.black87),
+        textStyle: const TextStyle(fontSize: 22, color: Colors.black87),
         onErrorFallback: (_) => _buildFallback(trimmed),
       ),
     );

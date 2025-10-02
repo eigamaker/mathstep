@@ -296,19 +296,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     
     // 柔軟な動的サイズ計算
-    // 画面の高さに基づいて適切な比率で計算
+    // 画面の高さに基づいて適切な比率で計算（分数表示のため比率を増加）
     double heightRatio;
     if (screenHeight > 900) {
-      heightRatio = 0.20; // 大きな画面では20%
+      heightRatio = 0.25; // 大きな画面では25%
     } else if (screenHeight > 700) {
-      heightRatio = 0.25; // 中程度の画面では25%
+      heightRatio = 0.30; // 中程度の画面では30%
     } else {
-      heightRatio = 0.30; // 小さな画面では30%
+      heightRatio = 0.35; // 小さな画面では35%
     }
     
-    // 最小・最大値を設定
-    final minHeight = 120.0;
-    final maxHeight = 200.0;
+    // 最小・最大値を設定（分数表示のため高さを増加）
+    final minHeight = 150.0;
+    final maxHeight = 300.0;
     
     double calculatedHeight = screenHeight * heightRatio;
     

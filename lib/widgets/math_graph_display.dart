@@ -58,6 +58,7 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
     try {
       final dataPoints = <FlSpot>[];
       final step = (widget.maxX - widget.minX) / widget.pointCount;
+      int validPoints = 0;
 
       for (int i = 0; i <= widget.pointCount; i++) {
         final x = widget.minX + i * step;
@@ -65,12 +66,18 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
         
         if (y != null && y.isFinite && y >= widget.minY && y <= widget.maxY) {
           dataPoints.add(FlSpot(x, y));
+          validPoints++;
         }
       }
 
       setState(() {
         _dataPoints = dataPoints;
         _isLoading = false;
+        
+        // 有効な点が少なすぎる場合はエラーメッセージを表示
+        if (validPoints < 5) {
+          _errorMessage = 'この数式はグラフ化できません。\n対応している関数: sin, cos, tan, sqrt, exp, ln, log, 累乗, 四則演算';
+        }
       });
     } catch (e) {
       setState(() {
@@ -123,6 +130,41 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
       },
     );
 
+    // exp(x) → e^x
+    expr = expr.replaceAllMapped(
+      RegExp(r'exp\(([^)]+)\)'),
+      (match) {
+        final inner = _evaluateArithmetic(match.group(1)!) ?? 0.0;
+        return math.exp(inner).toString();
+      },
+    );
+
+    // ln(x) → log(x) (自然対数)
+    expr = expr.replaceAllMapped(
+      RegExp(r'ln\(([^)]+)\)'),
+      (match) {
+        final inner = _evaluateArithmetic(match.group(1)!) ?? 0.0;
+        if (inner > 0) {
+          return math.log(inner).toString();
+        } else {
+          return '0'; // 負の数や0の対数は0とする
+        }
+      },
+    );
+
+    // log(x) → log10(x) (常用対数)
+    expr = expr.replaceAllMapped(
+      RegExp(r'log\(([^)]+)\)'),
+      (match) {
+        final inner = _evaluateArithmetic(match.group(1)!) ?? 0.0;
+        if (inner > 0) {
+          return (math.log(inner) / math.ln10).toString();
+        } else {
+          return '0'; // 負の数や0の対数は0とする
+        }
+      },
+    );
+
     // sin(x), cos(x), tan(x) の評価
     expr = expr.replaceAllMapped(
       RegExp(r'sin\(([^)]+)\)'),
@@ -152,13 +194,45 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
   }
 
   String _evaluatePowers(String expr) {
-    // x^2 → x^2 の評価
+    // 数値^数値 の評価
     expr = expr.replaceAllMapped(
       RegExp(r'([0-9.]+)\^([0-9.]+)'),
       (match) {
         final base = double.tryParse(match.group(1)!) ?? 0.0;
         final exponent = double.tryParse(match.group(2)!) ?? 1.0;
         return math.pow(base, exponent).toString();
+      },
+    );
+
+    // 変数^数値 の評価 (x^2, x^3 など)
+    expr = expr.replaceAllMapped(
+      RegExp(r'([a-zA-Z]+)\^([0-9.]+)'),
+      (match) {
+        final variable = match.group(1)!;
+        
+        // 変数がxの場合のみ処理（他の変数は未対応）
+        if (variable == 'x') {
+          // この時点ではxは既に数値に置換されているはず
+          // もしxが残っている場合は、そのまま返す
+          return match.group(0)!;
+        }
+        return match.group(0)!;
+      },
+    );
+
+    // 括弧内の累乗の評価 ((x+1)^2 など)
+    expr = expr.replaceAllMapped(
+      RegExp(r'\(([^)]+)\)\^([0-9.]+)'),
+      (match) {
+        final inner = match.group(1)!;
+        final exponent = double.tryParse(match.group(2)!) ?? 1.0;
+        
+        // 括弧内を先に評価
+        final evaluatedInner = _evaluateArithmetic(inner);
+        if (evaluatedInner != null) {
+          return math.pow(evaluatedInner, exponent).toString();
+        }
+        return match.group(0)!;
       },
     );
 
@@ -256,22 +330,29 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
       return Container(
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.red.shade50,
+          color: Colors.orange.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.red.shade300),
+          border: Border.all(color: Colors.orange.shade300),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error, color: Colors.red.shade400),
-              const SizedBox(height: 8),
-              Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red.shade700),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.warning, color: Colors.orange.shade400, size: 32),
+                const SizedBox(height: 12),
+                Text(
+                  _errorMessage!,
+                  style: TextStyle(
+                    color: Colors.orange.shade700,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       );

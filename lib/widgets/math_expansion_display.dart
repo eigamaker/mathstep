@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../localization/localization_extensions.dart';
 import '../models/solution.dart';
 import 'latex_preview.dart';
 
-/// 数式展開型の解法表示ウィジェット
-/// 数式の展開過程の中で説明やヒントを表示する
 class MathExpansionDisplay extends StatelessWidget {
-  const MathExpansionDisplay({
-    super.key,
-    required this.steps,
-  });
+  const MathExpansionDisplay({super.key, required this.steps});
 
   final List<SolutionStep> steps;
 
@@ -31,27 +27,21 @@ class MathExpansionDisplay extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 解法のタイトル
-          _buildSolutionTitle(theme),
+          _buildSolutionTitle(context, theme),
           const SizedBox(height: 16),
-          // 数式展開過程
-          _buildMathExpansion(theme),
+          _buildMathExpansion(context, theme),
         ],
       ),
     );
   }
 
-  Widget _buildSolutionTitle(ThemeData theme) {
+  Widget _buildSolutionTitle(BuildContext context, ThemeData theme) {
     return Row(
       children: [
-        Icon(
-          Icons.functions,
-          size: 20,
-          color: theme.colorScheme.primary,
-        ),
+        Icon(Icons.functions, size: 20, color: theme.colorScheme.primary),
         const SizedBox(width: 8),
         Text(
-          '解法',
+          context.l10n.solutionTabMain,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.primary,
@@ -61,29 +51,31 @@ class MathExpansionDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildMathExpansion(ThemeData theme) {
+  Widget _buildMathExpansion(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (int i = 0; i < steps.length; i++) ...[
-          _buildExpansionStep(theme, steps[i], i),
+          _buildExpansionStep(context, theme, steps[i], i),
           if (i < steps.length - 1) const SizedBox(height: 12),
         ],
       ],
     );
   }
 
-  Widget _buildExpansionStep(ThemeData theme, SolutionStep step, int index) {
+  Widget _buildExpansionStep(
+    BuildContext context,
+    ThemeData theme,
+    SolutionStep step,
+    int index,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 統合された説明と数式表示
         _buildIntegratedStep(theme, step),
-        
-        // 次のステップへの矢印（最後のステップ以外）
         if (index < steps.length - 1) ...[
           const SizedBox(height: 16),
-          _buildArrow(theme),
+          _buildArrow(context, theme),
           const SizedBox(height: 8),
         ],
       ],
@@ -105,7 +97,6 @@ class MathExpansionDisplay extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 説明文（数式表現を除去してプレーンなテキストのみ）
           Text(
             _cleanExplanation(step.description),
             style: theme.textTheme.bodyLarge?.copyWith(
@@ -113,9 +104,8 @@ class MathExpansionDisplay extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
           ),
-          
-          // 数式表示（説明文の下に表示）
-          if (step.latexExpression != null && step.latexExpression!.trim().isNotEmpty) ...[
+          if (step.latexExpression != null &&
+              step.latexExpression!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             _buildMathExpression(theme, step.latexExpression!),
           ],
@@ -127,9 +117,7 @@ class MathExpansionDisplay extends StatelessWidget {
   Widget _buildMathExpression(ThemeData theme, String expression) {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(
-        minHeight: 80, // 分数表示のための最小高さを設定
-      ),
+      constraints: const BoxConstraints(minHeight: 80),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceVariant.withOpacity(0.2),
@@ -147,8 +135,7 @@ class MathExpansionDisplay extends StatelessWidget {
     );
   }
 
-
-  Widget _buildArrow(ThemeData theme) {
+  Widget _buildArrow(BuildContext context, ThemeData theme) {
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -166,7 +153,7 @@ class MathExpansionDisplay extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              '次のステップ',
+              context.l10n.solutionNextStepLabel,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.secondary,
                 fontWeight: FontWeight.bold,
@@ -179,43 +166,40 @@ class MathExpansionDisplay extends StatelessWidget {
   }
 
   String _cleanExplanation(String description) {
-    // 説明文から数式表現を除去してプレーンなテキストにする
     var cleaned = description;
 
-    // 数式パターンを除去
     cleaned = cleaned.replaceAll(RegExp(r'sqrt\([^)]+\)'), '');
-    cleaned = cleaned.replaceAll(RegExp(r'\b(abs|sin|cos|tan|log|ln|sqrt|integral|sum|prod|limit|d/dx)\s*\([^)]+\)'), '');
+    cleaned = cleaned.replaceAll(
+      RegExp(
+        r'\b(abs|sin|cos|tan|log|ln|sqrt|integral|sum|prod|limit|d/dx)\s*\([^)]+\)',
+      ),
+      '',
+    );
     cleaned = cleaned.replaceAll(RegExp(r'\b\w+\^\w+'), '');
     cleaned = cleaned.replaceAll(RegExp(r'\b\w+/\w+'), '');
     cleaned = cleaned.replaceAll(RegExp(r'integral[^a-zA-Z]*'), '');
     cleaned = cleaned.replaceAll(RegExp(r'limit[^a-zA-Z]*'), '');
     cleaned = cleaned.replaceAll(RegExp(r'd/dx[^a-zA-Z]*'), '');
 
-    // 余分な空白を整理
     cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
 
-    // 数学的な表現をより親しみやすく
     cleaned = cleaned.replaceAll('である', 'です');
     cleaned = cleaned.replaceAll('である。', 'です。');
 
-    // ステップバイステップの説明を強調
     if (cleaned.contains('まず') || cleaned.contains('次に')) {
-      cleaned = '📝 $cleaned';
+      cleaned = '📝 ';
     }
 
-    // 重要なポイントを強調
     if (cleaned.contains('重要') || cleaned.contains('注意')) {
-      cleaned = '⚠️ $cleaned';
+      cleaned = '⚠️ ';
     }
 
-    // 結果を強調
     if (cleaned.contains('結果') || cleaned.contains('答え')) {
-      cleaned = '✅ $cleaned';
+      cleaned = '✅ ';
     }
 
-    // コツやヒントを強調
     if (cleaned.contains('コツ') || cleaned.contains('ヒント')) {
-      cleaned = '💡 $cleaned';
+      cleaned = '💡 ';
     }
 
     return cleaned;

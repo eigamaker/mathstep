@@ -334,16 +334,53 @@ class AppLocalizationsJa extends AppLocalizations {
   String get solutionTabAlternative => '別解・検算';
 
   @override
+  String get solutionTabGraph => 'グラフ';
+
+  @override
   String get solutionAlternativeSectionTitle => '別解';
 
   @override
   String get solutionVerificationSectionTitle => '検算・定義域チェック';
 
   @override
+  String get solutionStepsEmptyMessage => 'APIからステップが返されませんでした。';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '追加の情報はまだありません。';
+
+  @override
   String get solutionShareNotAvailable => '共有機能は今後のアップデートで対応予定です。';
 
   @override
   String get solutionSaveSuccess => '履歴に保存しました。';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return 'ステップ$stepNumber: $stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '次のステップ';
+
+  @override
+  String get solutionGraphSectionTitle => '関数のグラフ';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphUnsupportedMessage =>
+      'この数式はグラフ化できません。\n対応している関数: sin, cos, tan, sqrt, exp, ln, log, 累乗, 四則演算';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return 'グラフの生成中にエラーが発生しました: $error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => 'グラフデータがありません';
 
   @override
   String get verificationDomainCheckTitle => '定義域チェック';

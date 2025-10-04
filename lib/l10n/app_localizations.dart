@@ -710,6 +710,12 @@ abstract class AppLocalizations {
   /// **'Alternatives & checks'**
   String get solutionTabAlternative;
 
+  /// No description provided for @solutionTabGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph'**
+  String get solutionTabGraph;
+
   /// No description provided for @solutionAlternativeSectionTitle.
   ///
   /// In en, this message translates to:
@@ -722,6 +728,18 @@ abstract class AppLocalizations {
   /// **'Verification & domain check'**
   String get solutionVerificationSectionTitle;
 
+  /// No description provided for @solutionStepsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps were returned by the API.'**
+  String get solutionStepsEmptyMessage;
+
+  /// No description provided for @solutionAlternativeEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No additional material yet.'**
+  String get solutionAlternativeEmptyMessage;
+
   /// No description provided for @solutionShareNotAvailable.
   ///
   /// In en, this message translates to:
@@ -733,6 +751,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved to history.'**
   String get solutionSaveSuccess;
+
+  /// No description provided for @solutionStepBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {stepNumber}: {stepTitle}'**
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle);
+
+  /// No description provided for @solutionNextStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next step'**
+  String get solutionNextStepLabel;
+
+  /// No description provided for @solutionGraphSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph of the function'**
+  String get solutionGraphSectionTitle;
+
+  /// No description provided for @solutionGraphFunctionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'f(x) = {expression}'**
+  String solutionGraphFunctionLabel(String expression);
+
+  /// No description provided for @solutionGraphUnsupportedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This expression cannot be graphed.\nSupported functions: sin, cos, tan, sqrt, exp, ln, log, powers, basic arithmetic'**
+  String get solutionGraphUnsupportedMessage;
+
+  /// No description provided for @solutionGraphErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while generating the graph: {error}'**
+  String solutionGraphErrorMessage(String error);
+
+  /// No description provided for @solutionGraphNoDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No graph data available'**
+  String get solutionGraphNoDataMessage;
 
   /// No description provided for @verificationDomainCheckTitle.
   ///

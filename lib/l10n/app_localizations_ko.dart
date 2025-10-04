@@ -335,16 +335,53 @@ class AppLocalizationsKo extends AppLocalizations {
   String get solutionTabAlternative => '대안·검산';
 
   @override
+  String get solutionTabGraph => '그래프';
+
+  @override
   String get solutionAlternativeSectionTitle => '대안 해법';
 
   @override
   String get solutionVerificationSectionTitle => '검산 및 정의역 확인';
 
   @override
+  String get solutionStepsEmptyMessage => 'API에서 반환된 단계가 없습니다.';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '추가 자료가 아직 없습니다.';
+
+  @override
   String get solutionShareNotAvailable => '공유 기능은 추후 업데이트에서 제공될 예정입니다.';
 
   @override
   String get solutionSaveSuccess => '기록에 저장했습니다.';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return '단계 $stepNumber: $stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '다음 단계';
+
+  @override
+  String get solutionGraphSectionTitle => '함수 그래프';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphUnsupportedMessage =>
+      '이 식은 그래프로 표시할 수 없습니다.\n지원되는 함수: sin, cos, tan, sqrt, exp, ln, log, 거듭제곱, 사칙연산';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return '그래프를 생성하는 동안 오류가 발생했습니다: $error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => '그래프 데이터가 없습니다';
 
   @override
   String get verificationDomainCheckTitle => '정의역 확인';

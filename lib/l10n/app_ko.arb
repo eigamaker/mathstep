@@ -146,10 +146,44 @@
   "solutionProblemLabel": "문제:",
   "solutionTabMain": "해법",
   "solutionTabAlternative": "대안·검산",
+  "solutionTabGraph": "그래프",
   "solutionAlternativeSectionTitle": "대안 해법",
   "solutionVerificationSectionTitle": "검산 및 정의역 확인",
+  "solutionStepsEmptyMessage": "API에서 반환된 단계가 없습니다.",
+  "solutionAlternativeEmptyMessage": "추가 자료가 아직 없습니다.",
   "solutionShareNotAvailable": "공유 기능은 추후 업데이트에서 제공될 예정입니다.",
   "solutionSaveSuccess": "기록에 저장했습니다.",
+  "solutionStepBadgeLabel": "단계 {stepNumber}: {stepTitle}",
+  "@solutionStepBadgeLabel": {
+    "placeholders": {
+      "stepNumber": {
+        "type": "int"
+      },
+      "stepTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionNextStepLabel": "다음 단계",
+  "solutionGraphSectionTitle": "함수 그래프",
+  "solutionGraphFunctionLabel": "f(x) = {expression}",
+  "@solutionGraphFunctionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphUnsupportedMessage": "이 식은 그래프로 표시할 수 없습니다.\n지원되는 함수: sin, cos, tan, sqrt, exp, ln, log, 거듭제곱, 사칙연산",
+  "solutionGraphErrorMessage": "그래프를 생성하는 동안 오류가 발생했습니다: {error}",
+  "@solutionGraphErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNoDataMessage": "그래프 데이터가 없습니다",
   "verificationDomainCheckTitle": "정의역 확인",
   "verificationVerificationTitle": "검산",
   "verificationCommonPitfallsTitle": "자주 하는 실수",

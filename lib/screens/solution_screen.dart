@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import '../localization/localization_extensions.dart';
 import '../models/math_expression.dart';
 import '../models/solution.dart';
+import '../utils/asciimath_converter.dart';
 import '../widgets/alternative_solution_tab.dart';
 import '../widgets/latex_preview.dart';
-import '../widgets/solution_step_card.dart';
 import '../widgets/math_expansion_display.dart';
-import '../widgets/verification_section.dart';
 import '../widgets/math_graph_display.dart';
-import '../utils/asciimath_converter.dart';
+import '../widgets/solution_step_card.dart';
+import '../widgets/verification_section.dart';
 
 class SolutionScreen extends StatefulWidget {
   const SolutionScreen({
@@ -47,8 +47,66 @@ class _SolutionScreenState extends State<SolutionScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.solutionAppBarTitle),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.functions, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: Text(
+                l10n.solutionAppBarTitle,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+              ],
+            ),
+          ),
+        ),
         actions: [
           IconButton(icon: const Icon(Icons.share), onPressed: _shareSolution),
           IconButton(
@@ -61,7 +119,7 @@ class _SolutionScreenState extends State<SolutionScreen>
           tabs: [
             Tab(text: l10n.solutionTabMain),
             Tab(text: l10n.solutionTabAlternative),
-            const Tab(text: 'グラフ'),
+            Tab(text: l10n.solutionTabGraph),
           ],
         ),
       ),
@@ -74,7 +132,11 @@ class _SolutionScreenState extends State<SolutionScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [_buildStepsTab(), _buildAlternativeTab(), _buildGraphTab()],
+              children: [
+                _buildStepsTab(),
+                _buildAlternativeTab(),
+                _buildGraphTab(),
+              ],
             ),
           ),
         ],
@@ -84,17 +146,17 @@ class _SolutionScreenState extends State<SolutionScreen>
 
   Widget _buildStepsTab() {
     final steps = widget.solution.steps;
+    final l10n = context.l10n;
+
     if (steps.isEmpty) {
-      return const _EmptyState(message: 'No steps were returned by the API.');
+      return _EmptyState(message: l10n.solutionStepsEmptyMessage);
     }
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // 数式展開型の解法表示
         MathExpansionDisplay(steps: steps),
         const SizedBox(height: 16),
-        // 従来のステップカードも表示（詳細な説明用）
         ...steps.asMap().entries.map((entry) {
           final index = entry.key;
           final step = entry.value;
@@ -110,10 +172,11 @@ class _SolutionScreenState extends State<SolutionScreen>
   Widget _buildAlternativeTab() {
     final alternativeSolutions = widget.solution.alternativeSolutions;
     final verification = widget.solution.verification;
+    final l10n = context.l10n;
 
     if ((alternativeSolutions == null || alternativeSolutions.isEmpty) &&
         verification == null) {
-      return const _EmptyState(message: 'No additional material yet.');
+      return _EmptyState(message: l10n.solutionAlternativeEmptyMessage);
     }
 
     return ListView(
@@ -129,29 +192,21 @@ class _SolutionScreenState extends State<SolutionScreen>
           ),
           const SizedBox(height: 12),
           ...alternativeSolutions.map(
-            (alt) => AlternativeSolutionTab(alternativeSolution: alt),
+            (item) => AlternativeSolutionTab(alternativeSolution: item),
           ),
           const SizedBox(height: 24),
         ],
-        if (verification != null) ...[
-          Text(
-            context.l10n.solutionVerificationSectionTitle,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
+        if (verification != null)
           VerificationSection(verification: verification),
-        ],
       ],
     );
   }
 
   Widget _buildGraphTab() {
-    // 元の数式をAsciiMath形式に変換
     final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(
       widget.mathExpression.calculatorSyntax,
     );
+    final l10n = context.l10n;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -159,17 +214,17 @@ class _SolutionScreenState extends State<SolutionScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '関数のグラフ',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            l10n.solutionGraphSectionTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Text(
-            'f(x) = $asciiMathExpression',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontFamily: 'monospace',
-            ),
+            l10n.solutionGraphFunctionLabel(asciiMathExpression),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(fontFamily: 'monospace'),
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -232,16 +287,13 @@ class _ProblemSummary extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Container(
-            constraints: const BoxConstraints(
-              minHeight: 80, // 分数表示のための最小高さを設定
-            ),
+            constraints: const BoxConstraints(minHeight: 80),
             child: LatexPreview(expression: latexExpression),
           ),
         ],
       ),
     );
   }
-
 }
 
 class _EmptyState extends StatelessWidget {

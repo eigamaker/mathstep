@@ -146,10 +146,44 @@
   "solutionProblemLabel": "Problem:",
   "solutionTabMain": "Solution",
   "solutionTabAlternative": "Alternatives & checks",
+  "solutionTabGraph": "Graph",
   "solutionAlternativeSectionTitle": "Alternative solutions",
   "solutionVerificationSectionTitle": "Verification & domain check",
+  "solutionStepsEmptyMessage": "No steps were returned by the API.",
+  "solutionAlternativeEmptyMessage": "No additional material yet.",
   "solutionShareNotAvailable": "Sharing will be available in a future update.",
   "solutionSaveSuccess": "Saved to history.",
+  "solutionStepBadgeLabel": "Step {stepNumber}: {stepTitle}",
+  "@solutionStepBadgeLabel": {
+    "placeholders": {
+      "stepNumber": {
+        "type": "int"
+      },
+      "stepTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionNextStepLabel": "Next step",
+  "solutionGraphSectionTitle": "Graph of the function",
+  "solutionGraphFunctionLabel": "f(x) = {expression}",
+  "@solutionGraphFunctionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphUnsupportedMessage": "This expression cannot be graphed.\nSupported functions: sin, cos, tan, sqrt, exp, ln, log, powers, basic arithmetic",
+  "solutionGraphErrorMessage": "An error occurred while generating the graph: {error}",
+  "@solutionGraphErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNoDataMessage": "No graph data available",
   "verificationDomainCheckTitle": "Domain check",
   "verificationVerificationTitle": "Verification",
   "verificationCommonPitfallsTitle": "Common pitfalls",

@@ -369,10 +369,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get solutionTabAlternative => 'Alternatives & checks';
 
   @override
+  String get solutionTabGraph => 'Graph';
+
+  @override
   String get solutionAlternativeSectionTitle => 'Alternative solutions';
 
   @override
   String get solutionVerificationSectionTitle => 'Verification & domain check';
+
+  @override
+  String get solutionStepsEmptyMessage => 'No steps were returned by the API.';
+
+  @override
+  String get solutionAlternativeEmptyMessage => 'No additional material yet.';
 
   @override
   String get solutionShareNotAvailable =>
@@ -380,6 +389,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get solutionSaveSuccess => 'Saved to history.';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return 'Step $stepNumber: $stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => 'Next step';
+
+  @override
+  String get solutionGraphSectionTitle => 'Graph of the function';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphUnsupportedMessage =>
+      'This expression cannot be graphed.\nSupported functions: sin, cos, tan, sqrt, exp, ln, log, powers, basic arithmetic';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return 'An error occurred while generating the graph: $error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => 'No graph data available';
 
   @override
   String get verificationDomainCheckTitle => 'Domain check';

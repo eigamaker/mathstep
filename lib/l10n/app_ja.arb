@@ -146,10 +146,44 @@
   "solutionProblemLabel": "問題:",
   "solutionTabMain": "解法",
   "solutionTabAlternative": "別解・検算",
+  "solutionTabGraph": "グラフ",
   "solutionAlternativeSectionTitle": "別解",
   "solutionVerificationSectionTitle": "検算・定義域チェック",
+  "solutionStepsEmptyMessage": "APIからステップが返されませんでした。",
+  "solutionAlternativeEmptyMessage": "追加の情報はまだありません。",
   "solutionShareNotAvailable": "共有機能は今後のアップデートで対応予定です。",
   "solutionSaveSuccess": "履歴に保存しました。",
+  "solutionStepBadgeLabel": "ステップ{stepNumber}: {stepTitle}",
+  "@solutionStepBadgeLabel": {
+    "placeholders": {
+      "stepNumber": {
+        "type": "int"
+      },
+      "stepTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionNextStepLabel": "次のステップ",
+  "solutionGraphSectionTitle": "関数のグラフ",
+  "solutionGraphFunctionLabel": "f(x) = {expression}",
+  "@solutionGraphFunctionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphUnsupportedMessage": "この数式はグラフ化できません。\n対応している関数: sin, cos, tan, sqrt, exp, ln, log, 累乗, 四則演算",
+  "solutionGraphErrorMessage": "グラフの生成中にエラーが発生しました: {error}",
+  "@solutionGraphErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNoDataMessage": "グラフデータがありません",
   "verificationDomainCheckTitle": "定義域チェック",
   "verificationVerificationTitle": "検算",
   "verificationCommonPitfallsTitle": "よくある間違い",

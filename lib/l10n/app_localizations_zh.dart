@@ -333,16 +333,53 @@ class AppLocalizationsZh extends AppLocalizations {
   String get solutionTabAlternative => '其它解法与检验';
 
   @override
+  String get solutionTabGraph => '图形';
+
+  @override
   String get solutionAlternativeSectionTitle => '其它解法';
 
   @override
   String get solutionVerificationSectionTitle => '检验与定义域检查';
 
   @override
+  String get solutionStepsEmptyMessage => 'API 未返回任何步骤。';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '暂无其他内容。';
+
+  @override
   String get solutionShareNotAvailable => '分享功能将在未来更新中提供。';
 
   @override
   String get solutionSaveSuccess => '已保存到历史记录。';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return '第 $stepNumber 步：$stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '下一步';
+
+  @override
+  String get solutionGraphSectionTitle => '函数图像';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphUnsupportedMessage =>
+      '无法绘制此表达式。\n支持的函数：sin、cos、tan、sqrt、exp、ln、log、幂运算、四则运算';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return '生成图形时发生错误：$error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => '没有图形数据';
 
   @override
   String get verificationDomainCheckTitle => '定义域检查';
@@ -683,16 +720,53 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get solutionTabAlternative => '其它解法与检验';
 
   @override
+  String get solutionTabGraph => '图形';
+
+  @override
   String get solutionAlternativeSectionTitle => '其它解法';
 
   @override
   String get solutionVerificationSectionTitle => '检验与定义域检查';
 
   @override
+  String get solutionStepsEmptyMessage => 'API 未返回任何步骤。';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '暂无其他内容。';
+
+  @override
   String get solutionShareNotAvailable => '分享功能将在未来更新中提供。';
 
   @override
   String get solutionSaveSuccess => '已保存到历史记录。';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return '第 $stepNumber 步：$stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '下一步';
+
+  @override
+  String get solutionGraphSectionTitle => '函数图像';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphUnsupportedMessage =>
+      '无法绘制此表达式。\n支持的函数：sin、cos、tan、sqrt、exp、ln、log、幂运算、四则运算';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return '生成图形时发生错误：$error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => '没有图形数据';
 
   @override
   String get verificationDomainCheckTitle => '定义域检查';
@@ -1033,16 +1107,53 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get solutionTabAlternative => '其它解法與檢算';
 
   @override
+  String get solutionTabGraph => '圖形';
+
+  @override
   String get solutionAlternativeSectionTitle => '其它解法';
 
   @override
   String get solutionVerificationSectionTitle => '檢算與定義域檢查';
 
   @override
+  String get solutionStepsEmptyMessage => 'API 未傳回任何步驟。';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '目前沒有其他內容。';
+
+  @override
   String get solutionShareNotAvailable => '分享功能將在未來更新提供。';
 
   @override
   String get solutionSaveSuccess => '已儲存到歷史紀錄。';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return '第 $stepNumber 步：$stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '下一步';
+
+  @override
+  String get solutionGraphSectionTitle => '函數圖形';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphUnsupportedMessage =>
+      '無法繪製此算式。\n支援的函數：sin、cos、tan、sqrt、exp、ln、log、冪次、四則運算';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return '產生圖形時發生錯誤：$error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => '沒有圖形資料';
 
   @override
   String get verificationDomainCheckTitle => '定義域檢查';

@@ -146,10 +146,44 @@
   "solutionProblemLabel": "題目：",
   "solutionTabMain": "解法",
   "solutionTabAlternative": "其它解法與檢算",
+  "solutionTabGraph": "圖形",
   "solutionAlternativeSectionTitle": "其它解法",
   "solutionVerificationSectionTitle": "檢算與定義域檢查",
+  "solutionStepsEmptyMessage": "API 未傳回任何步驟。",
+  "solutionAlternativeEmptyMessage": "目前沒有其他內容。",
   "solutionShareNotAvailable": "分享功能將在未來更新提供。",
   "solutionSaveSuccess": "已儲存到歷史紀錄。",
+  "solutionStepBadgeLabel": "第 {stepNumber} 步：{stepTitle}",
+  "@solutionStepBadgeLabel": {
+    "placeholders": {
+      "stepNumber": {
+        "type": "int"
+      },
+      "stepTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionNextStepLabel": "下一步",
+  "solutionGraphSectionTitle": "函數圖形",
+  "solutionGraphFunctionLabel": "f(x) = {expression}",
+  "@solutionGraphFunctionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphUnsupportedMessage": "無法繪製此算式。\n支援的函數：sin、cos、tan、sqrt、exp、ln、log、冪次、四則運算",
+  "solutionGraphErrorMessage": "產生圖形時發生錯誤：{error}",
+  "@solutionGraphErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNoDataMessage": "沒有圖形資料",
   "verificationDomainCheckTitle": "定義域檢查",
   "verificationVerificationTitle": "檢算",
   "verificationCommonPitfallsTitle": "常見錯誤",

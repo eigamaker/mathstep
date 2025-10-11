@@ -17,6 +17,7 @@ import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
 import '../models/sample_expression.dart';
 import '../constants/app_colors.dart';
+import '../widgets/mathstep_logo.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -415,46 +416,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
-            child: const Icon(Icons.functions, color: Colors.white, size: 20),
+            child: Image.asset(
+              'assets/images/mathstep_w.png',
+              width: 24,
+              height: 24,
+              fit: BoxFit.contain,
+            ),
           ),
           const SizedBox(width: 12),
-          ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ).createShader(bounds),
-            child: const Text(
-              'MathStep',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 1.2,
-              ),
-            ),
+          const MathstepLogo(
+            fontSize: 24,
+            textColor: AppColors.primary,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
           ),
         ],
       ),
@@ -464,8 +448,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+              AppColors.surface,
+              AppColors.surface.withValues(alpha: 0.95),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -559,7 +543,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               color: AppColors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.functions, size: 40, color: AppColors.primaryLight),
+            child: Image.asset(
+              'assets/images/mathstep_w.png',
+              width: 40,
+              height: 40,
+              fit: BoxFit.contain,
+            ),
           ),
           const SizedBox(height: 16),
           Text(

@@ -38,7 +38,7 @@ class MathExpansionDisplay extends StatelessWidget {
   Widget _buildSolutionTitle(BuildContext context, ThemeData theme) {
     return Row(
       children: [
-        Icon(Icons.functions, size: 20, color: theme.colorScheme.primary),
+        Icon(Icons.calculate, size: 20, color: theme.colorScheme.primary),
         const SizedBox(width: 8),
         Text(
           context.l10n.solutionTabMain,

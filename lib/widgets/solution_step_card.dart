@@ -99,7 +99,7 @@ class SolutionStepCard extends StatelessWidget {
         children: [
           CommonUIComponents.buildSectionTitle(
             context.l10n.solutionStepExpressionLabel,
-            icon: Icons.functions,
+            icon: Icons.calculate,
             color: theme.colorScheme.secondary,
             theme: theme,
           ),

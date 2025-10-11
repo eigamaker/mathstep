@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 /// アプリケーション全体で使用する統一されたカラーパレット
 class AppColors {
   // プライマリカラー（メインのブルー系）
-  static const Color primary = Color(0xFF1976D2); // Material Blue 700
-  static const Color primaryLight = Color(0xFF42A5F5); // Material Blue 400
-  static const Color primaryDark = Color(0xFF0D47A1); // Material Blue 900
-  static const Color primaryContainer = Color(0xFFE3F2FD); // Material Blue 50
-  static const Color primarySurface = Color(0xFFF3F9FF); // より薄いブルー
+  static const Color primary = Color(0xFF2F3B69); // 新しいプライマリーカラー
+  static const Color primaryLight = Color(0xFF4A5A8A); // より明るいブルー
+  static const Color primaryDark = Color(0xFF1A2338); // より暗いブルー
+  static const Color primaryContainer = Color(0xFFE8EBF2); // 薄いブルー
+  static const Color primarySurface = Color(0xFFF2F4F8); // より薄いブルー
 
   // セカンダリカラー（アクセント用の緑系）
   static const Color secondary = Color(0xFF388E3C); // Material Green 700
@@ -59,8 +59,8 @@ class AppColors {
 
   // グラデーション用
   static const List<Color> primaryGradient = [
-    Color(0xFF1976D2),
-    Color(0xFF42A5F5),
+    Color(0xFF2F3B69),
+    Color(0xFF4A5A8A),
   ];
   
   static const List<Color> secondaryGradient = [

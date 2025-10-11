@@ -69,7 +69,7 @@ class _SolutionScreenState extends State<SolutionScreen>
                   ),
                 ],
               ),
-              child: const Icon(Icons.functions, color: Colors.white, size: 20),
+              child: const Icon(Icons.calculate, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 12),
             ShaderMask(

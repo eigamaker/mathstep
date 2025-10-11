@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
 import '../providers/language_provider.dart';
+import '../widgets/mathstep_logo.dart';
+import '../constants/app_colors.dart';
 import 'main_navigation_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -133,7 +135,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2196F3),
+      backgroundColor: AppColors.primary,
       body: _buildLanguageSelection(),
     );
   }
@@ -166,10 +168,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               children: [
                 Text(
                   context.l10n.languageSelectionTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2196F3),
+                    color: AppColors.primary,
                   ),
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
@@ -184,10 +186,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: const Color(0xFF2196F3).withValues(alpha: 0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -197,10 +199,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         Expanded(
                           child: Text(
                             '${_selectedLanguage.nativeName} (${_selectedLanguage.englishName})',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF2196F3),
+                              color: AppColors.primary,
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -209,7 +211,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         const SizedBox(width: 8),
                         Icon(
                           _showLanguageDropdown ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                          color: const Color(0xFF2196F3),
+                          color: AppColors.primary,
                         ),
                       ],
                     ),
@@ -246,15 +248,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                             width: double.infinity,
                                             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                                             decoration: BoxDecoration(
-                                              color: isSelected ? const Color(0xFF2196F3).withValues(alpha: 0.1) : Colors.transparent,
+                                              color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
                                               borderRadius: BorderRadius.circular(12),
                                             ),
                                             child: Row(
                                               children: [
                                                 if (isSelected)
-                                                  const Icon(
+                                                  Icon(
                                                     Icons.check,
-                                                    color: Color(0xFF2196F3),
+                                                    color: AppColors.primary,
                                                     size: 20,
                                                   )
                                                 else
@@ -266,7 +268,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                                     style: TextStyle(
                                                       fontSize: 14,
                                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                                      color: isSelected ? const Color(0xFF2196F3) : Colors.black87,
+                                                      color: isSelected ? AppColors.primary : Colors.black87,
                                                     ),
                                                     overflow: TextOverflow.ellipsis,
                                                     maxLines: 1,
@@ -295,7 +297,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   child: FilledButton(
                     onPressed: _confirmLanguageSelection,
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF2196F3),
+                      backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -325,33 +327,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget _buildLogoAndTitle() {
     return Column(
       children: [
-        // ロゴ部分
+        // ロゴ部分（画像を使用）
         AnimatedBuilder(
           animation: _logoAnimation,
           builder: (context, child) {
             return Transform.scale(
               scale: _logoAnimation.value,
-              child: Transform.rotate(
-                angle: _logoAnimation.value * 0.1,
-                child: Container(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Image.asset(
+                  'assets/images/mathstep.png',
                   width: 120,
                   height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(60),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.functions,
-                    size: 60,
-                    color: Color(0xFF2196F3),
-                  ),
+                  fit: BoxFit.contain,
                 ),
               ),
             );
@@ -360,39 +359,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
         const SizedBox(height: 30),
 
-        // アプリ名
+        // タグラインのみ
         AnimatedBuilder(
           animation: _textAnimation,
           builder: (context, child) {
             return Opacity(
               opacity: _textAnimation.value,
-              child: Column(
-                children: [
-                  Text(
-                    context.l10n.appTitle,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    context.l10n.splashTagline,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withValues(alpha: 0.9),
-                      letterSpacing: 1,
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ],
+              child: Text(
+                context.l10n.splashTagline,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  letterSpacing: 1,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             );
           },

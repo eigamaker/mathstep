@@ -74,9 +74,13 @@ class MathExpressionUtils {
     
     // 関数
     if (expression.contains('sqrt') || expression.contains('sin') || 
-        expression.contains('cos') || expression.contains('tan')) complexity++;
+        expression.contains('cos') || expression.contains('tan')) {
+      complexity++;
+    }
     if (expression.contains('log') || expression.contains('ln') || 
-        expression.contains('exp')) complexity++;
+        expression.contains('exp')) {
+      complexity++;
+    }
     
     // 括弧の深さ
     int maxDepth = 0;

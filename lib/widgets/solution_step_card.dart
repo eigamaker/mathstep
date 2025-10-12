@@ -91,7 +91,7 @@ class SolutionStepCard extends StatelessWidget {
     return CommonUIComponents.buildCardContainer(
       theme: theme,
       backgroundColor: theme.colorScheme.surface,
-      borderColor: theme.colorScheme.outline.withOpacity(0.3),
+      borderColor: theme.colorScheme.outline.withValues(alpha: 0.3),
       borderRadius: 8.0,
       padding: const EdgeInsets.all(16),
       child: Column(

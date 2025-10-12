@@ -127,7 +127,7 @@ class PromptGenerator {
       ..writeln('こんにちは！数学の問題を一緒に解いてみましょう！')
       ..writeln()
       ..writeln('【問題】')
-      ..writeln('$asciiMathExpression')
+      ..writeln(asciiMathExpression)
       ..writeln()
       ..writeln('【お願い】')
       ..writeln('この問題を、高校生が理解しやすいように、以下のポイントを意識して説明してください：')

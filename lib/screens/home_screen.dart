@@ -17,7 +17,6 @@ import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
 import '../models/sample_expression.dart';
 import '../constants/app_colors.dart';
-import '../widgets/mathstep_logo.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 

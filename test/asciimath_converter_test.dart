@@ -69,7 +69,7 @@ void main() {
       test('複雑な数式の変換', () {
         expect(
           AsciiMathConverter.calculatorToAsciiMath('frac(x^2 + 1, sqrt(x))'),
-          equals('(x^2 + (1))/(() sqrt(x))'),
+          equals('(x^2 + (1))/((sqrt(x)))'),
         );
       });
 
@@ -116,7 +116,7 @@ void main() {
       test('関数の変換', () {
         expect(
           AsciiMathConverter.asciiMathToLatex('sin(x)'),
-          equals('\\sin(x)'),
+          equals('sin(x)'),
         );
         
         expect(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/math_text_processor.dart';
-import '../utils/asciimath_converter.dart';
+import '../utils/syntax_converter.dart';
 import 'latex_preview.dart';
 
 /// 数式とテキストを適切に表示するウィジェット
@@ -53,8 +53,88 @@ class MathTextDisplay extends StatelessWidget {
   }
 
   Widget _buildMathWidget(String mathExpression) {
-    // AsciiMath形式をLaTeX形式に変換して表示
-    final latexExpression = AsciiMathConverter.asciiMathToLatex(mathExpression);
+    // 不完全な数式（括弧が閉じられていない）のチェック
+    if (_hasUnclosedParentheses(mathExpression)) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.orange.shade200, width: 1),
+        ),
+        child: Text(
+          mathExpression,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+            fontFamily: 'monospace',
+          ),
+        ),
+      );
+    }
+
+    // 不完全な関数呼び出しのチェック（sin(, log(, cos( など）
+    if (_hasIncompleteFunctionCall(mathExpression)) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.orange.shade200, width: 1),
+        ),
+        child: Text(
+          mathExpression,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+            fontFamily: 'monospace',
+          ),
+        ),
+      );
+    }
+
+    // 不完全な累乗のチェック（x^, e^, x^(2 など）
+    if (_hasIncompletePower(mathExpression)) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.orange.shade200, width: 1),
+        ),
+        child: Text(
+          mathExpression,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+            fontFamily: 'monospace',
+          ),
+        ),
+      );
+    }
+
+    // 不完全な分数のチェック（1/, x/, sin(x)/ など）
+    if (_hasIncompleteFraction(mathExpression)) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.orange.shade200, width: 1),
+        ),
+        child: Text(
+          mathExpression,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+            fontFamily: 'monospace',
+          ),
+        ),
+      );
+    }
+    
+    // SyntaxConverterを使用してLaTeX形式に変換
+    final latexExpression = SyntaxConverter.calculatorToLatex(mathExpression);
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -68,9 +148,66 @@ class MathTextDisplay extends StatelessWidget {
           minHeight: 50, // 分数表示のための最小高さを設定
           maxHeight: 80, // 最大高さも増加
         ),
-        child: LatexPreview(expression: latexExpression),
+        child: _buildLatexPreview(latexExpression, mathExpression),
       ),
     );
+  }
+
+  bool _hasUnclosedParentheses(String input) {
+    int parenthesesCount = 0;
+    int bracketCount = 0;
+    
+    for (int i = 0; i < input.length; i++) {
+      final char = input[i];
+      if (char == '(') {
+        parenthesesCount++;
+      } else if (char == ')') {
+        parenthesesCount--;
+      } else if (char == '[') {
+        bracketCount++;
+      } else if (char == ']') {
+        bracketCount--;
+      }
+    }
+    
+    return parenthesesCount != 0 || bracketCount != 0;
+  }
+
+  bool _hasIncompleteFunctionCall(String input) {
+    // 不完全な関数呼び出しをチェック: sin(, log(, cos(, tan(, ln( など
+    final incompleteFunctionPattern = RegExp(r'\b(sin|cos|tan|log|ln|sqrt)\s*\(\s*$');
+    return incompleteFunctionPattern.hasMatch(input);
+  }
+
+  bool _hasIncompletePower(String input) {
+    // 不完全な累乗をチェック: x^, e^, x^(2 など
+    final incompletePowerPattern = RegExp(r'\^$|\^\(\s*$|\^\(\s*[^)]*$');
+    return incompletePowerPattern.hasMatch(input);
+  }
+
+  bool _hasIncompleteFraction(String input) {
+    // 不完全な分数をチェック: 1/, x/, sin(x)/ など
+    final incompleteFractionPattern = RegExp(r'/\s*$');
+    return incompleteFractionPattern.hasMatch(input);
+  }
+
+  Widget _buildLatexPreview(String latexExpression, String original) {
+    try {
+      return LatexPreview(expression: latexExpression);
+    } catch (e) {
+      // エラーが発生した場合はフォールバック表示
+      return Container(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          original,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+            fontFamily: 'monospace',
+          ),
+        ),
+      );
+    }
   }
 }
 
@@ -109,8 +246,8 @@ class ReadableMathTextDisplay extends StatelessWidget {
     return Wrap(
       children: segments.map((segment) {
         if (segment.type == MathTextType.math) {
-          // AsciiMath形式をLaTeX形式に変換して表示
-          final latexExpression = AsciiMathConverter.asciiMathToLatex(segment.content);
+          // SyntaxConverterを使用してLaTeX形式に変換
+          final latexExpression = SyntaxConverter.calculatorToLatex(segment.content);
           
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 2),

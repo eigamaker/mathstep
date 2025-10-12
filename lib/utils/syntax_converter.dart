@@ -2,6 +2,27 @@ class SyntaxConverter {
   static String calculatorToLatex(String calculatorSyntax) {
     String latex = calculatorSyntax;
 
+    // 微分記法の変換: d/dx[...] (最優先で処理、分数変換の前に実行)
+    latex = latex.replaceAllMapped(
+      RegExp(r'd/d([a-zA-Z])\[([^\]]+)\]'),
+      (match) => 'DERIVATIVE_${match.group(1)}_${match.group(2)}_END',
+    );
+
+    // 積分記法の変換: integral_a^b f(x) dx (分数変換の前に実行、関数変換と累乗変換はプレースホルダー内で処理)
+    final integralMatches = <_IntegralMatch>[];
+    latex = latex.replaceAllMapped(
+      RegExp(r'integral_([^_\^]+)\^([^\s]+)\s+(.+?)\s+d([a-zA-Z]+)'),
+      (m) {
+        integralMatches.add(_IntegralMatch(
+          lower: m.group(1)!.trim(),
+          upper: m.group(2)!.trim(),
+          expr: m.group(3)!.trim(),
+          variable: m.group(4)!.trim(),
+        ));
+        return 'INTEGRAL_PLACEHOLDER_${integralMatches.length - 1}_END';
+      },
+    );
+
     latex = _convertGenericFractions(latex);
 
     // 基本的な変換ルール
@@ -25,6 +46,8 @@ class SyntaxConverter {
       (match) => '\\sqrt[${match.group(1)}]{${match.group(2)}}',
     );
 
+    // 関数記法の変換は不要（スペースはそのまま処理される）
+
     // 関数の変換
     latex = latex.replaceAllMapped(
       RegExp(r'sin\(([^)]+)\)'),
@@ -41,39 +64,100 @@ class SyntaxConverter {
       (match) => '\\tan(${match.group(1)})',
     );
 
+    // ln関数の変換（括弧と角括弧に対応）
     latex = latex.replaceAllMapped(
       RegExp(r'ln\(([^)]+)\)'),
       (match) => '\\ln(${match.group(1)})',
     );
 
+    // log関数の変換（lnに統一）
     latex = latex.replaceAllMapped(
       RegExp(r'log\(([^)]+)\)'),
-      (match) => '\\log(${match.group(1)})',
+      (match) => '\\ln(${match.group(1)})',
     );
 
-    // pow()関数の変換（括弧付きべき乗）
-    latex = latex.replaceAllMapped(
-      RegExp(r'pow\(([^,]+),([^)]+)\)'),
-      (match) => '${match.group(1)}^{${match.group(2)}}',
-    );
-
-    // サンプル式で使用される積分記法: integral_a^b f(x) dx（累乗変換より前に実行）
-    latex = latex.replaceAllMapped(
-      RegExp(r'integral_([^_\^]+)\^([^\s]+)\s+([^d]+)\s+d([a-zA-Z]+)'),
-      (m) =>
-          '\\int_{${m.group(1)!.trim()}}^{${m.group(2)!.trim()}} ${m.group(3)!.trim()} \\, d${m.group(4)!.trim()}',
-    );
-
+    // 累乗の変換を先に実行（積分記法の前に実行）
+    // x^{...}形式の累乗はそのままにする
     // x^()形式のべき乗の変換
     latex = latex.replaceAllMapped(
       RegExp(r'\^\(([^)]+)\)'),
       (match) => '^{${match.group(1)}}',
     );
 
-    // 累乗の変換
+    // 累乗の変換（数字のみ）
     latex = latex.replaceAllMapped(
       RegExp(r'\^(\d+)'),
       (match) => '^{${match.group(1)}}',
+    );
+
+    // プレースホルダーをLaTeX形式に変換（最後に実行）
+    latex = latex.replaceAllMapped(
+      RegExp(r'DERIVATIVE_([a-zA-Z])_(.+?)_END'),
+      (match) => '\\frac{d}{d${match.group(1)}}{${match.group(2)}}',
+    );
+
+    // 積分記法のプレースホルダーをLaTeX形式に変換（最後に実行）
+    latex = latex.replaceAllMapped(
+      RegExp(r'INTEGRAL_PLACEHOLDER_(\d+)_END'),
+      (m) {
+        final index = int.parse(m.group(1)!);
+        if (index < integralMatches.length) {
+          final match = integralMatches[index];
+          // 積分式に関数変換と累乗変換を適用
+          String expr = match.expr;
+          // 累乗の変換（関数変換の前に実行）
+          expr = expr.replaceAllMapped(RegExp(r'\^\(([^)]+)\)'), (m) => '^{${m.group(1)}}');
+          expr = expr.replaceAllMapped(RegExp(r'\^(\d+)'), (m) => '^{${m.group(1)}}');
+          expr = expr.replaceAllMapped(RegExp(r'\^([a-zA-Z])'), (m) => '^{${m.group(1)}}');
+          // 関数の変換（累乗変換の後に実行）
+          expr = expr.replaceAllMapped(RegExp(r'sin'), (m) => '\\sin');
+          expr = expr.replaceAllMapped(RegExp(r'cos'), (m) => '\\cos');
+          expr = expr.replaceAllMapped(RegExp(r'tan'), (m) => '\\tan');
+          expr = expr.replaceAllMapped(RegExp(r'\\sin'), (m) => '\\sin'); // 重複を防ぐ
+          expr = expr.replaceAllMapped(RegExp(r'\\cos'), (m) => '\\cos'); // 重複を防ぐ
+          expr = expr.replaceAllMapped(RegExp(r'\\tan'), (m) => '\\tan'); // 重複を防ぐ
+          expr = expr.replaceAllMapped(RegExp(r'ln\(([^)]+)\)'), (m) => '\\ln(${m.group(1)})');
+          expr = expr.replaceAllMapped(RegExp(r'log\(([^)]+)\)'), (m) => '\\ln(${m.group(1)})');
+          // 上限・下限のpi変換と分数処理
+          String lower = match.lower;
+          String upper = match.upper;
+          
+          // 分数の処理を最初に行う: pi/2 -> \frac{\pi}{2}
+          lower = lower.replaceAllMapped(RegExp(r'pi/(\d+)'), (m) => '\\frac{\\pi}{${m.group(1)}}');
+          upper = upper.replaceAllMapped(RegExp(r'pi/(\d+)'), (m) => '\\frac{\\pi}{${m.group(1)}}');
+          
+          // 単独のpiを変換（分数処理の後）
+          lower = lower.replaceAll(RegExp(r'pi(?!/)'), '\\pi');
+          upper = upper.replaceAll(RegExp(r'pi(?!/)'), '\\pi');
+          
+          // 余分な括弧を削除
+          lower = lower.replaceAll(RegExp(r'[()]'), '');
+          upper = upper.replaceAll(RegExp(r'[()]'), '');
+          
+          // 最終的なクリーンアップ（重複したバックスラッシュを修正）
+          lower = lower.replaceAll(RegExp(r'\\\\'), '\\');
+          upper = upper.replaceAll(RegExp(r'\\\\'), '\\');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          upper = upper.replaceAll(RegExp(r'\\frac{\\\\pi'), '\\frac{\\pi');
+          
+          return '\\int_{$lower}^{$upper} $expr \\, d${match.variable}';
+        }
+        return m.group(0)!;
+      },
+    );
+
+    // pow()関数の変換（括弧付きべき乗）
+    latex = latex.replaceAllMapped(
+      RegExp(r'pow\(([^,]+),([^)]+)\)'),
+      (match) => '${match.group(1)}^{${match.group(2)}}',
     );
 
     // 絶対値
@@ -216,7 +300,20 @@ class SyntaxConverter {
     // 不定積分の簡潔記法: integral f(x) dx
     latex = latex.replaceAllMapped(
       RegExp(r'integral\s+([^d]+)\s+d([a-zA-Z]+)'),
-      (m) => '\\int ${m.group(1)!.trim()} \\, d${m.group(2)!.trim()}',
+      (m) {
+        String expr = m.group(1)!.trim();
+        // 累乗の変換
+        expr = expr.replaceAllMapped(RegExp(r'\^\(([^)]+)\)'), (m) => '^{${m.group(1)}}');
+        expr = expr.replaceAllMapped(RegExp(r'\^(\d+)'), (m) => '^{${m.group(1)}}');
+        expr = expr.replaceAllMapped(RegExp(r'\^([a-zA-Z])'), (m) => '^{${m.group(1)}}');
+        // 関数の変換
+        expr = expr.replaceAllMapped(RegExp(r'sin'), (m) => '\\sin');
+        expr = expr.replaceAllMapped(RegExp(r'cos'), (m) => '\\cos');
+        expr = expr.replaceAllMapped(RegExp(r'tan'), (m) => '\\tan');
+        expr = expr.replaceAllMapped(RegExp(r'ln\(([^)]+)\)'), (m) => '\\ln(${m.group(1)})');
+        expr = expr.replaceAllMapped(RegExp(r'log\(([^)]+)\)'), (m) => '\\ln(${m.group(1)})');
+        return '\\int $expr \\, d${m.group(2)!.trim()}';
+      },
     );
 
     // 単純な積分記法: ∫ f(x) dx
@@ -690,4 +787,18 @@ class _Span {
   final int end;
 
   const _Span(this.start, this.end);
+}
+
+class _IntegralMatch {
+  final String lower;
+  final String upper;
+  final String expr;
+  final String variable;
+
+  const _IntegralMatch({
+    required this.lower,
+    required this.upper,
+    required this.expr,
+    required this.variable,
+  });
 }

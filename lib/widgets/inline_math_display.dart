@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
-import '../utils/asciimath_converter.dart';
+import '../utils/syntax_converter.dart';
 
 /// テキスト内の数式を自動検出・変換して表示するウィジェット
 /// テキストと数式が自然に混ざった表示を実現
@@ -61,24 +61,94 @@ class InlineMathDisplay extends StatelessWidget {
 
   Widget _buildMathWidget(String mathExpression, TextStyle? textStyle) {
     try {
-      // AsciiMath形式をLaTeX形式に変換
-      final latexExpression = AsciiMathConverter.asciiMathToLatex(mathExpression);
-      final prepared = _prepareForDisplay(latexExpression);
+      // 不完全な数式（括弧が閉じられていない）のチェック
+      if (_hasUnclosedParentheses(mathExpression)) {
+        return _buildFallback(mathExpression, textStyle);
+      }
 
-      return Math.tex(
-        prepared,
-        mathStyle: MathStyle.text,
-        textStyle: textStyle?.copyWith(
-          fontSize: (textStyle?.fontSize ?? 16) * 0.9, // 少し小さく
-        ),
-        onErrorFallback: (_) => _buildFallback(mathExpression, textStyle),
-      );
+      // 不完全な関数呼び出しのチェック（sin(, log(, cos( など）
+      if (_hasIncompleteFunctionCall(mathExpression)) {
+        return _buildFallback(mathExpression, textStyle);
+      }
+
+      // 不完全な累乗のチェック（x^, e^, x^(2 など）
+      if (_hasIncompletePower(mathExpression)) {
+        return _buildFallback(mathExpression, textStyle);
+      }
+
+      // 不完全な分数のチェック（1/, x/, sin(x)/ など）
+      if (_hasIncompleteFraction(mathExpression)) {
+        return _buildFallback(mathExpression, textStyle);
+      }
+      
+      // SyntaxConverterを使用してLaTeX形式に変換
+      final latexExpression = SyntaxConverter.calculatorToLatex(mathExpression);
+      final prepared = _prepareForDisplay(latexExpression);
+      final baseFontSize = textStyle?.fontSize ?? 16;
+
+      return _buildMathTex(prepared, mathExpression, textStyle, baseFontSize);
     } catch (e) {
       return _buildFallback(mathExpression, textStyle);
     }
   }
 
+  bool _hasUnclosedParentheses(String input) {
+    int parenthesesCount = 0;
+    int bracketCount = 0;
+    
+    for (int i = 0; i < input.length; i++) {
+      final char = input[i];
+      if (char == '(') {
+        parenthesesCount++;
+      } else if (char == ')') {
+        parenthesesCount--;
+      } else if (char == '[') {
+        bracketCount++;
+      } else if (char == ']') {
+        bracketCount--;
+      }
+    }
+    
+    return parenthesesCount != 0 || bracketCount != 0;
+  }
+
+  bool _hasIncompleteFunctionCall(String input) {
+    // 不完全な関数呼び出しをチェック: sin(, log(, cos(, tan(, ln( など
+    final incompleteFunctionPattern = RegExp(r'\b(sin|cos|tan|log|ln|sqrt)\s*\(\s*$');
+    return incompleteFunctionPattern.hasMatch(input);
+  }
+
+  bool _hasIncompletePower(String input) {
+    // 不完全な累乗をチェック: x^, e^, x^(2 など
+    final incompletePowerPattern = RegExp(r'\^$|\^\(\s*$|\^\(\s*[^)]*$');
+    return incompletePowerPattern.hasMatch(input);
+  }
+
+  bool _hasIncompleteFraction(String input) {
+    // 不完全な分数をチェック: 1/, x/, sin(x)/ など
+    final incompleteFractionPattern = RegExp(r'/\s*$');
+    return incompleteFractionPattern.hasMatch(input);
+  }
+
+  Widget _buildMathTex(String prepared, String original, TextStyle? textStyle, double baseFontSize) {
+    try {
+      return Math.tex(
+        prepared,
+        mathStyle: MathStyle.text,
+        textStyle: textStyle?.copyWith(
+          fontSize: baseFontSize * 0.9, // 少し小さく
+        ),
+        onErrorFallback: (_) => _buildFallback(original, textStyle),
+      );
+    } catch (e) {
+      // エラーが発生した場合はフォールバック表示
+      return _buildFallback(original, textStyle);
+    }
+  }
+
   Widget _buildFallback(String content, TextStyle? textStyle) {
+    final baseFontSize = textStyle?.fontSize ?? 16;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
@@ -90,7 +160,7 @@ class InlineMathDisplay extends StatelessWidget {
         content,
         style: textStyle?.copyWith(
           fontFamily: 'monospace',
-          fontSize: (textStyle?.fontSize ?? 16) * 0.8,
+          fontSize: baseFontSize * 0.8,
         ),
       ),
     );

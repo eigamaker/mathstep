@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
@@ -49,3 +49,4 @@ class AppConstants {
   // Default identifiers
   static const String unknownId = 'unknown';
 }
+

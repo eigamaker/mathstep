@@ -1,43 +1,42 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'simple_math_display.dart';
+
 import '../constants/app_colors.dart';
+import 'simple_math_display.dart';
 
 class LatexPreview extends StatelessWidget {
-  final String expression;
-
   const LatexPreview({
-    super.key,
+    super.key, 
     required this.expression,
+    this.showBorder = true,
+    this.padding = const EdgeInsets.all(12),
   });
+
+  final String expression;
+  final bool showBorder;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
+    final trimmed = expression.trim();
+    if (trimmed.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       width: double.infinity,
-      height: double.infinity, // 親の高さ制約を尊重
-      padding: const EdgeInsets.all(12), // 適切なパディングに調整
-      decoration: BoxDecoration(
+      constraints: const BoxConstraints(
+        minHeight: 60, // 分数表示のための最小高さを設定
+      ),
+      padding: padding,
+      decoration: showBorder ? BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
-      ),
+      ) : null,
       child: SingleChildScrollView(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: math.max(100, MediaQuery.of(context).size.width - 32),
-            ),
-            child: _buildMathExpression(),
-          ),
-        ),
+        scrollDirection: Axis.horizontal,
+        child: SimpleMathDisplay(expression: trimmed),
       ),
     );
-  }
-
-  Widget _buildMathExpression() {
-    // SimpleMathDisplayの表示ロジックを優先使用
-    return SimpleMathDisplay(expression: expression);
   }
 }

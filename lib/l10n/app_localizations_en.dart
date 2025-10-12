@@ -290,6 +290,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.';
 
   @override
+  String get guideTipIntegralNotation =>
+      'Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.';
+
+  @override
   String get guideTipFractionKey =>
       'Use the a/b key for fractions and separate the numerator and denominator with the comma key.';
 
@@ -369,10 +373,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get solutionTabAlternative => 'Alternatives & checks';
 
   @override
+  String get solutionTabGraph => 'Graph';
+
+  @override
   String get solutionAlternativeSectionTitle => 'Alternative solutions';
 
   @override
   String get solutionVerificationSectionTitle => 'Verification & domain check';
+
+  @override
+  String get solutionStepsEmptyMessage => 'No steps were returned by the API.';
+
+  @override
+  String get solutionAlternativeEmptyMessage => 'No additional material yet.';
 
   @override
   String get solutionShareNotAvailable =>
@@ -380,6 +393,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get solutionSaveSuccess => 'Saved to history.';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return 'Step $stepNumber: $stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => 'Next step';
+
+  @override
+  String get solutionGraphSectionTitle => 'Graph of the function';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphNotSupported =>
+      'This expression is not supported for graphing.';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return 'An error occurred while generating the graph: $error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => 'No graph data available';
 
   @override
   String get verificationDomainCheckTitle => 'Domain check';

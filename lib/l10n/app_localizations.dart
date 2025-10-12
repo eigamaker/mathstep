@@ -572,6 +572,12 @@ abstract class AppLocalizations {
   /// **'For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.'**
   String get guideTipSigmaPi;
 
+  /// No description provided for @guideTipIntegralNotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.'**
+  String get guideTipIntegralNotation;
+
   /// No description provided for @guideTipFractionKey.
   ///
   /// In en, this message translates to:
@@ -710,6 +716,12 @@ abstract class AppLocalizations {
   /// **'Alternatives & checks'**
   String get solutionTabAlternative;
 
+  /// No description provided for @solutionTabGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph'**
+  String get solutionTabGraph;
+
   /// No description provided for @solutionAlternativeSectionTitle.
   ///
   /// In en, this message translates to:
@@ -722,6 +734,18 @@ abstract class AppLocalizations {
   /// **'Verification & domain check'**
   String get solutionVerificationSectionTitle;
 
+  /// No description provided for @solutionStepsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps were returned by the API.'**
+  String get solutionStepsEmptyMessage;
+
+  /// No description provided for @solutionAlternativeEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No additional material yet.'**
+  String get solutionAlternativeEmptyMessage;
+
   /// No description provided for @solutionShareNotAvailable.
   ///
   /// In en, this message translates to:
@@ -733,6 +757,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved to history.'**
   String get solutionSaveSuccess;
+
+  /// No description provided for @solutionStepBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {stepNumber}: {stepTitle}'**
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle);
+
+  /// No description provided for @solutionNextStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next step'**
+  String get solutionNextStepLabel;
+
+  /// No description provided for @solutionGraphSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph of the function'**
+  String get solutionGraphSectionTitle;
+
+  /// No description provided for @solutionGraphFunctionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'f(x) = {expression}'**
+  String solutionGraphFunctionLabel(String expression);
+
+  /// No description provided for @solutionGraphNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This expression is not supported for graphing.'**
+  String get solutionGraphNotSupported;
+
+  /// No description provided for @solutionGraphErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while generating the graph: {error}'**
+  String solutionGraphErrorMessage(String error);
+
+  /// No description provided for @solutionGraphNoDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No graph data available'**
+  String get solutionGraphNoDataMessage;
 
   /// No description provided for @verificationDomainCheckTitle.
   ///

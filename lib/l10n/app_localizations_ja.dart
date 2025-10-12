@@ -261,6 +261,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get guideTipSigmaPi => 'Σ, Π, ∫ キーはカンマ区切りで下限・上限・式を入力します。';
 
   @override
+  String get guideTipIntegralNotation =>
+      '∫ キーを押すと「integral(下限,上限,被積分関数,変数)」の形式で入力できます。';
+
+  @override
   String get guideTipFractionKey => 'a/bキーで分数を入力し、カンマで分子と分母を区切ります。';
 
   @override
@@ -334,16 +338,52 @@ class AppLocalizationsJa extends AppLocalizations {
   String get solutionTabAlternative => '別解・検算';
 
   @override
+  String get solutionTabGraph => 'グラフ';
+
+  @override
   String get solutionAlternativeSectionTitle => '別解';
 
   @override
   String get solutionVerificationSectionTitle => '検算・定義域チェック';
 
   @override
+  String get solutionStepsEmptyMessage => 'APIからステップが返されませんでした。';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '追加の情報はまだありません。';
+
+  @override
   String get solutionShareNotAvailable => '共有機能は今後のアップデートで対応予定です。';
 
   @override
   String get solutionSaveSuccess => '履歴に保存しました。';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return 'ステップ$stepNumber: $stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '次のステップ';
+
+  @override
+  String get solutionGraphSectionTitle => '関数のグラフ';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphNotSupported => 'この数式はグラフ表示に対応していません。';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return 'グラフの生成中にエラーが発生しました: $error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => 'グラフデータがありません';
 
   @override
   String get verificationDomainCheckTitle => '定義域チェック';

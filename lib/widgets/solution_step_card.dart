@@ -1,78 +1,115 @@
 import 'package:flutter/material.dart';
-import '../models/solution.dart';
+
 import '../localization/localization_extensions.dart';
+import '../models/solution.dart';
+import 'common_ui_components.dart';
 import 'latex_preview.dart';
-import 'math_text_display.dart';
 
 class SolutionStepCard extends StatelessWidget {
-  final SolutionStep step;
-  final bool isExpanded;
-  final VoidCallback onToggleExpansion;
+  const SolutionStepCard({super.key, required this.step, required this.index});
 
-  const SolutionStepCard({
-    super.key,
-    required this.step,
-    required this.isExpanded,
-    required this.onToggleExpansion,
-  });
+  final SolutionStep step;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: ExpansionTile(
-        title: Text(
-          step.title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: ReadableMathTextDisplay(
-          text: step.description,
-          textStyle: const TextStyle(fontSize: 14),
-        ),
-        trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
-        onExpansionChanged: (expanded) {
-          onToggleExpansion();
-        },
-        children: [
-          if (step.latexExpression != null && step.latexExpression!.isNotEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                border: Border(top: BorderSide(color: Colors.grey.shade300)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.l10n.solutionStepExpressionLabel,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  LatexPreview(expression: step.latexExpression!),
-                ],
-              ),
-            ),
+    final theme = Theme.of(context);
 
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.solutionStepDescriptionLabel,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                ReadableMathTextDisplay(
-                  text: step.description,
-                  textStyle: const TextStyle(fontSize: 14),
-                ),
-              ],
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CommonUIComponents.buildStepTitleBadge(
+              context: context,
+              title: step.title,
+              index: index,
+              theme: theme,
             ),
+            const SizedBox(height: 12),
+            _buildIntegratedContent(context, theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIntegratedContent(BuildContext context, ThemeData theme) {
+    final hasLatex =
+        step.latexExpression != null && step.latexExpression!.trim().isNotEmpty;
+
+    if (!hasLatex) {
+      return _buildEnhancedDescription(context, step.description, theme);
+    }
+
+    return CommonUIComponents.buildCardContainer(
+      theme: theme,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildEnhancedDescription(context, step.description, theme),
+          const SizedBox(height: 16),
+          CommonUIComponents.buildDivider(theme),
+          const SizedBox(height: 12),
+          _buildMathExpression(context, theme),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedDescription(
+    BuildContext context,
+    String description,
+    ThemeData theme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CommonUIComponents.buildSectionTitle(
+          context.l10n.solutionStepDescriptionLabel,
+          icon: Icons.lightbulb_outline,
+          color: theme.colorScheme.primary,
+          theme: theme,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          CommonUIComponents.cleanDescription(description),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            height: 1.6,
+            color: theme.colorScheme.onSurface,
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMathExpression(BuildContext context, ThemeData theme) {
+    return CommonUIComponents.buildCardContainer(
+      theme: theme,
+      backgroundColor: theme.colorScheme.surface,
+      borderColor: theme.colorScheme.outline.withOpacity(0.3),
+      borderRadius: 8.0,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CommonUIComponents.buildSectionTitle(
+            context.l10n.solutionStepExpressionLabel,
+            icon: Icons.calculate,
+            color: theme.colorScheme.secondary,
+            theme: theme,
+          ),
+          const SizedBox(height: 12),
+          if (step.latexExpression != null)
+            LatexPreview(
+              expression: step.latexExpression!,
+              showBorder: false,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+            ),
         ],
       ),
     );

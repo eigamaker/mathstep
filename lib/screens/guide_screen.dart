@@ -88,21 +88,14 @@ class GuideScreen extends StatelessWidget {
           _GuideExample(
             expression: '\\int_{0}^{1} x^2 \\, dx',
             keySequence: [
-              '∫',
-              '0',
-              ',',
-              '1',
-              ',',
-              'x',
-              'x^y',
-              '2',
-              ',',
-              'x',
+              '∫', '(', '0', ',', '1', ',', 'x', 'x^y', '2', ',', 'x', ')'
             ],
           ),
           _GuideExample(
-            expression: '\\int \\sin(x) \\, dx',
-            keySequence: ['∫', 'sin', '(', 'x', ')', ',', 'x'],
+            expression: '\\int_{0}^{\\pi/2} \\sin(x) \\, dx',
+            keySequence: [
+              '∫', '(', '0', ',', '(', 'π', '/', '2', ')', ',', 'sin', '(', 'x', ')', ',', 'x', ')'
+            ],
           ),
         ],
       ),
@@ -134,14 +127,73 @@ class GuideScreen extends StatelessWidget {
       l10n.guideTipArrowKeys,
       l10n.guideTipDeleteKey,
       l10n.guideTipSigmaPi,
+      l10n.guideTipIntegralNotation,
       l10n.guideTipFractionKey,
       l10n.guideTipCloseParenthesis,
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.guideAppBarTitle),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.help_outline, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: Text(
+                l10n.guideAppBarTitle,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+              ],
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

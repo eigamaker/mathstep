@@ -123,6 +123,7 @@
   "guideTipArrowKeys": "矢印キー（← →）でカーソルを移動できます。",
   "guideTipDeleteKey": "DELキーでカーソルの左側を削除できます。",
   "guideTipSigmaPi": "Σ, Π, ∫ キーはカンマ区切りで下限・上限・式を入力します。",
+  "guideTipIntegralNotation": "∫ キーを押すと「integral(下限,上限,被積分関数,変数)」の形式で入力できます。",
   "guideTipFractionKey": "a/bキーで分数を入力し、カンマで分子と分母を区切ります。",
   "guideTipCloseParenthesis": "必要に応じて ) キーで括弧を閉じてください。",
   "homeSampleLoaded": "サンプル数式を読み込みました: {expression}",
@@ -146,10 +147,44 @@
   "solutionProblemLabel": "問題:",
   "solutionTabMain": "解法",
   "solutionTabAlternative": "別解・検算",
+  "solutionTabGraph": "グラフ",
   "solutionAlternativeSectionTitle": "別解",
   "solutionVerificationSectionTitle": "検算・定義域チェック",
+  "solutionStepsEmptyMessage": "APIからステップが返されませんでした。",
+  "solutionAlternativeEmptyMessage": "追加の情報はまだありません。",
   "solutionShareNotAvailable": "共有機能は今後のアップデートで対応予定です。",
   "solutionSaveSuccess": "履歴に保存しました。",
+  "solutionStepBadgeLabel": "ステップ{stepNumber}: {stepTitle}",
+  "@solutionStepBadgeLabel": {
+    "placeholders": {
+      "stepNumber": {
+        "type": "int"
+      },
+      "stepTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionNextStepLabel": "次のステップ",
+  "solutionGraphSectionTitle": "関数のグラフ",
+  "solutionGraphFunctionLabel": "f(x) = {expression}",
+  "@solutionGraphFunctionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNotSupported": "この数式はグラフ表示に対応していません。",
+  "solutionGraphErrorMessage": "グラフの生成中にエラーが発生しました: {error}",
+  "@solutionGraphErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNoDataMessage": "グラフデータがありません",
   "verificationDomainCheckTitle": "定義域チェック",
   "verificationVerificationTitle": "検算",
   "verificationCommonPitfallsTitle": "よくある間違い",

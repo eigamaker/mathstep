@@ -262,6 +262,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get guideTipSigmaPi => 'Σ, Π, ∫ 키는 쉼표로 하한, 상한, 식을 구분해 입력합니다.';
 
   @override
+  String get guideTipIntegralNotation =>
+      '∫ 키를 누르면 \"integral(하한,상한,피적분함수,변수)\" 형식으로 입력할 수 있습니다.';
+
+  @override
   String get guideTipFractionKey => 'a/b 키로 분수를 입력하고 쉼표로 분자와 분모를 나눕니다.';
 
   @override
@@ -335,16 +339,52 @@ class AppLocalizationsKo extends AppLocalizations {
   String get solutionTabAlternative => '대안·검산';
 
   @override
+  String get solutionTabGraph => '그래프';
+
+  @override
   String get solutionAlternativeSectionTitle => '대안 해법';
 
   @override
   String get solutionVerificationSectionTitle => '검산 및 정의역 확인';
 
   @override
+  String get solutionStepsEmptyMessage => 'API에서 반환된 단계가 없습니다.';
+
+  @override
+  String get solutionAlternativeEmptyMessage => '추가 자료가 아직 없습니다.';
+
+  @override
   String get solutionShareNotAvailable => '공유 기능은 추후 업데이트에서 제공될 예정입니다.';
 
   @override
   String get solutionSaveSuccess => '기록에 저장했습니다.';
+
+  @override
+  String solutionStepBadgeLabel(int stepNumber, String stepTitle) {
+    return '단계 $stepNumber: $stepTitle';
+  }
+
+  @override
+  String get solutionNextStepLabel => '다음 단계';
+
+  @override
+  String get solutionGraphSectionTitle => '함수 그래프';
+
+  @override
+  String solutionGraphFunctionLabel(String expression) {
+    return 'f(x) = $expression';
+  }
+
+  @override
+  String get solutionGraphNotSupported => '이 식은 그래프 표시를 지원하지 않습니다.';
+
+  @override
+  String solutionGraphErrorMessage(String error) {
+    return '그래프를 생성하는 동안 오류가 발생했습니다: $error';
+  }
+
+  @override
+  String get solutionGraphNoDataMessage => '그래프 데이터가 없습니다';
 
   @override
   String get verificationDomainCheckTitle => '정의역 확인';

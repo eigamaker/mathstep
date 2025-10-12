@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConfig {
@@ -56,8 +57,13 @@ class ApiConfig {
   // 環境変数が正しく読み込まれているかチェック
   static bool get isConfigured {
     try {
-      return openaiApiKey.isNotEmpty;
+      final key = openaiApiKey;
+      debugPrint('ApiConfig.isConfigured: key length = ${key.length}');
+      debugPrint('ApiConfig.isConfigured: key preview = ${key.isNotEmpty ? key.substring(0, key.length > 10 ? 10 : key.length) + "..." : "empty"}');
+      debugPrint('ApiConfig.isConfigured: dotenv.env keys = ${dotenv.env.keys.toList()}');
+      return key.isNotEmpty;
     } catch (e) {
+      debugPrint('ApiConfig.isConfigured error: $e');
       return false;
     }
   }

@@ -11,15 +11,15 @@ class JsonParser {
   static Solution? parseSolutionResponse(String content) {
     try {
       final jsonString = _extractJsonString(content);
-      if (jsonString == null) return null;
+      if (jsonString == null) {
+        debugPrint('JsonParser: Failed to locate JSON payload in response.');
+        return null;
+      }
 
-      final cleanedJsonString = _cleanJsonString(jsonString);
-      final jsonMap = _parseJsonMap(cleanedJsonString);
-      if (jsonMap == null) return null;
-
+      final jsonMap = _parseJsonMap(jsonString);
       return _createSolutionFromJson(jsonMap);
     } catch (error, stackTrace) {
-      debugPrint('Failed to parse solution response: $error\n$stackTrace');
+      debugPrint('JsonParser: Failed to parse solution response: $error\n$stackTrace');
       return null;
     }
   }
@@ -34,21 +34,14 @@ class JsonParser {
     return content.substring(start, end + 1);
   }
 
-  /// Normalises invalid escape sequences inside the JSON payload.
-  static String _cleanJsonString(String jsonString) {
-    return jsonString.replaceAllMapped(
-      RegExp(AppConstants.multipleBackslashesPattern),
-      (match) => AppConstants.replacementBackslashes,
-    );
-  }
-
   /// Decodes a JSON string to a map.
-  static Map<String, dynamic>? _parseJsonMap(String jsonString) {
+  static Map<String, dynamic> _parseJsonMap(String jsonString) {
     try {
-      return jsonDecode(jsonString) as Map<String, dynamic>;
-    } catch (e) {
-      debugPrint('Failed to parse JSON: $e');
-      debugPrint('JSON string: $jsonString');
+      final decoded = jsonDecode(jsonString);
+      return decoded as Map<String, dynamic>;
+    } catch (error) {
+      debugPrint('JsonParser: Failed to decode JSON: $error');
+      debugPrint('JsonParser: JSON content: $jsonString');
       throw const FormatException('invalid_json_format');
     }
   }
@@ -116,8 +109,8 @@ class JsonParser {
   static String? _safeStringCast(dynamic value) {
     if (value == null) return null;
     if (value is String) return value;
-    if (value is List) return value.join(', ');
-    if (value is Map) return value.toString();
-    return value.toString();
+
+    return value is List ? value.join(', ') : value.toString();
   }
 }
+

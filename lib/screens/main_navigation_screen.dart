@@ -54,7 +54,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 _buildNavItem(
                   context: context,
                   index: 0,
-                  icon: Icons.functions,
+                  icon: Icons.calculate,
                   isSelected: currentIndex == 0,
                 ),
                 _buildNavItem(

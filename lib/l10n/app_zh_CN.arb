@@ -123,6 +123,7 @@
   "guideTipArrowKeys": "使用 ← → 键移动光标。",
   "guideTipDeleteKey": "DEL 键可删除光标左侧的字符。",
   "guideTipSigmaPi": "Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。",
+  "guideTipIntegralNotation": "按 ∫ 键可以按 \"integral(下限,上限,被积函数,变量)\" 格式输入积分。",
   "guideTipFractionKey": "使用 a/b 键输入分数，并用逗号区分分子和分母。",
   "guideTipCloseParenthesis": "需要时请使用 ) 键闭合括号。",
   "homeSampleLoaded": "已载入示例表达式：{expression}",
@@ -146,10 +147,44 @@
   "solutionProblemLabel": "题目：",
   "solutionTabMain": "解法",
   "solutionTabAlternative": "其它解法与检验",
+  "solutionTabGraph": "图形",
   "solutionAlternativeSectionTitle": "其它解法",
   "solutionVerificationSectionTitle": "检验与定义域检查",
+  "solutionStepsEmptyMessage": "API 未返回任何步骤。",
+  "solutionAlternativeEmptyMessage": "暂无其他内容。",
   "solutionShareNotAvailable": "分享功能将在未来更新中提供。",
   "solutionSaveSuccess": "已保存到历史记录。",
+  "solutionStepBadgeLabel": "第 {stepNumber} 步：{stepTitle}",
+  "@solutionStepBadgeLabel": {
+    "placeholders": {
+      "stepNumber": {
+        "type": "int"
+      },
+      "stepTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionNextStepLabel": "下一步",
+  "solutionGraphSectionTitle": "函数图像",
+  "solutionGraphFunctionLabel": "f(x) = {expression}",
+  "@solutionGraphFunctionLabel": {
+    "placeholders": {
+      "expression": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNotSupported": "此表达式不支持图形显示。",
+  "solutionGraphErrorMessage": "生成图形时发生错误：{error}",
+  "@solutionGraphErrorMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "solutionGraphNoDataMessage": "没有图形数据",
   "verificationDomainCheckTitle": "定义域检查",
   "verificationVerificationTitle": "检验",
   "verificationCommonPitfallsTitle": "常见误区",

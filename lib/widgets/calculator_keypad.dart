@@ -79,7 +79,7 @@ class CalculatorKeypad extends StatelessWidget {
     [
       _KeySpec.input('sum(', label: '\u03A3'),
       _KeySpec.input('prod(', label: '\u03A0'),
-      _KeySpec.input('int(', label: '\u222B'),
+      _KeySpec.input('integral(', label: '\u222B'),
       _KeySpec.input('nPr(', label: 'P'),
       _KeySpec.input('nCr(', label: 'C'),
       _KeySpec.input('Re(', label: 'Re'),

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../config/api_config.dart';
 import '../models/math_expression.dart';
-import '../utils/syntax_converter.dart';
+import '../utils/asciimath_converter.dart';
 import '../widgets/calculator_keypad.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/reward_ad_button.dart';
@@ -17,6 +17,7 @@ import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
 import '../models/sample_expression.dart';
 import '../constants/app_colors.dart';
+import '../widgets/mathstep_logo.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -185,7 +186,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     try {
+      debugPrint('HomeScreen: Checking API configuration...');
+      debugPrint('HomeScreen: ApiConfig.isConfigured = ${ApiConfig.isConfigured}');
+      debugPrint('HomeScreen: ApiConfig.openaiApiKey length = ${ApiConfig.openaiApiKey.length}');
+      
       if (!ApiConfig.isConfigured) {
+        debugPrint('HomeScreen: API key not configured, showing error');
         _showSnackBar(l10n.homeApiKeyMissingSnack);
         _showErrorDialog(
           l10n.homeApiKeyMissingDialogMessage,
@@ -197,12 +203,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _showSnackBar(l10n.homeSendingToChatGpt);
 
       final chatGptService = ref.read(chatGptServiceProvider);
-      final latexExpression = SyntaxConverter.calculatorToLatex(input);
+      final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(input);
       final conditionRaw = _conditionController.text.trim();
       final condition = conditionRaw.isEmpty ? null : conditionRaw;
 
       final solution = await chatGptService.generateSolution(
-        latexExpression,
+        asciiMathExpression,
         condition: condition,
         language: language,
       );
@@ -212,13 +218,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final mathExpression = MathExpression(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         calculatorSyntax: input,
-        latexExpression: latexExpression,
+        latexExpression: AsciiMathConverter.asciiMathToLatex(asciiMathExpression),
         timestamp: DateTime.now(),
       );
+
+      debugPrint('HomeScreen: Saving solution to storage...');
+      debugPrint('HomeScreen: MathExpression ID: ${mathExpression.id}');
+      debugPrint('HomeScreen: Solution ID: ${solution.id}');
+      debugPrint('HomeScreen: Solution steps count: ${solution.steps.length}');
 
       ref
           .read(solutionStorageProvider.notifier)
           .addSolution(mathExpression, solution);
+
+      debugPrint('HomeScreen: Solution saved successfully, navigating to SolutionScreen');
 
       Navigator.push(
         context,
@@ -284,19 +297,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     
     // 柔軟な動的サイズ計算
-    // 画面の高さに基づいて適切な比率で計算
+    // 画面の高さに基づいて適切な比率で計算（分数表示のため比率を増加）
     double heightRatio;
     if (screenHeight > 900) {
-      heightRatio = 0.20; // 大きな画面では20%
+      heightRatio = 0.25; // 大きな画面では25%
     } else if (screenHeight > 700) {
-      heightRatio = 0.25; // 中程度の画面では25%
+      heightRatio = 0.30; // 中程度の画面では30%
     } else {
-      heightRatio = 0.30; // 小さな画面では30%
+      heightRatio = 0.35; // 小さな画面では35%
     }
     
-    // 最小・最大値を設定
-    final minHeight = 120.0;
-    final maxHeight = 200.0;
+    // 最小・最大値を設定（分数表示のため高さを増加）
+    final minHeight = 150.0;
+    final maxHeight = 300.0;
     
     double calculatedHeight = screenHeight * heightRatio;
     
@@ -405,8 +418,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -414,22 +427,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
-            child: const Icon(Icons.functions, color: Colors.white, size: 20),
+            child: const Icon(Icons.calculate, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 12),
           ShaderMask(
             shaderCallback: (bounds) => LinearGradient(
               colors: [
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                AppColors.primary,
+                AppColors.primary.withValues(alpha: 0.7),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -452,8 +463,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+              AppColors.surface,
+              AppColors.surface.withValues(alpha: 0.95),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,

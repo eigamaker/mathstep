@@ -336,7 +336,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get solutionTabMain => '해법';
 
   @override
-  String get solutionTabAlternative => '대안·검산';
+  String get solutionTabAlternative => '유사 문제';
+
+  @override
+  String get solutionSimilarProblemsSectionTitle => '유사 문제';
+
+  @override
+  String get solutionSimilarProblemTitle => '유사 문제';
+
+  @override
+  String get solutionSimilarProblemDescription => '유사한 이유';
+
+  @override
+  String get solutionSimilarProblemExpression => '문제식';
+
+  @override
+  String get solutionSimilarProblemEmptyMessage => '아직 유사 문제가 없습니다.';
 
   @override
   String get solutionTabGraph => '그래프';

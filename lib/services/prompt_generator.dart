@@ -49,21 +49,52 @@ class PromptGenerator {
       "title": "ステップのタイトル（何をするか）",
       "description": "数式の変換や変形の理由を説明（思考プロセス・コツ・励ましを含む）",
       "asciiMathExpression": "数式（AsciiMath形式）"
+    },
+    {
+      "id": "step2",
+      "title": "次のステップのタイトル",
+      "description": "次のステップの説明",
+      "asciiMathExpression": "次の数式"
     }
   ],
-  "alternativeSolutions": [...],
-  "verification": {
-    "domainCheck": "定義域の確認方法",
-    "verification": "答えの検証方法",
-    "commonMistakes": "よくある間違いと対策"
-  }
+  "similarProblems": [
+    {
+      "id": "similar1",
+      "title": "類似問題のタイトル",
+      "description": "なぜこの問題が類似しているかの説明",
+      "problemExpression": "類似問題の数式（AsciiMath形式）",
+      "solutionSteps": [
+        {
+          "id": "step1",
+          "title": "ステップのタイトル",
+          "description": "解法の説明",
+          "asciiMathExpression": "数式（AsciiMath形式）"
+        }
+      ]
+    }
+  ]
 }
+
+【類似問題の作成方針】
+- 元の問題と同様の解法パターンを持つ問題を2-3個提案する
+- 難易度を段階的に上げる（基本→応用→発展）
+- 類似問題の解法も詳細に説明する
+- なぜその問題が類似しているかを明確に説明する
+
+【ステップ作成の重要ポイント】
+- 必ず複数のステップ（最低3つ以上）を作成する
+- 各ステップには一意のID（step1, step2, step3...）を付ける
+- 各ステップには明確なタイトルと説明を記述する
+- 数式がある場合はasciiMathExpressionフィールドに記述する
+- ステップは論理的な順序で並べる
 
 【重要なポイント】
 - 数式の展開過程で説明を挿入する
 - 変換や変形の理由を必ず説明する
 - 思考プロセスを共有する
 - AsciiMath形式で数式を記述する
+- 類似問題で学習効果を高める
+- 必ず複数のステップを作成する（1つだけでは不十分）
 
 常に${language.chatGptLanguageName}で、分かりやすく説明してください。
 ''';
@@ -89,6 +120,7 @@ class PromptGenerator {
       ..writeln('• 難しい概念は身近な例で説明する')
       ..writeln('• つまずきやすいポイントを事前に教える')
       ..writeln('• 各ステップで「何をしているか」を明確にする')
+      ..writeln('• この問題と同様の解法パターンを持つ類似問題を2-3個提案し、その解法も詳しく説明する')
       ..writeln();
 
     if (condition != null && condition.trim().isNotEmpty) {

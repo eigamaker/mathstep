@@ -370,7 +370,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get solutionTabMain => 'Solution';
 
   @override
-  String get solutionTabAlternative => 'Alternatives & checks';
+  String get solutionTabAlternative => 'Similar Problems';
+
+  @override
+  String get solutionSimilarProblemsSectionTitle => 'Similar Problems';
+
+  @override
+  String get solutionSimilarProblemTitle => 'Similar Problem';
+
+  @override
+  String get solutionSimilarProblemDescription => 'Why it\'s similar';
+
+  @override
+  String get solutionSimilarProblemExpression => 'Problem Expression';
+
+  @override
+  String get solutionSimilarProblemEmptyMessage =>
+      'No similar problems available yet.';
 
   @override
   String get solutionTabGraph => 'Graph';

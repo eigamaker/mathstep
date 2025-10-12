@@ -337,6 +337,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get solutionTabAlternative => '其它解法与检验';
 
   @override
+  String get solutionSimilarProblemsSectionTitle => 'Similar Problems';
+
+  @override
+  String get solutionSimilarProblemTitle => 'Similar Problem';
+
+  @override
+  String get solutionSimilarProblemDescription => 'Why it\'s similar';
+
+  @override
+  String get solutionSimilarProblemExpression => 'Problem Expression';
+
+  @override
+  String get solutionSimilarProblemEmptyMessage =>
+      'No similar problems available yet.';
+
+  @override
   String get solutionTabGraph => '图形';
 
   @override
@@ -724,7 +740,22 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get solutionTabMain => '解法';
 
   @override
-  String get solutionTabAlternative => '其它解法与检验';
+  String get solutionTabAlternative => '类似问题';
+
+  @override
+  String get solutionSimilarProblemsSectionTitle => '类似问题';
+
+  @override
+  String get solutionSimilarProblemTitle => '类似问题';
+
+  @override
+  String get solutionSimilarProblemDescription => '相似原因';
+
+  @override
+  String get solutionSimilarProblemExpression => '问题表达式';
+
+  @override
+  String get solutionSimilarProblemEmptyMessage => '暂无类似问题。';
 
   @override
   String get solutionTabGraph => '图形';
@@ -1114,7 +1145,22 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get solutionTabMain => '解法';
 
   @override
-  String get solutionTabAlternative => '其它解法與檢算';
+  String get solutionTabAlternative => '類似問題';
+
+  @override
+  String get solutionSimilarProblemsSectionTitle => '類似問題';
+
+  @override
+  String get solutionSimilarProblemTitle => '類似問題';
+
+  @override
+  String get solutionSimilarProblemDescription => '相似原因';
+
+  @override
+  String get solutionSimilarProblemExpression => '問題表達式';
+
+  @override
+  String get solutionSimilarProblemEmptyMessage => '暫無類似問題。';
 
   @override
   String get solutionTabGraph => '圖形';

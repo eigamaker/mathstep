@@ -297,19 +297,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     
     // 柔軟な動的サイズ計算
-    // 画面の高さに基づいて適切な比率で計算（分数表示のため比率を増加）
+    // 画面の高さに基づいて適切な比率で計算（キーボード表示を考慮して調整）
     double heightRatio;
     if (screenHeight > 900) {
-      heightRatio = 0.25; // 大きな画面では25%
+      heightRatio = 0.20; // 大きな画面では20%
     } else if (screenHeight > 700) {
-      heightRatio = 0.30; // 中程度の画面では30%
+      heightRatio = 0.22; // 中程度の画面では22%
     } else {
-      heightRatio = 0.35; // 小さな画面では35%
+      heightRatio = 0.25; // 小さな画面では25%
     }
     
-    // 最小・最大値を設定（分数表示のため高さを増加）
-    final minHeight = 150.0;
-    final maxHeight = 300.0;
+    // 最小・最大値を設定（キーボード表示領域を確保）
+    final minHeight = 120.0;
+    final maxHeight = 200.0;
     
     double calculatedHeight = screenHeight * heightRatio;
     
@@ -360,7 +360,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               final previewHeight = _calculatePreviewHeight(context);
               return Container(
                 height: previewHeight,
-                margin: const EdgeInsets.all(16), // マージンを適切に調整
+                margin: const EdgeInsets.fromLTRB(16, 16, 16, 8), // 下部マージンを削減
                 child: _buildLatexPreview(expressionState.latex),
               );
             },
@@ -370,19 +370,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildExpressionField(expressionState.input),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildConditionField(),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildGenerateButton(expressionState.isLoading),
           ),
           if (expressionState.errorMessage != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -395,7 +395,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           // キーパッドエリア（残りのスペースを使用）
           Expanded(
             child: Padding(
@@ -403,7 +403,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: _buildCalculator(),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
         ],
       ),
     );

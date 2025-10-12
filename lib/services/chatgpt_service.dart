@@ -173,6 +173,9 @@ class ChatGptService {
   /// コンテンツからソリューションを解析する
   Solution _parseSolutionFromContent(String content) {
     debugPrint('Parsing solution from content...');
+    debugPrint('Content length: ${content.length}');
+    debugPrint('Content preview: ${content.length > 200 ? content.substring(0, 200) + "..." : content}');
+    
     final solution = JsonParser.parseSolutionResponse(content);
     if (solution == null) {
       debugPrint('Failed to parse solution JSON from content: $content');
@@ -181,6 +184,12 @@ class ChatGptService {
         'Failed to parse solution JSON',
       );
     }
+    
+    debugPrint('Solution parsed successfully:');
+    debugPrint('- Problem statement: ${solution.problemStatement}');
+    debugPrint('- Steps count: ${solution.steps.length}');
+    debugPrint('- Similar problems count: ${solution.similarProblems?.length ?? 0}');
+    
     return solution;
   }
 
@@ -199,8 +208,8 @@ class ChatGptService {
       );
     }).toList();
 
-    final normalizedAlternativeSolutions = solution.alternativeSolutions?.map((alt) {
-      final normalizedAltSteps = alt.steps.map((step) {
+    final normalizedSimilarProblems = solution.similarProblems?.map((similar) {
+      final normalizedSimilarSteps = similar.solutionSteps.map((step) {
         final normalizedExpression = step.latexExpression != null
             ? AsciiMathConverter.normalizeChatGptResponse(step.latexExpression!)
             : null;
@@ -213,26 +222,14 @@ class ChatGptService {
         );
       }).toList();
 
-      return AlternativeSolution(
-        id: alt.id,
-        title: alt.title,
-        steps: normalizedAltSteps,
+      return SimilarProblem(
+        id: similar.id,
+        title: similar.title,
+        description: similar.description,
+        problemExpression: similar.problemExpression,
+        solutionSteps: normalizedSimilarSteps,
       );
     }).toList();
-
-    final normalizedVerification = solution.verification != null
-        ? Verification(
-            domainCheck: solution.verification!.domainCheck != null
-                ? AsciiMathConverter.normalizeChatGptResponse(solution.verification!.domainCheck!)
-                : null,
-            verification: solution.verification!.verification != null
-                ? AsciiMathConverter.normalizeChatGptResponse(solution.verification!.verification!)
-                : null,
-            commonMistakes: solution.verification!.commonMistakes != null
-                ? AsciiMathConverter.normalizeChatGptResponse(solution.verification!.commonMistakes!)
-                : null,
-          )
-        : null;
 
     return Solution(
       id: solution.id,
@@ -241,8 +238,7 @@ class ChatGptService {
           ? AsciiMathConverter.normalizeChatGptResponse(solution.problemStatement!)
           : null,
       steps: normalizedSteps,
-      alternativeSolutions: normalizedAlternativeSolutions,
-      verification: normalizedVerification,
+      similarProblems: normalizedSimilarProblems,
       timestamp: solution.timestamp,
     );
   }

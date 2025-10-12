@@ -713,8 +713,38 @@ abstract class AppLocalizations {
   /// No description provided for @solutionTabAlternative.
   ///
   /// In en, this message translates to:
-  /// **'Alternatives & checks'**
+  /// **'Similar Problems'**
   String get solutionTabAlternative;
+
+  /// No description provided for @solutionSimilarProblemsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Similar Problems'**
+  String get solutionSimilarProblemsSectionTitle;
+
+  /// No description provided for @solutionSimilarProblemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Similar Problem'**
+  String get solutionSimilarProblemTitle;
+
+  /// No description provided for @solutionSimilarProblemDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Why it\'s similar'**
+  String get solutionSimilarProblemDescription;
+
+  /// No description provided for @solutionSimilarProblemExpression.
+  ///
+  /// In en, this message translates to:
+  /// **'Problem Expression'**
+  String get solutionSimilarProblemExpression;
+
+  /// No description provided for @solutionSimilarProblemEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No similar problems available yet.'**
+  String get solutionSimilarProblemEmptyMessage;
 
   /// No description provided for @solutionTabGraph.
   ///

@@ -3,8 +3,7 @@ class Solution {
   final String mathExpressionId;
   final String? problemStatement;
   final List<SolutionStep> steps;
-  final List<AlternativeSolution>? alternativeSolutions;
-  final Verification? verification;
+  final List<SimilarProblem>? similarProblems;
   final DateTime timestamp;
 
   const Solution({
@@ -12,8 +11,7 @@ class Solution {
     required this.mathExpressionId,
     this.problemStatement,
     required this.steps,
-    this.alternativeSolutions,
-    this.verification,
+    this.similarProblems,
     required this.timestamp,
   });
 
@@ -23,10 +21,9 @@ class Solution {
       'mathExpressionId': mathExpressionId,
       'problemStatement': problemStatement,
       'steps': steps.map((step) => step.toJson()).toList(),
-      'alternativeSolutions': alternativeSolutions
-          ?.map((alt) => alt.toJson())
+      'similarProblems': similarProblems
+          ?.map((similar) => similar.toJson())
           .toList(),
-      'verification': verification?.toJson(),
       'timestamp': timestamp.toIso8601String(),
     };
   }
@@ -39,13 +36,10 @@ class Solution {
       steps: (json['steps'] as List)
           .map((step) => SolutionStep.fromJson(step))
           .toList(),
-      alternativeSolutions: json['alternativeSolutions'] != null
-          ? (json['alternativeSolutions'] as List)
-                .map((alt) => AlternativeSolution.fromJson(alt))
+      similarProblems: json['similarProblems'] != null
+          ? (json['similarProblems'] as List)
+                .map((similar) => SimilarProblem.fromJson(similar))
                 .toList()
-          : null,
-      verification: json['verification'] != null
-          ? Verification.fromJson(json['verification'])
           : null,
       timestamp: DateTime.parse(json['timestamp']),
     );
@@ -56,8 +50,7 @@ class Solution {
     String? mathExpressionId,
     String? problemStatement,
     List<SolutionStep>? steps,
-    List<AlternativeSolution>? alternativeSolutions,
-    Verification? verification,
+    List<SimilarProblem>? similarProblems,
     DateTime? timestamp,
   }) {
     return Solution(
@@ -65,8 +58,7 @@ class Solution {
       mathExpressionId: mathExpressionId ?? this.mathExpressionId,
       problemStatement: problemStatement ?? this.problemStatement,
       steps: steps ?? this.steps,
-      alternativeSolutions: alternativeSolutions ?? this.alternativeSolutions,
-      verification: verification ?? this.verification,
+      similarProblems: similarProblems ?? this.similarProblems,
       timestamp: timestamp ?? this.timestamp,
     );
   }
@@ -124,60 +116,40 @@ class SolutionStep {
   }
 }
 
-class AlternativeSolution {
+class SimilarProblem {
   final String id;
   final String title;
-  final List<SolutionStep> steps;
+  final String description;
+  final String problemExpression;
+  final List<SolutionStep> solutionSteps;
 
-  const AlternativeSolution({
+  const SimilarProblem({
     required this.id,
     required this.title,
-    required this.steps,
+    required this.description,
+    required this.problemExpression,
+    required this.solutionSteps,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'title': title,
-      'steps': steps.map((step) => step.toJson()).toList(),
+      'description': description,
+      'problemExpression': problemExpression,
+      'solutionSteps': solutionSteps.map((step) => step.toJson()).toList(),
     };
   }
 
-  factory AlternativeSolution.fromJson(Map<String, dynamic> json) {
-    return AlternativeSolution(
+  factory SimilarProblem.fromJson(Map<String, dynamic> json) {
+    return SimilarProblem(
       id: json['id'],
       title: json['title'],
-      steps: (json['steps'] as List)
+      description: json['description'],
+      problemExpression: json['problemExpression'],
+      solutionSteps: (json['solutionSteps'] as List)
           .map((step) => SolutionStep.fromJson(step))
           .toList(),
-    );
-  }
-}
-
-class Verification {
-  final String? domainCheck;
-  final String? verification;
-  final String? commonMistakes;
-
-  const Verification({
-    this.domainCheck,
-    this.verification,
-    this.commonMistakes,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'domainCheck': domainCheck,
-      'verification': verification,
-      'commonMistakes': commonMistakes,
-    };
-  }
-
-  factory Verification.fromJson(Map<String, dynamic> json) {
-    return Verification(
-      domainCheck: json['domainCheck'],
-      verification: json['verification'],
-      commonMistakes: json['commonMistakes'],
     );
   }
 }

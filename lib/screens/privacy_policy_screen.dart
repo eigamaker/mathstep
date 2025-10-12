@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
 import '../providers/language_provider.dart';
@@ -130,7 +131,7 @@ class PrivacyPolicyScreen extends ConsumerWidget {
             children: [
               _buildSectionTitle(context, 'プライバシーポリシー', Icons.privacy_tip),
               const SizedBox(height: 16),
-              _buildLastUpdated(context, '最終更新日: 2024年12月19日'),
+              _buildLastUpdated(context, '最終更新日: 2025年10月1日'),
               const SizedBox(height: 20),
               
               _buildSection(context, '1. はじめに', [
@@ -217,7 +218,7 @@ class PrivacyPolicyScreen extends ConsumerWidget {
             children: [
               _buildSectionTitle(context, 'Privacy Policy', Icons.privacy_tip),
               const SizedBox(height: 16),
-              _buildLastUpdated(context, 'Last Updated: December 19, 2024'),
+              _buildLastUpdated(context, 'Last Updated: October 1, 2025'),
               const SizedBox(height: 20),
               
               _buildSection(context, '1. Introduction', [
@@ -304,7 +305,7 @@ class PrivacyPolicyScreen extends ConsumerWidget {
             children: [
               _buildSectionTitle(context, '개인정보처리방침', Icons.privacy_tip),
               const SizedBox(height: 16),
-              _buildLastUpdated(context, '최종 업데이트: 2024년 12월 19일'),
+              _buildLastUpdated(context, '최종 업데이트: 2025년 10월 1일'),
               const SizedBox(height: 20),
               
               _buildSection(context, '1. 개요', [
@@ -391,7 +392,7 @@ class PrivacyPolicyScreen extends ConsumerWidget {
             children: [
               _buildSectionTitle(context, '隐私政策', Icons.privacy_tip),
               const SizedBox(height: 16),
-              _buildLastUpdated(context, '最后更新：2024年12月19日'),
+              _buildLastUpdated(context, '最后更新：2025年10月1日'),
               const SizedBox(height: 20),
               
               _buildSection(context, '1. 简介', [
@@ -485,21 +486,65 @@ class PrivacyPolicyScreen extends ConsumerWidget {
   }
 
   Widget _buildLastUpdated(BuildContext context, String date) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Text(
-        date,
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey.shade600,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final version = snapshot.hasData ? snapshot.data!.version : '1.0.0';
+        final l10n = context.l10n;
+        
+        // 言語に応じてバージョン表示テキストを決定
+        String versionText;
+        if (date.contains('2025年10月1日')) {
+          versionText = 'アプリバージョン: $version';
+        } else if (date.contains('October 1, 2025')) {
+          versionText = 'App Version: $version';
+        } else if (date.contains('2025년 10월 1일')) {
+          versionText = '앱 버전: $version';
+        } else if (date.contains('2025年10月1日')) {
+          versionText = '应用版本: $version';
+        } else {
+          versionText = 'App Version: $version';
+        }
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Text(
+                date,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Text(
+                versionText,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

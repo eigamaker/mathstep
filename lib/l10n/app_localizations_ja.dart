@@ -335,22 +335,37 @@ class AppLocalizationsJa extends AppLocalizations {
   String get solutionTabMain => '解法';
 
   @override
-  String get solutionTabAlternative => '別解・検算';
+  String get solutionTabAlternative => '類似問題';
 
   @override
-  String get solutionTabGraph => 'グラフ';
+  String get solutionSimilarProblemsSectionTitle => '類似問題';
 
   @override
-  String get solutionAlternativeSectionTitle => '別解';
+  String get solutionSimilarProblemTitle => '類似問題';
 
   @override
-  String get solutionVerificationSectionTitle => '検算・定義域チェック';
+  String get solutionSimilarProblemDescription => 'なぜ類似しているか';
 
   @override
-  String get solutionStepsEmptyMessage => 'APIからステップが返されませんでした。';
+  String get solutionSimilarProblemExpression => '問題式';
 
   @override
-  String get solutionAlternativeEmptyMessage => '追加の情報はまだありません。';
+  String get solutionSimilarProblemEmptyMessage => '類似問題はまだありません。';
+
+  @override
+  String get solutionTabGraph => 'Graph';
+
+  @override
+  String get solutionAlternativeSectionTitle => 'Alternative solutions';
+
+  @override
+  String get solutionVerificationSectionTitle => 'Verification & domain check';
+
+  @override
+  String get solutionStepsEmptyMessage => 'No steps were returned by the API.';
+
+  @override
+  String get solutionAlternativeEmptyMessage => 'No additional material yet.';
 
   @override
   String get solutionShareNotAvailable => '共有機能は今後のアップデートで対応予定です。';

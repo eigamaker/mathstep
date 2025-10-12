@@ -23,14 +23,14 @@ class GuideScreen extends StatelessWidget {
             expression: 'e^{x^2}',
             keySequence: ['e', 'x^y', '(', 'x', 'x^y', '2', ')'],
           ),
-          _GuideExample(expression: '\\sqrt{9}', keySequence: ['√', '9']),
+          _GuideExample(expression: '\\sqrt{9}', keySequence: ['√', '9', ')']),
           _GuideExample(
             expression: '\\sqrt[3]{8}',
-            keySequence: ['∛', '8'],
+            keySequence: ['∛', '8', ')'],
           ),
           _GuideExample(
             expression: '\\sqrt[4]{16}',
-            keySequence: ['ⁿ√', '4', ',', '16'],
+            keySequence: ['ⁿ√', '4', ',', '16', ')'],
           ),
         ],
       ),
@@ -39,16 +39,16 @@ class GuideScreen extends StatelessWidget {
         examples: const [
           _GuideExample(
             expression: '\\frac{1}{2}',
-            keySequence: ['a/b', '1', ',', '2'],
+            keySequence: ['a/b', '1', ',', '2', ')'],
           ),
           _GuideExample(
             expression: '\\frac{x+1}{x-1}',
-            keySequence: ['a/b', 'x', '+', '1', ',', 'x', '-', '1'],
+            keySequence: ['a/b', 'x', '+', '1', ',', 'x', '-', '1', ')'],
           ),
-          _GuideExample(expression: '|x|', keySequence: ['|x|', 'x']),
+          _GuideExample(expression: '|x|', keySequence: ['|x|', 'x', ')']),
           _GuideExample(
             expression: '|3+4i|',
-            keySequence: ['|x|', '3', '+', '4', 'i'],
+            keySequence: ['|x|', '3', '+', '4', 'i', ')'],
           ),
         ],
       ),
@@ -57,20 +57,20 @@ class GuideScreen extends StatelessWidget {
         examples: const [
           _GuideExample(
             expression: '\\sin(x)',
-            keySequence: ['sin', '(', 'x', ')'],
+            keySequence: ['sin', 'x', ')'],
           ),
           _GuideExample(
             expression: '\\cos(x)',
-            keySequence: ['cos', '(', 'x', ')'],
+            keySequence: ['cos', 'x', ')'],
           ),
           _GuideExample(
             expression: '\\tan(x)',
-            keySequence: ['tan', '(', 'x', ')'],
+            keySequence: ['tan', 'x', ')'],
           ),
-          _GuideExample(expression: '\\ln(e)', keySequence: ['ln', '(', 'e', ')']),
+          _GuideExample(expression: '\\ln(e)', keySequence: ['ln', 'e', ')']),
           _GuideExample(
             expression: '\\log(100)',
-            keySequence: ['log', '(', '1', '0', '0', ')'],
+            keySequence: ['log', '1', '0', '0', ')'],
           ),
         ],
       ),
@@ -79,22 +79,22 @@ class GuideScreen extends StatelessWidget {
         examples: const [
           _GuideExample(
             expression: '\\sum_{i=1}^{5} x_i',
-            keySequence: ['Σ', 'i', '=', '1', ',', '5', ',', 'x', '_', 'i'],
+            keySequence: ['Σ', 'i', '=', '1', ',', '5', ',', 'x', '_', 'i', ')'],
           ),
           _GuideExample(
             expression: '\\prod_{i=1}^{4} x_i',
-            keySequence: ['Π', 'i', '=', '1', ',', '4', ',', 'x', '_', 'i'],
+            keySequence: ['Π', 'i', '=', '1', ',', '4', ',', 'x', '_', 'i', ')'],
           ),
           _GuideExample(
             expression: '\\int_{0}^{1} x^2 \\, dx',
             keySequence: [
-              '∫', '(', '0', ',', '1', ',', 'x', 'x^y', '2', ',', 'x', ')'
+              '∫', '0', ',', '1', ',', 'x', 'x^y', '2', ',', 'x', ')'
             ],
           ),
           _GuideExample(
             expression: '\\int_{0}^{\\pi/2} \\sin(x) \\, dx',
             keySequence: [
-              '∫', '(', '0', ',', '(', 'π', '/', '2', ')', ',', 'sin', '(', 'x', ')', ',', 'x', ')'
+              '∫', '0', ',', 'π', '/', '2', ',', 'sin', 'x', ')', ',', 'x', ')'
             ],
           ),
         ],
@@ -105,17 +105,17 @@ class GuideScreen extends StatelessWidget {
           _GuideExample(expression: '3+4i', keySequence: ['3', '+', '4', 'i']),
           _GuideExample(
             expression: '\\overline{z}',
-            keySequence: ['z*', 'z'],
+            keySequence: ['z*', 'z', ')'],
           ),
-          _GuideExample(expression: '\\Re(z)', keySequence: ['Re', '(', 'z', ')']),
-          _GuideExample(expression: '\\Im(z)', keySequence: ['Im', '(', 'z', ')']),
+          _GuideExample(expression: '\\Re(z)', keySequence: ['Re', 'z', ')']),
+          _GuideExample(expression: '\\Im(z)', keySequence: ['Im', 'z', ')']),
           _GuideExample(
             expression: 'P_{3}^{5}',
-            keySequence: ['P', '5', ',', '3'],
+            keySequence: ['P', '5', ',', '3', ')'],
           ),
           _GuideExample(
             expression: 'C_{3}^{5}',
-            keySequence: ['C', '5', ',', '3'],
+            keySequence: ['C', '5', ',', '3', ')'],
           ),
         ],
       ),

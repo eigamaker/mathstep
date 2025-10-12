@@ -4,12 +4,10 @@ import '../localization/localization_extensions.dart';
 import '../models/math_expression.dart';
 import '../models/solution.dart';
 import '../utils/asciimath_converter.dart';
-import '../widgets/alternative_solution_tab.dart';
 import '../widgets/latex_preview.dart';
 import '../widgets/math_expansion_display.dart';
 import '../widgets/math_graph_display.dart';
 import '../widgets/solution_step_card.dart';
-import '../widgets/verification_section.dart';
 
 class SolutionScreen extends StatefulWidget {
   const SolutionScreen({
@@ -174,34 +172,26 @@ class _SolutionScreenState extends State<SolutionScreen>
   }
 
   Widget _buildAlternativeTab() {
-    final alternativeSolutions = widget.solution.alternativeSolutions;
-    final verification = widget.solution.verification;
+    final similarProblems = widget.solution.similarProblems;
     final l10n = context.l10n;
 
-    if ((alternativeSolutions == null || alternativeSolutions.isEmpty) &&
-        verification == null) {
-      return _EmptyState(message: l10n.solutionAlternativeEmptyMessage);
+    if (similarProblems == null || similarProblems.isEmpty) {
+      return _EmptyState(message: l10n.solutionSimilarProblemEmptyMessage);
     }
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        if (alternativeSolutions != null &&
-            alternativeSolutions.isNotEmpty) ...[
-          Text(
-            context.l10n.solutionAlternativeSectionTitle,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          ...alternativeSolutions.map(
-            (item) => AlternativeSolutionTab(alternativeSolution: item),
-          ),
-          const SizedBox(height: 24),
-        ],
-        if (verification != null)
-          VerificationSection(verification: verification),
+        Text(
+          context.l10n.solutionSimilarProblemsSectionTitle,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        ...similarProblems.map(
+          (similarProblem) => _SimilarProblemCard(similarProblem: similarProblem),
+        ),
       ],
     );
   }
@@ -326,6 +316,83 @@ class _EmptyState extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SimilarProblemCard extends StatelessWidget {
+  const _SimilarProblemCard({required this.similarProblem});
+
+  final SimilarProblem similarProblem;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // タイトル
+          Text(
+            similarProblem.title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          
+          // 説明
+          Text(
+            similarProblem.description,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          
+          // 問題式
+          Text(
+            l10n.solutionSimilarProblemExpression,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          LatexPreview(
+            expression: similarProblem.problemExpression,
+            showBorder: true,
+            padding: const EdgeInsets.all(12),
+          ),
+          const SizedBox(height: 16),
+          
+          // 解法ステップ
+          Text(
+            '解法',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...similarProblem.solutionSteps.asMap().entries.map((entry) {
+            final index = entry.key;
+            final step = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: SolutionStepCard(step: step, index: index),
+            );
+          }),
+        ],
       ),
     );
   }

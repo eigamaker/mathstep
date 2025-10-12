@@ -53,19 +53,24 @@ class JsonParser {
       mathExpressionId: '',
       problemStatement: _safeStringCast(jsonMap['problemStatement']),
       steps: _parseSolutionSteps(jsonMap['steps']),
-      alternativeSolutions: _parseAlternativeSolutions(
-        jsonMap['alternativeSolutions'],
-      ),
-      verification: _parseVerification(jsonMap['verification']),
+      similarProblems: _parseSimilarProblems(jsonMap['similarProblems']),
       timestamp: DateTime.now(),
     );
   }
 
   /// Parses the list of solution steps.
   static List<SolutionStep> _parseSolutionSteps(dynamic stepsData) {
-    if (stepsData is! List) return [];
+    if (stepsData is! List) {
+      debugPrint('JsonParser: stepsData is not a List: $stepsData');
+      return [];
+    }
 
-    return stepsData
+    debugPrint('JsonParser: Parsing ${stepsData.length} steps');
+    for (int i = 0; i < stepsData.length; i++) {
+      debugPrint('JsonParser: Step $i: ${stepsData[i]}');
+    }
+
+    final steps = stepsData
         .map(
           (step) => SolutionStep(
             id: _safeStringCast(step['id']) ?? AppConstants.unknownId,
@@ -75,34 +80,30 @@ class JsonParser {
           ),
         )
         .toList();
+
+    debugPrint('JsonParser: Parsed ${steps.length} steps successfully');
+    for (int i = 0; i < steps.length; i++) {
+      debugPrint('JsonParser: Parsed step $i: id=${steps[i].id}, title="${steps[i].title}", description="${steps[i].description}"');
+    }
+
+    return steps;
   }
 
-  /// Parses any alternative solutions provided by the API.
-  static List<AlternativeSolution>? _parseAlternativeSolutions(
-    dynamic altData,
-  ) {
-    if (altData is! List) return null;
+  /// Parses any similar problems provided by the API.
+  static List<SimilarProblem>? _parseSimilarProblems(dynamic similarData) {
+    if (similarData is! List) return null;
 
-    return altData
+    return similarData
         .map(
-          (alt) => AlternativeSolution(
-            id: _safeStringCast(alt['id']) ?? AppConstants.unknownId,
-            title: _safeStringCast(alt['title'])?.trim() ?? '',
-            steps: _parseSolutionSteps(alt['steps']),
+          (similar) => SimilarProblem(
+            id: _safeStringCast(similar['id']) ?? AppConstants.unknownId,
+            title: _safeStringCast(similar['title'])?.trim() ?? '',
+            description: _safeStringCast(similar['description'])?.trim() ?? '',
+            problemExpression: _safeStringCast(similar['problemExpression'])?.trim() ?? '',
+            solutionSteps: _parseSolutionSteps(similar['solutionSteps']),
           ),
         )
         .toList();
-  }
-
-  /// Parses the verification block if present.
-  static Verification? _parseVerification(dynamic verificationData) {
-    if (verificationData == null) return null;
-
-    return Verification(
-      domainCheck: _safeStringCast(verificationData['domainCheck']),
-      verification: _safeStringCast(verificationData['verification']),
-      commonMistakes: _safeStringCast(verificationData['commonMistakes']),
-    );
   }
 
   /// Safely casts any value to a string representation.

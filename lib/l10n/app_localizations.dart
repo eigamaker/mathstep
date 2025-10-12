@@ -572,6 +572,12 @@ abstract class AppLocalizations {
   /// **'For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.'**
   String get guideTipSigmaPi;
 
+  /// No description provided for @guideTipIntegralNotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.'**
+  String get guideTipIntegralNotation;
+
   /// No description provided for @guideTipFractionKey.
   ///
   /// In en, this message translates to:
@@ -776,11 +782,11 @@ abstract class AppLocalizations {
   /// **'f(x) = {expression}'**
   String solutionGraphFunctionLabel(String expression);
 
-  /// No description provided for @solutionGraphUnsupportedMessage.
+  /// No description provided for @solutionGraphNotSupported.
   ///
   /// In en, this message translates to:
-  /// **'This expression cannot be graphed.\nSupported functions: sin, cos, tan, sqrt, exp, ln, log, powers, basic arithmetic'**
-  String get solutionGraphUnsupportedMessage;
+  /// **'This expression is not supported for graphing.'**
+  String get solutionGraphNotSupported;
 
   /// No description provided for @solutionGraphErrorMessage.
   ///

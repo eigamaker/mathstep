@@ -44,6 +44,10 @@ class _SolutionScreenState extends State<SolutionScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(
+      widget.mathExpression.calculatorSyntax,
+    );
+    final canGraph = MathGraphDisplay.canGraphExpression(asciiMathExpression);
 
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +123,7 @@ class _SolutionScreenState extends State<SolutionScreen>
           tabs: [
             Tab(text: l10n.solutionTabMain),
             Tab(text: l10n.solutionTabAlternative),
-            Tab(text: l10n.solutionTabGraph),
+            if (canGraph) Tab(text: l10n.solutionTabGraph),
           ],
         ),
       ),
@@ -135,7 +139,7 @@ class _SolutionScreenState extends State<SolutionScreen>
               children: [
                 _buildStepsTab(),
                 _buildAlternativeTab(),
-                _buildGraphTab(),
+                if (canGraph) _buildGraphTab(),
               ],
             ),
           ),

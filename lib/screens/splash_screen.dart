@@ -336,7 +336,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.white.withValues(alpha: 0.1), // 半透明の白背景
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -348,9 +348,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 ),
                 child: Image.asset(
                   'assets/images/mathstep.png',
-                  width: 120,
-                  height: 120,
+                  width: 200, // 横長ロゴに適した幅
+                  height: 50, // 比率を維持した高さ (1600:400 = 4:1)
                   fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    // 画像が見つからない場合はテキストロゴを表示
+                    return const MathstepLogo(
+                      fontSize: 32,
+                      textColor: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    );
+                  },
                 ),
               ),
             );

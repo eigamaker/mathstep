@@ -77,6 +77,12 @@ class AsciiMathConverter {
       (match) => '\\sqrt[${match.group(1)}]{${match.group(2)}}',
     );
 
+    // 積分: integral_a^b f(x) dx → \int_a^b f(x) dx (累乗変換より前に実行)
+    latex = latex.replaceAllMapped(
+      RegExp(r'integral_([^_\^]+)\^([^\s]+)\s+([^d]+)\s+d([a-zA-Z]+)'),
+      (match) => '\\int_{${match.group(1)}}^{${match.group(2)}} ${match.group(3)} \\, d${match.group(4)}',
+    );
+
     // 累乗: x^2 → x^{2}
     latex = latex.replaceAllMapped(
       RegExp(r'(\w+)\^(\w+)'),

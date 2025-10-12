@@ -262,6 +262,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get guideTipSigmaPi => 'Σ, Π, ∫ 키는 쉼표로 하한, 상한, 식을 구분해 입력합니다.';
 
   @override
+  String get guideTipIntegralNotation =>
+      '∫ 키를 누르면 \"integral(하한,상한,피적분함수,변수)\" 형식으로 입력할 수 있습니다.';
+
+  @override
   String get guideTipFractionKey => 'a/b 키로 분수를 입력하고 쉼표로 분자와 분모를 나눕니다.';
 
   @override
@@ -372,8 +376,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get solutionGraphUnsupportedMessage =>
-      '이 식은 그래프로 표시할 수 없습니다.\n지원되는 함수: sin, cos, tan, sqrt, exp, ln, log, 거듭제곱, 사칙연산';
+  String get solutionGraphNotSupported => '이 식은 그래프 표시를 지원하지 않습니다.';
 
   @override
   String solutionGraphErrorMessage(String error) {

@@ -123,6 +123,7 @@
   "guideTipArrowKeys": "使用 ← → 鍵移動游標。",
   "guideTipDeleteKey": "DEL 鍵可刪除游標左側的字元。",
   "guideTipSigmaPi": "Σ、Π、∫ 鍵使用逗號依序輸入下限、上限與數式。",
+  "guideTipIntegralNotation": "按 ∫ 鍵可以按 \"integral(下限,上限,被積函數,變數)\" 格式輸入積分。",
   "guideTipFractionKey": "使用 a/b 鍵輸入分數，並以逗號區分分子與分母。",
   "guideTipCloseParenthesis": "需要時請使用 ) 鍵關閉括號。",
   "homeSampleLoaded": "已載入範例數式：{expression}",
@@ -174,7 +175,7 @@
       }
     }
   },
-  "solutionGraphUnsupportedMessage": "無法繪製此算式。\n支援的函數：sin、cos、tan、sqrt、exp、ln、log、冪次、四則運算",
+  "solutionGraphNotSupported": "此算式不支援圖形顯示。",
   "solutionGraphErrorMessage": "產生圖形時發生錯誤：{error}",
   "@solutionGraphErrorMessage": {
     "placeholders": {

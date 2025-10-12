@@ -130,6 +130,22 @@ void main() {
           AsciiMathConverter.asciiMathToLatex('int(x^2, x)'),
           equals('\\int x^{2} dx'),
         );
+        
+        // サンプル式で使用される積分記法のテスト
+        expect(
+          AsciiMathConverter.asciiMathToLatex('integral_0^1 x * sqrt(1 - x^2) dx'),
+          equals('\\int_{0}^{1} x * \\sqrt{1 - x^{2}} \\, dx'),
+        );
+        
+        expect(
+          AsciiMathConverter.asciiMathToLatex('integral_0^2 (x^2 - 2x) dx'),
+          equals('\\int_{0}^{2} (x^{2} - 2x) \\, dx'),
+        );
+        
+        expect(
+          AsciiMathConverter.asciiMathToLatex('integral_0^(pi/2) x * sin(x) dx'),
+          equals('\\int_{0}^{(\\frac{\\pi}{2})} x * sin(x) \\, dx'),
+        );
       });
 
       test('総和の変換', () {

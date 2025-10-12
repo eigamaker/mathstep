@@ -261,6 +261,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get guideTipSigmaPi => 'Σ, Π, ∫ キーはカンマ区切りで下限・上限・式を入力します。';
 
   @override
+  String get guideTipIntegralNotation =>
+      '∫ キーを押すと「integral(下限,上限,被積分関数,変数)」の形式で入力できます。';
+
+  @override
   String get guideTipFractionKey => 'a/bキーで分数を入力し、カンマで分子と分母を区切ります。';
 
   @override
@@ -371,8 +375,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get solutionGraphUnsupportedMessage =>
-      'この数式はグラフ化できません。\n対応している関数: sin, cos, tan, sqrt, exp, ln, log, 累乗, 四則演算';
+  String get solutionGraphNotSupported => 'この数式はグラフ表示に対応していません。';
 
   @override
   String solutionGraphErrorMessage(String error) {

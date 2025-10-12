@@ -57,6 +57,13 @@ class SyntaxConverter {
       (match) => '${match.group(1)}^{${match.group(2)}}',
     );
 
+    // サンプル式で使用される積分記法: integral_a^b f(x) dx（累乗変換より前に実行）
+    latex = latex.replaceAllMapped(
+      RegExp(r'integral_([^_\^]+)\^([^\s]+)\s+([^d]+)\s+d([a-zA-Z]+)'),
+      (m) =>
+          '\\int_{${m.group(1)!.trim()}}^{${m.group(2)!.trim()}} ${m.group(3)!.trim()} \\, d${m.group(4)!.trim()}',
+    );
+
     // x^()形式のべき乗の変換
     latex = latex.replaceAllMapped(
       RegExp(r'\^\(([^)]+)\)'),
@@ -204,6 +211,12 @@ class SyntaxConverter {
       RegExp(r'∫\[([^,]+),([^\]]+)\]\s*([^d]+)\s*d([a-zA-Z]+)'),
       (m) =>
           '\\int_{${normalizeInfinity(m.group(1)!.trim())}}^{${normalizeInfinity(m.group(2)!.trim())}} ${m.group(3)!.trim()} \\, d${m.group(4)!.trim()}',
+    );
+
+    // 不定積分の簡潔記法: integral f(x) dx
+    latex = latex.replaceAllMapped(
+      RegExp(r'integral\s+([^d]+)\s+d([a-zA-Z]+)'),
+      (m) => '\\int ${m.group(1)!.trim()} \\, d${m.group(2)!.trim()}',
     );
 
     // 単純な積分記法: ∫ f(x) dx

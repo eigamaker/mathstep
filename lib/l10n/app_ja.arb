@@ -123,6 +123,7 @@
   "guideTipArrowKeys": "矢印キー（← →）でカーソルを移動できます。",
   "guideTipDeleteKey": "DELキーでカーソルの左側を削除できます。",
   "guideTipSigmaPi": "Σ, Π, ∫ キーはカンマ区切りで下限・上限・式を入力します。",
+  "guideTipIntegralNotation": "∫ キーを押すと「integral(下限,上限,被積分関数,変数)」の形式で入力できます。",
   "guideTipFractionKey": "a/bキーで分数を入力し、カンマで分子と分母を区切ります。",
   "guideTipCloseParenthesis": "必要に応じて ) キーで括弧を閉じてください。",
   "homeSampleLoaded": "サンプル数式を読み込みました: {expression}",
@@ -174,7 +175,7 @@
       }
     }
   },
-  "solutionGraphUnsupportedMessage": "この数式はグラフ化できません。\n対応している関数: sin, cos, tan, sqrt, exp, ln, log, 累乗, 四則演算",
+  "solutionGraphNotSupported": "この数式はグラフ表示に対応していません。",
   "solutionGraphErrorMessage": "グラフの生成中にエラーが発生しました: {error}",
   "@solutionGraphErrorMessage": {
     "placeholders": {

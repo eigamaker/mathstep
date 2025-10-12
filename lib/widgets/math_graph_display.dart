@@ -22,6 +22,27 @@ class MathGraphDisplay extends StatefulWidget {
   final double maxY;
   final int pointCount;
 
+  /// 数式がグラフ化可能かどうかを判定
+  static bool canGraphExpression(String asciiMathExpression) {
+    try {
+      // テスト用の値をいくつか試して、評価可能かチェック
+      final testValues = [-5.0, 0.0, 5.0];
+      int validCount = 0;
+      
+      for (final x in testValues) {
+        final result = ExpressionEvaluator.evaluateExpression(asciiMathExpression, x);
+        if (result != null && result.isFinite) {
+          validCount++;
+        }
+      }
+      
+      // 3つのテスト値のうち2つ以上が有効な場合、グラフ化可能と判定
+      return validCount >= 2;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   State<MathGraphDisplay> createState() => _MathGraphDisplayState();
 }
@@ -81,7 +102,7 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
         _isLoading = false;
 
         if (validPoints < 5) {
-          _errorMessage = l10n.solutionGraphUnsupportedMessage;
+          _errorMessage = l10n.solutionGraphNotSupported;
         }
       });
     } catch (e) {

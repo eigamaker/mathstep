@@ -625,18 +625,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     WidgetRef ref,
     AppLanguage language,
   ) {
-    final l10n = context.l10n;
     ref.read(languageStateProvider.notifier).setLanguage(language);
     
     // ドロップダウンを閉じる
     _toggleLanguageDropdown();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.settingsLanguageChanged(language.nativeName)),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    // 言語変更後にSnackBarを表示
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final l10n = context.l10n;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.settingsLanguageChanged(language.nativeName)),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    });
   }
 }

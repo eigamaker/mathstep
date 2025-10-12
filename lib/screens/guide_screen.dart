@@ -88,21 +88,14 @@ class GuideScreen extends StatelessWidget {
           _GuideExample(
             expression: '\\int_{0}^{1} x^2 \\, dx',
             keySequence: [
-              '∫',
-              '0',
-              ',',
-              '1',
-              ',',
-              'x',
-              'x^y',
-              '2',
-              ',',
-              'x',
+              '∫', '(', '0', ',', '1', ',', 'x', 'x^y', '2', ',', 'x', ')'
             ],
           ),
           _GuideExample(
-            expression: '\\int \\sin(x) \\, dx',
-            keySequence: ['∫', 'sin', '(', 'x', ')', ',', 'x'],
+            expression: '\\int_{0}^{\\pi/2} \\sin(x) \\, dx',
+            keySequence: [
+              '∫', '(', '0', ',', '(', 'π', '/', '2', ')', ',', 'sin', '(', 'x', ')', ',', 'x', ')'
+            ],
           ),
         ],
       ),
@@ -134,6 +127,7 @@ class GuideScreen extends StatelessWidget {
       l10n.guideTipArrowKeys,
       l10n.guideTipDeleteKey,
       l10n.guideTipSigmaPi,
+      l10n.guideTipIntegralNotation,
       l10n.guideTipFractionKey,
       l10n.guideTipCloseParenthesis,
     ];

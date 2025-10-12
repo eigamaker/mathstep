@@ -290,6 +290,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.';
 
   @override
+  String get guideTipIntegralNotation =>
+      'Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.';
+
+  @override
   String get guideTipFractionKey =>
       'Use the a/b key for fractions and separate the numerator and denominator with the comma key.';
 
@@ -407,8 +411,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get solutionGraphUnsupportedMessage =>
-      'This expression cannot be graphed.\nSupported functions: sin, cos, tan, sqrt, exp, ln, log, powers, basic arithmetic';
+  String get solutionGraphNotSupported =>
+      'This expression is not supported for graphing.';
 
   @override
   String solutionGraphErrorMessage(String error) {

@@ -416,29 +416,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.2),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
-            child: Image.asset(
-              'assets/images/mathstep_w.png',
-              width: 24,
-              height: 24,
-              fit: BoxFit.contain,
-            ),
+            child: const Icon(Icons.calculate, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 12),
-          const MathstepLogo(
-            fontSize: 24,
-            textColor: AppColors.primary,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
+          ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [
+                AppColors.primary,
+                AppColors.primary.withValues(alpha: 0.7),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: const Text(
+              'MathStep',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1.2,
+              ),
+            ),
           ),
         ],
       ),
@@ -543,12 +558,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               color: AppColors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Image.asset(
-              'assets/images/mathstep_w.png',
-              width: 40,
-              height: 40,
-              fit: BoxFit.contain,
-            ),
+            child: Icon(Icons.functions, size: 40, color: AppColors.primaryLight),
           ),
           const SizedBox(height: 16),
           Text(

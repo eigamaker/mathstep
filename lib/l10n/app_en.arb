@@ -123,6 +123,7 @@
   "guideTipArrowKeys": "Use the arrow keys (← →) to move the cursor.",
   "guideTipDeleteKey": "Press DEL to delete the character to the left of the cursor.",
   "guideTipSigmaPi": "For Σ, Π, and ∫ keys, use commas to enter lower bound, upper bound, and expression.",
+  "guideTipIntegralNotation": "Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.",
   "guideTipFractionKey": "Use the a/b key for fractions and separate the numerator and denominator with the comma key.",
   "guideTipCloseParenthesis": "Close parentheses with the ) key whenever necessary.",
   "homeSampleLoaded": "Loaded sample expression: {expression}",
@@ -174,7 +175,7 @@
       }
     }
   },
-  "solutionGraphUnsupportedMessage": "This expression cannot be graphed.\nSupported functions: sin, cos, tan, sqrt, exp, ln, log, powers, basic arithmetic",
+  "solutionGraphNotSupported": "This expression is not supported for graphing.",
   "solutionGraphErrorMessage": "An error occurred while generating the graph: {error}",
   "@solutionGraphErrorMessage": {
     "placeholders": {

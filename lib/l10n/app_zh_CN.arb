@@ -123,6 +123,7 @@
   "guideTipArrowKeys": "使用 ← → 键移动光标。",
   "guideTipDeleteKey": "DEL 键可删除光标左侧的字符。",
   "guideTipSigmaPi": "Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。",
+  "guideTipIntegralNotation": "按 ∫ 键可以按 \"integral(下限,上限,被积函数,变量)\" 格式输入积分。",
   "guideTipFractionKey": "使用 a/b 键输入分数，并用逗号区分分子和分母。",
   "guideTipCloseParenthesis": "需要时请使用 ) 键闭合括号。",
   "homeSampleLoaded": "已载入示例表达式：{expression}",
@@ -174,7 +175,7 @@
       }
     }
   },
-  "solutionGraphUnsupportedMessage": "无法绘制此表达式。\n支持的函数：sin、cos、tan、sqrt、exp、ln、log、幂运算、四则运算",
+  "solutionGraphNotSupported": "此表达式不支持图形显示。",
   "solutionGraphErrorMessage": "生成图形时发生错误：{error}",
   "@solutionGraphErrorMessage": {
     "placeholders": {

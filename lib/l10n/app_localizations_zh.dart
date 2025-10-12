@@ -260,6 +260,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get guideTipSigmaPi => 'Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。';
 
   @override
+  String get guideTipIntegralNotation =>
+      'Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.';
+
+  @override
   String get guideTipFractionKey => '使用 a/b 键输入分数，并用逗号区分分子和分母。';
 
   @override
@@ -370,8 +374,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get solutionGraphUnsupportedMessage =>
-      '无法绘制此表达式。\n支持的函数：sin、cos、tan、sqrt、exp、ln、log、幂运算、四则运算';
+  String get solutionGraphNotSupported => '此表达式不支持图形显示。';
 
   @override
   String solutionGraphErrorMessage(String error) {
@@ -647,6 +650,10 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get guideTipSigmaPi => 'Σ、Π、∫ 键使用逗号依次输入下限、上限和表达式。';
 
   @override
+  String get guideTipIntegralNotation =>
+      '按 ∫ 键可以按 \"integral(下限,上限,被积函数,变量)\" 格式输入积分。';
+
+  @override
   String get guideTipFractionKey => '使用 a/b 键输入分数，并用逗号区分分子和分母。';
 
   @override
@@ -757,8 +764,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   }
 
   @override
-  String get solutionGraphUnsupportedMessage =>
-      '无法绘制此表达式。\n支持的函数：sin、cos、tan、sqrt、exp、ln、log、幂运算、四则运算';
+  String get solutionGraphNotSupported => '此表达式不支持图形显示。';
 
   @override
   String solutionGraphErrorMessage(String error) {
@@ -1034,6 +1040,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get guideTipSigmaPi => 'Σ、Π、∫ 鍵使用逗號依序輸入下限、上限與數式。';
 
   @override
+  String get guideTipIntegralNotation =>
+      '按 ∫ 鍵可以按 \"integral(下限,上限,被積函數,變數)\" 格式輸入積分。';
+
+  @override
   String get guideTipFractionKey => '使用 a/b 鍵輸入分數，並以逗號區分分子與分母。';
 
   @override
@@ -1144,8 +1154,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get solutionGraphUnsupportedMessage =>
-      '無法繪製此算式。\n支援的函數：sin、cos、tan、sqrt、exp、ln、log、冪次、四則運算';
+  String get solutionGraphNotSupported => '此算式不支援圖形顯示。';
 
   @override
   String solutionGraphErrorMessage(String error) {

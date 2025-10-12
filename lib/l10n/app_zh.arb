@@ -174,7 +174,7 @@
       }
     }
   },
-  "solutionGraphUnsupportedMessage": "无法绘制此表达式。\n支持的函数：sin、cos、tan、sqrt、exp、ln、log、幂运算、四则运算",
+  "solutionGraphNotSupported": "此表达式不支持图形显示。",
   "solutionGraphErrorMessage": "生成图形时发生错误：{error}",
   "@solutionGraphErrorMessage": {
     "placeholders": {

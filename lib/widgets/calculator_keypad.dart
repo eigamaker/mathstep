@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
+import '../models/keypad_layout_mode.dart';
 
 enum CalculatorKeyType { input, delete, moveLeft, moveRight }
 
@@ -10,139 +14,422 @@ class CalculatorKeyEvent {
   final String value;
 }
 
-class CalculatorKeypad extends StatelessWidget {
-  const CalculatorKeypad({super.key, required this.onKeyPressed});
+class CalculatorKeypad extends StatefulWidget {
+  const CalculatorKeypad({
+    super.key,
+    required this.onKeyPressed,
+    required this.mode,
+  });
 
   final void Function(CalculatorKeyEvent event) onKeyPressed;
+  final KeypadLayoutMode mode;
 
-  static const List<List<_KeySpec>> _layout = [
-    // 数字と基本演算
-    [
-      _KeySpec.input('7'),
-      _KeySpec.input('8'),
-      _KeySpec.input('9'),
-      _KeySpec.input('('),
-      _KeySpec.input(')'),
-      _KeySpec.delete(),
-    ],
-    [
-      _KeySpec.input('4'),
-      _KeySpec.input('5'),
-      _KeySpec.input('6'),
-      _KeySpec.input('+'),
-      _KeySpec.input('-'),
-      _KeySpec.input('*', label: '\u00D7'),
-    ],
-    [
-      _KeySpec.input('1'),
-      _KeySpec.input('2'),
-      _KeySpec.input('3'),
-      _KeySpec.input('/', label: '\u00F7'),
-      _KeySpec.input('^', label: 'x^y'),
-      _KeySpec.input('pow(', label: 'x^()'),
-    ],
-    [
-      _KeySpec.input('0'),
-      _KeySpec.input('.'),
-      _KeySpec.input('sqrt(', label: '\u221A'),
-      _KeySpec.input('cbrt(', label: '\u221B'),
-      _KeySpec.input('root(', label: '\u207F\u221A'),
-      _KeySpec.input('frac(', label: 'a/b'),
-    ],
-    // 変数と定数
-    [
-      _KeySpec.input('x'),
-      _KeySpec.input('y'),
-      _KeySpec.input('z'),
-      _KeySpec.input('n'),
-      _KeySpec.input('pi', label: '\u03C0'),
-      _KeySpec.input('e'),
-    ],
-    [
-      _KeySpec.input('i'),
-      _KeySpec.input('abs(', label: '|x|'),
-      _KeySpec.input('f(', label: 'f(x)'),
-      _KeySpec.moveLeft(),
-      _KeySpec.moveRight(),
-      _KeySpec.input(',', label: ','),
-    ],
-    // 三角・対数関数
-    [
-      _KeySpec.input('sin('),
-      _KeySpec.input('cos('),
-      _KeySpec.input('tan('),
-      _KeySpec.input('ln('),
-      _KeySpec.input('log('),
-      _KeySpec.input('n!', label: 'n!'),
-    ],
-    // 高度な数学関数
-    [
-      _KeySpec.input('sum(', label: '\u03A3'),
-      _KeySpec.input('prod(', label: '\u03A0'),
-      _KeySpec.input('integral(', label: '\u222B'),
-      _KeySpec.input('nPr(', label: 'P'),
-      _KeySpec.input('nCr(', label: 'C'),
-      _KeySpec.input('Re(', label: 'Re'),
-    ],
-    [
-      _KeySpec.input('conj(', label: 'z*'),
-      _KeySpec.input('Im(', label: 'Im'),
-      _KeySpec.input('|', label: '|'),
-      _KeySpec.moveLeft(),
-      _KeySpec.moveRight(),
-      _KeySpec.input('='),
-    ],
+  static const List<_KeyCategory> _categories = [
+    _KeyCategory(
+      label: 'Num',
+      icon: Icons.pin_rounded,
+      keys: [
+        _KeySpec.input('0'),
+        _KeySpec.input('1'),
+        _KeySpec.input('2'),
+        _KeySpec.input('3'),
+        _KeySpec.input('4'),
+        _KeySpec.input('5'),
+        _KeySpec.input('6'),
+        _KeySpec.input('7'),
+        _KeySpec.input('8'),
+        _KeySpec.input('9'),
+        _KeySpec.input('.'),
+      ],
+    ),
+    _KeyCategory(
+      label: 'Ops',
+      icon: Icons.calculate_rounded,
+      keys: [
+        _KeySpec.input('+'),
+        _KeySpec.input('-'),
+        _KeySpec.input('*', label: '\u00D7'),
+        _KeySpec.input('/', label: '\u00F7'),
+        _KeySpec.input('^', label: 'x^y'),
+        _KeySpec.input('=', label: '='),
+        _KeySpec.input('(', label: '('),
+        _KeySpec.input(')', label: ')'),
+        _KeySpec.input(',', label: ','),
+      ],
+    ),
+    _KeyCategory(
+      label: 'Func',
+      icon: Icons.functions_rounded,
+      keys: [
+        _KeySpec.input('pow(', label: 'x^()'),
+        _KeySpec.input('sqrt(', label: '\u221A'),
+        _KeySpec.input('cbrt(', label: '\u221B'),
+        _KeySpec.input('root(', label: '\u207F\u221A'),
+        _KeySpec.input('frac(', label: 'a/b'),
+        _KeySpec.input('abs(', label: '|x|'),
+        _KeySpec.input('f(', label: 'f(x)'),
+        _KeySpec.input('sin('),
+        _KeySpec.input('cos('),
+        _KeySpec.input('tan('),
+        _KeySpec.input('ln('),
+        _KeySpec.input('log('),
+        _KeySpec.input('n!', label: 'n!'),
+      ],
+    ),
+    _KeyCategory(
+      label: 'Adv',
+      icon: Icons.science_rounded,
+      keys: [
+        _KeySpec.input('sum(', label: '\u03A3'),
+        _KeySpec.input('prod(', label: '\u03A0'),
+        _KeySpec.input('integral(', label: '\u222B'),
+        _KeySpec.input('nPr(', label: 'P'),
+        _KeySpec.input('nCr(', label: 'C'),
+        _KeySpec.input('Re(', label: 'Re'),
+        _KeySpec.input('Im(', label: 'Im'),
+        _KeySpec.input('conj(', label: 'z*'),
+        _KeySpec.input('|', label: '|'),
+      ],
+    ),
+    _KeyCategory(
+      label: 'Var',
+      icon: Icons.text_fields_rounded,
+      keys: [
+        _KeySpec.input('x'),
+        _KeySpec.input('y'),
+        _KeySpec.input('z'),
+        _KeySpec.input('n'),
+        _KeySpec.input('pi', label: '\u03C0'),
+        _KeySpec.input('e'),
+        _KeySpec.input('i'),
+      ],
+    ),
+    _KeyCategory(
+      label: 'Edit',
+      icon: Icons.edit_note_rounded,
+      keys: [_KeySpec.delete(), _KeySpec.moveLeft(), _KeySpec.moveRight()],
+    ),
   ];
+
+  static final List<_KeySpec> _scrollKeys = List<_KeySpec>.unmodifiable(
+    _categories.expand((category) => category.keys),
+  );
+
+  @override
+  State<CalculatorKeypad> createState() => _CalculatorKeypadState();
+}
+
+class _CalculatorKeypadState extends State<CalculatorKeypad> {
+  static const double _categorySpacing = 16;
+  static const double _categoryButtonSize = 92;
+  static const double _optionButtonSize = 52;
+
+  final GlobalKey _flickStackKey = GlobalKey();
+  _FlickOverlayState? _activeFlick;
+
+  @override
+  void didUpdateWidget(covariant CalculatorKeypad oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mode != widget.mode &&
+        widget.mode != KeypadLayoutMode.flick) {
+      _closeFlick();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: Column(
-        children: [
-          for (final row in _layout) _buildKeyRow(context, row),
-        ],
+    if (widget.mode == KeypadLayoutMode.flick) {
+      return _buildFlickKeyboard();
+    }
+    return _buildScrollableKeyboard();
+  }
+
+  Widget _buildFlickKeyboard() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          child: Stack(
+            key: _flickStackKey,
+            clipBehavior: Clip.none,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: LayoutBuilder(
+                  builder: (context, innerConstraints) {
+                    final double maxInset =
+                        (innerConstraints.maxWidth / 2) -
+                        (_categoryButtonSize / 2) -
+                        8;
+                    final double edgeInset = max(
+                      16.0,
+                      min(56.0, maxInset.isFinite ? maxInset : 56.0),
+                    );
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: edgeInset),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: _categorySpacing,
+                        runSpacing: _categorySpacing,
+                        children: [
+                          for (
+                            var i = 0;
+                            i < CalculatorKeypad._categories.length;
+                            i++
+                          )
+                            _buildCategoryButton(i),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              if (_activeFlick != null) _buildFlickOverlay(constraints),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildScrollableKeyboard() {
+    return Scrollbar(
+      thumbVisibility: false,
+      child: GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 6,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.92,
+        ),
+        itemCount: CalculatorKeypad._scrollKeys.length,
+        itemBuilder: (context, index) {
+          final spec = CalculatorKeypad._scrollKeys[index];
+          return _buildRectKey(spec);
+        },
       ),
     );
   }
 
-  Widget _buildKeyRow(BuildContext context, List<_KeySpec> keys) {
-    return Expanded(
-      child: Row(
-        children: keys
-            .map((key) => Expanded(child: _buildKey(context, key)))
-            .toList(),
-      ),
-    );
-  }
+  Widget _buildCategoryButton(int index) {
+    final category = CalculatorKeypad._categories[index];
+    final bool isActive = _activeFlick?.categoryIndex == index;
 
-  Widget _buildKey(BuildContext context, _KeySpec spec) {
-    final background = _backgroundColorFor(spec.type, spec.value);
-    final textColor = _textColorFor(spec.type, spec.value);
-
-    return Container(
-      margin: const EdgeInsets.all(1.5),
-      height: 48, // キーボタンの高さを適切に調整
-      child: Material(
-        color: background,
-        borderRadius: BorderRadius.circular(8),
-        elevation: 1,
-        shadowColor: Colors.black.withValues(alpha: 0.05),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: () => onKeyPressed(CalculatorKeyEvent(spec.type, spec.value)),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: background.withValues(alpha: 0.5)),
+    return Builder(
+      builder: (buttonContext) {
+        return SizedBox(
+          width: _categoryButtonSize,
+          height: _categoryButtonSize,
+          child: Material(
+            color: isActive ? AppColors.primary : AppColors.primaryContainer,
+            elevation: isActive ? 6 : 2,
+            borderRadius: BorderRadius.circular(18),
+            shadowColor: Colors.black.withValues(alpha: 0.08),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () => _toggleFlickMenu(index, buttonContext),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      category.icon,
+                      size: 28,
+                      color: isActive
+                          ? AppColors.textOnPrimary
+                          : AppColors.primary,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      category.label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: isActive
+                            ? AppColors.textOnPrimary
+                            : AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            child: Center(
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRectKey(_KeySpec spec) {
+    return Material(
+      color: AppColors.primaryContainer,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _triggerKey(spec),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.05),
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              width: 1,
+            ),
+          ),
+          child: Text(
+            spec.displayLabel,
+            style: TextStyle(
+              fontSize: spec.fontSize ?? 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlickOverlay(BoxConstraints constraints) {
+    final overlay = _activeFlick!;
+    final category = CalculatorKeypad._categories[overlay.categoryIndex];
+    final keys = category.keys;
+    final double baseRadius = _idealRadiusFor(keys.length);
+    final double radius = _constrainRadius(
+      baseRadius,
+      overlay.center,
+      keys.length,
+      constraints,
+    );
+
+    return Positioned.fill(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _closeFlick,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOutCubic,
+                color: Colors.black.withValues(alpha: 0.25),
+              ),
+            ),
+            Positioned.fill(
+              child: IgnorePointer(
+                ignoring: true,
+                child: SizedBox.expand(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.black.withValues(alpha: 0.18),
+                          Colors.black.withValues(alpha: 0.0),
+                        ],
+                        radius: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: overlay.center.dx - (_optionButtonSize / 2),
+              top: overlay.center.dy - (_optionButtonSize / 2),
+              child: IgnorePointer(child: _buildCenterMarker(category)),
+            ),
+            for (var i = 0; i < keys.length; i++)
+              _buildFlickOption(
+                spec: keys[i],
+                center: overlay.center,
+                radius: radius,
+                index: i,
+                total: keys.length,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterMarker(_KeyCategory category) {
+    return SizedBox(
+      width: _optionButtonSize,
+      height: _optionButtonSize,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            category.label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlickOption({
+    required _KeySpec spec,
+    required Offset center,
+    required double radius,
+    required int index,
+    required int total,
+  }) {
+    final double angle = (2 * pi / total) * index - (pi / 2);
+    final double dx = center.dx + radius * cos(angle) - (_optionButtonSize / 2);
+    final double dy = center.dy + radius * sin(angle) - (_optionButtonSize / 2);
+
+    return Positioned(
+      left: dx,
+      top: dy,
+      child: SizedBox(
+        width: _optionButtonSize,
+        height: _optionButtonSize,
+        child: Material(
+          color: Colors.white,
+          shape: const CircleBorder(),
+          elevation: 6,
+          shadowColor: Colors.black.withValues(alpha: 0.14),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: () => _handleFlickSelection(spec),
+            splashColor: AppColors.primary.withValues(alpha: 0.12),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.18),
+                  width: 1.2,
+                ),
+              ),
+              alignment: Alignment.center,
               child: Text(
                 spec.displayLabel,
                 style: TextStyle(
-                  fontSize: spec.fontSize ?? 18,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
+                  fontSize: min(spec.fontSize ?? 16, 16),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -153,114 +440,146 @@ class CalculatorKeypad extends StatelessWidget {
     );
   }
 
-
-  Color _backgroundColorFor(CalculatorKeyType type, String value) {
-    switch (type) {
-      case CalculatorKeyType.delete:
-        return AppColors.errorContainer;
-      case CalculatorKeyType.moveLeft:
-      case CalculatorKeyType.moveRight:
-        return AppColors.primaryContainer;
-      case CalculatorKeyType.input:
-        switch (value) {
-          case '+':
-          case '-':
-          case '*':
-          case '/':
-            return AppColors.warningContainer;
-          case '0':
-          case '1':
-          case '2':
-          case '3':
-          case '4':
-          case '5':
-          case '6':
-          case '7':
-          case '8':
-          case '9':
-          case '.':
-            return AppColors.primaryContainer;
-          case 'sin(':
-          case 'cos(':
-          case 'tan(':
-          case 'ln(':
-          case 'log(':
-          case 'pow(':
-            return AppColors.infoContainer;
-          case 'sqrt(':
-          case 'cbrt(':
-          case 'root(':
-            return AppColors.infoContainer;
-          case 'n!':
-            return AppColors.warningContainer;
-          case 'int(':
-          case 'sum(':
-          case 'prod(':
-          case 'f(':
-            return AppColors.secondaryContainer;
-          case 'n':
-            return AppColors.primaryContainer;
-          case '=':
-            return AppColors.successContainer;
-          default:
-            return AppColors.neutralContainer;
-        }
+  void _toggleFlickMenu(int index, BuildContext buttonContext) {
+    if (_activeFlick?.categoryIndex == index) {
+      _closeFlick();
+    } else {
+      _openFlick(index, buttonContext);
     }
   }
 
-  Color _textColorFor(CalculatorKeyType type, String value) {
-    switch (type) {
-      case CalculatorKeyType.delete:
-        return AppColors.error;
-      case CalculatorKeyType.moveLeft:
-      case CalculatorKeyType.moveRight:
-        return AppColors.primary;
-      case CalculatorKeyType.input:
-        switch (value) {
-          case '+':
-          case '-':
-          case '*':
-          case '/':
-            return AppColors.warning;
-          case '0':
-          case '1':
-          case '2':
-          case '3':
-          case '4':
-          case '5':
-          case '6':
-          case '7':
-          case '8':
-          case '9':
-          case '.':
-            return AppColors.primary;
-          case 'sin(':
-          case 'cos(':
-          case 'tan(':
-          case 'ln(':
-          case 'log(':
-          case 'pow(':
-            return AppColors.info;
-          case 'sqrt(':
-          case 'cbrt(':
-          case 'root(':
-            return AppColors.info;
-          case 'n!':
-            return AppColors.warning;
-          case 'int(':
-          case 'sum(':
-          case 'prod(':
-          case 'f(':
-            return AppColors.secondary;
-          case 'n':
-            return AppColors.primary;
-          case '=':
-            return AppColors.success;
-          default:
-            return AppColors.neutral;
-        }
+  void _openFlick(int index, BuildContext buttonContext) {
+    final RenderBox? stackBox =
+        _flickStackKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? buttonBox = buttonContext.findRenderObject() as RenderBox?;
+    if (stackBox == null || buttonBox == null) {
+      return;
     }
+
+    final Offset center = buttonBox.localToGlobal(
+      buttonBox.size.center(Offset.zero),
+      ancestor: stackBox,
+    );
+
+    setState(() {
+      _activeFlick = _FlickOverlayState(categoryIndex: index, center: center);
+    });
   }
+
+  void _closeFlick() {
+    if (_activeFlick == null) {
+      return;
+    }
+    setState(() {
+      _activeFlick = null;
+    });
+  }
+
+  void _handleFlickSelection(_KeySpec spec) {
+    _triggerKey(spec);
+    _closeFlick();
+  }
+
+  void _triggerKey(_KeySpec spec) {
+    widget.onKeyPressed(CalculatorKeyEvent(spec.type, spec.value));
+  }
+
+  double _idealRadiusFor(int count) {
+    const double minGapFromCenter = 6;
+    if (count <= 1) {
+      return _optionButtonSize + minGapFromCenter;
+    }
+
+    final double optionSpacing = () {
+      if (count >= 11) {
+        return 18.0;
+      }
+      if (count >= 9) {
+        return 12.0;
+      }
+      if (count >= 7) {
+        return 10.0;
+      }
+      return 8.0;
+    }();
+    final double minChord = _optionButtonSize + optionSpacing;
+    final double sinValue = sin(pi / count).clamp(0.08, 1.0);
+    final double radius = minChord / (2 * sinValue);
+
+    return max(_optionButtonSize + minGapFromCenter, radius);
+  }
+
+  double _constrainRadius(
+    double baseRadius,
+    Offset center,
+    int total,
+    BoxConstraints constraints,
+  ) {
+    const double margin = 4;
+    const double epsilon = 1e-3;
+    final double halfButton = _optionButtonSize / 2;
+    double radius = baseRadius;
+
+    for (var i = 0; i < total; i++) {
+      final double angle = (2 * pi / total) * i - (pi / 2);
+      final double cosValue = cos(angle);
+      final double sinValue = sin(angle);
+
+      double horizontalLimit = double.infinity;
+      double verticalLimit = double.infinity;
+
+      if (cosValue.abs() > epsilon) {
+        if (cosValue > 0) {
+          final double spaceRight =
+              constraints.maxWidth - margin - halfButton - center.dx;
+          horizontalLimit = spaceRight / cosValue;
+        } else {
+          final double spaceLeft = center.dx - margin - halfButton;
+          horizontalLimit = spaceLeft / -cosValue;
+        }
+      }
+
+      if (sinValue.abs() > epsilon) {
+        if (sinValue > 0) {
+          final double spaceDown =
+              constraints.maxHeight - margin - halfButton - center.dy;
+          verticalLimit = spaceDown / sinValue;
+        } else {
+          final double spaceUp = center.dy - margin - halfButton;
+          verticalLimit = spaceUp / -sinValue;
+        }
+      }
+
+      final double limit = min(horizontalLimit, verticalLimit);
+      if (limit.isFinite) {
+        radius = min(radius, limit);
+      }
+    }
+
+    const double innerGap = 6;
+    final double minRadius = _optionButtonSize + innerGap;
+    radius = min(baseRadius, max(radius, minRadius));
+    return radius;
+  }
+}
+
+class _FlickOverlayState {
+  const _FlickOverlayState({required this.categoryIndex, required this.center});
+
+  final int categoryIndex;
+  final Offset center;
+}
+
+class _KeyCategory {
+  const _KeyCategory({
+    required this.label,
+    required this.keys,
+    required this.icon,
+  });
+
+  final String label;
+  final List<_KeySpec> keys;
+  final IconData icon;
 }
 
 class _KeySpec {

@@ -12,6 +12,7 @@ import '../providers/expression_provider.dart';
 import '../providers/service_providers.dart';
 import '../providers/solution_storage_provider.dart';
 import '../providers/reward_ad_provider.dart';
+import '../providers/keypad_settings_provider.dart';
 import '../localization/localization_extensions.dart';
 import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
@@ -48,7 +49,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _loadAdAfterDelay() async {
     // AdMob初期化を待つ（短縮）
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     // 既に広告が読み込まれている場合は再読み込みしない
     final adState = ref.read(rewardAdStateProvider);
     if (!adState.isAdLoaded && !adState.isLoading) {
@@ -186,9 +187,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     try {
       debugPrint('HomeScreen: Checking API configuration...');
-      debugPrint('HomeScreen: ApiConfig.isConfigured = ${ApiConfig.isConfigured}');
-      debugPrint('HomeScreen: ApiConfig.openaiApiKey length = ${ApiConfig.openaiApiKey.length}');
-      
+      debugPrint(
+        'HomeScreen: ApiConfig.isConfigured = ${ApiConfig.isConfigured}',
+      );
+      debugPrint(
+        'HomeScreen: ApiConfig.openaiApiKey length = ${ApiConfig.openaiApiKey.length}',
+      );
+
       if (!ApiConfig.isConfigured) {
         debugPrint('HomeScreen: API key not configured, showing error');
         _showSnackBar(l10n.homeApiKeyMissingSnack);
@@ -202,7 +207,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _showSnackBar(l10n.homeSendingToChatGpt);
 
       final chatGptService = ref.read(chatGptServiceProvider);
-      final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(input);
+      final asciiMathExpression = AsciiMathConverter.calculatorToAsciiMath(
+        input,
+      );
       final conditionRaw = _conditionController.text.trim();
       final condition = conditionRaw.isEmpty ? null : conditionRaw;
 
@@ -217,7 +224,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final mathExpression = MathExpression(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         calculatorSyntax: input,
-        latexExpression: AsciiMathConverter.asciiMathToLatex(asciiMathExpression),
+        latexExpression: AsciiMathConverter.asciiMathToLatex(
+          asciiMathExpression,
+        ),
         timestamp: DateTime.now(),
       );
 
@@ -230,7 +239,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           .read(solutionStorageProvider.notifier)
           .addSolution(mathExpression, solution);
 
-      debugPrint('HomeScreen: Solution saved successfully, navigating to SolutionScreen');
+      debugPrint(
+        'HomeScreen: Solution saved successfully, navigating to SolutionScreen',
+      );
 
       Navigator.push(
         context,
@@ -294,7 +305,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   double _calculatePreviewHeight(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     // 柔軟な動的サイズ計算
     // 画面の高さに基づいて適切な比率で計算（キーボード表示を考慮して調整）
     double heightRatio;
@@ -305,24 +316,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     } else {
       heightRatio = 0.25; // 小さな画面では25%
     }
-    
+
     // 最小・最大値を設定（キーボード表示領域を確保）
     final minHeight = 120.0;
     final maxHeight = 200.0;
-    
+
     double calculatedHeight = screenHeight * heightRatio;
-    
+
     // 最小・最大値でクランプ
     calculatedHeight = calculatedHeight.clamp(minHeight, maxHeight);
-    
+
     // 横画面の場合は少し小さく
     if (screenWidth > screenHeight) {
       calculatedHeight *= 0.8;
     }
-    
+
     // デバッグ用ログ
-    debugPrint('Preview height calculation: screenHeight=$screenHeight, calculatedHeight=$calculatedHeight');
-    
+    debugPrint(
+      'Preview height calculation: screenHeight=$screenHeight, calculatedHeight=$calculatedHeight',
+    );
+
     return calculatedHeight;
   }
 
@@ -563,7 +576,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               color: AppColors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.functions, size: 40, color: AppColors.primaryLight),
+            child: Icon(
+              Icons.functions,
+              size: 40,
+              color: AppColors.primaryLight,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -596,28 +613,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         showCursor: false, // カーソルを非表示にしてキーボードの自動表示を防ぐ
         readOnly: true, // 読み取り専用にしてキーボードの表示を防ぐ
         decoration: InputDecoration(
-        labelText: l10n.homeExpressionFieldLabel,
-        labelStyle: TextStyle(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w500,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
-        ),
-        filled: true,
-        fillColor: AppColors.surface,
-        hintText: l10n.homeExpressionHint,
-        hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
-        prefixIcon: Icon(Icons.calculate, color: AppColors.primary),
+          labelText: l10n.homeExpressionFieldLabel,
+          labelStyle: TextStyle(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.border),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.primary, width: 2),
+          ),
+          filled: true,
+          fillColor: AppColors.surface,
+          hintText: l10n.homeExpressionHint,
+          hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
+          prefixIcon: Icon(Icons.calculate, color: AppColors.primary),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -667,28 +684,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         maxLines: 2,
         minLines: 1,
         decoration: InputDecoration(
-        labelText: l10n.homeConditionFieldLabel,
-        labelStyle: TextStyle(
-          color: AppColors.secondary,
-          fontWeight: FontWeight.w500,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.secondary, width: 2),
-        ),
-        filled: true,
-        fillColor: AppColors.secondaryContainer,
-        hintText: l10n.homeConditionHint,
-        hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
-        prefixIcon: Icon(Icons.help_outline, color: AppColors.secondary),
+          labelText: l10n.homeConditionFieldLabel,
+          labelStyle: TextStyle(
+            color: AppColors.secondary,
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.border),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.secondary, width: 2),
+          ),
+          filled: true,
+          fillColor: AppColors.secondaryContainer,
+          hintText: l10n.homeConditionHint,
+          hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
+          prefixIcon: Icon(Icons.help_outline, color: AppColors.secondary),
           suffixIcon: _conditionController.text.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear, color: AppColors.error),
@@ -718,6 +735,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildCalculator() {
+    final keypadMode = ref.watch(keypadSettingsProvider);
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -741,6 +759,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           borderRadius: BorderRadius.circular(14),
         ),
         child: CalculatorKeypad(
+          mode: keypadMode,
           onKeyPressed: (event) {
             switch (event.type) {
               case CalculatorKeyType.delete:

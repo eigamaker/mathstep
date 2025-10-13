@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
+import '../models/keypad_layout_mode.dart';
+import '../providers/keypad_settings_provider.dart';
 import '../providers/language_provider.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
@@ -61,7 +63,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             const SizedBox(height: 24),
 
             // その他の設定セクション
-            _buildOtherSettingsSection(context),
+            _buildOtherSettingsSection(context, ref),
           ],
         ),
       ),
@@ -225,11 +227,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.language,
-                    color: Colors.blue.shade700,
-                    size: 20,
-                  ),
+                  Icon(Icons.language, color: Colors.blue.shade700, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -285,7 +283,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
             ),
           ),
-          
+
           // ドロップダウン選択肢（アニメーション付き）
           AnimatedBuilder(
             animation: _dropdownAnimation,
@@ -311,69 +309,79 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                           ),
                           child: Column(
                             children: AppLanguage.supportedLanguages
-                                .where((language) => 
-                                    language.code != languageState.language.code)
+                                .where(
+                                  (language) =>
+                                      language.code !=
+                                      languageState.language.code,
+                                )
                                 .map((language) {
-                              return InkWell(
-                                onTap: () => _onLanguageSelected(context, ref, language),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.radio_button_unchecked,
-                                        color: Colors.grey.shade400,
-                                        size: 20,
+                                  return InkWell(
+                                    onTap: () => _onLanguageSelected(
+                                      context,
+                                      ref,
+                                      language,
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
                                       ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              language.nativeName,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black87,
-                                              ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.radio_button_unchecked,
+                                            color: Colors.grey.shade400,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  language.nativeName,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  language.englishName,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Text(
-                                              language.englishName,
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              language.code.toUpperCase(),
                                               style: TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
                                                 color: Colors.grey.shade600,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade100,
-                                          borderRadius: BorderRadius.circular(6),
-                                        ),
-                                        child: Text(
-                                          language.code.toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.grey.shade600,
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                                    ),
+                                  );
+                                })
+                                .toList(),
                           ),
                         )
                       : const SizedBox.shrink(),
@@ -529,19 +537,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: color,
-              size: 16,
-            ),
+            Icon(Icons.arrow_forward_ios, color: color, size: 16),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildOtherSettingsSection(BuildContext context) {
+  Widget _buildOtherSettingsSection(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final keypadMode = ref.watch(keypadSettingsProvider);
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -585,36 +590,124 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ],
               ),
               const SizedBox(height: 16),
-              Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.construction,
-                      size: 48,
-                      color: Colors.grey.shade400,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.settingsOtherSettingsComingSoon,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.settingsOtherSettingsDescription,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
+              Text(
+                'Keyboard layout',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade700,
                 ),
+              ),
+              const SizedBox(height: 12),
+              _buildKeyboardModeOption(
+                context: context,
+                ref: ref,
+                mode: KeypadLayoutMode.flick,
+                currentMode: keypadMode,
+                icon: Icons.touch_app_rounded,
+                title: 'Flick keyboard',
+                description:
+                    'Category buttons expand into radial pads for quick flick input.',
+              ),
+              const SizedBox(height: 12),
+              _buildKeyboardModeOption(
+                context: context,
+                ref: ref,
+                mode: KeypadLayoutMode.scroll,
+                currentMode: keypadMode,
+                icon: Icons.grid_view_rounded,
+                title: 'Scrollable keyboard',
+                description:
+                    'Shows every key in a compact 6-column grid that you can scroll vertically.',
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKeyboardModeOption({
+    required BuildContext context,
+    required WidgetRef ref,
+    required KeypadLayoutMode mode,
+    required KeypadLayoutMode currentMode,
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    final bool isSelected = mode == currentMode;
+    final theme = Theme.of(context);
+    final borderColor = isSelected
+        ? theme.colorScheme.primary.withValues(alpha: 0.35)
+        : Colors.grey.shade300;
+    final backgroundColor = isSelected
+        ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
+        : Colors.white;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => ref.read(keypadSettingsProvider.notifier).setMode(mode),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: borderColor, width: 1.2),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 24, color: theme.colorScheme.primary),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                            color: Colors.grey.shade800,
+                          ),
+                        ),
+                      ),
+                      Radio<KeypadLayoutMode>(
+                        value: mode,
+                        groupValue: currentMode,
+                        onChanged: (_) => ref
+                            .read(keypadSettingsProvider.notifier)
+                            .setMode(mode),
+                        activeColor: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade600,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -626,7 +719,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     AppLanguage language,
   ) {
     ref.read(languageStateProvider.notifier).setLanguage(language);
-    
+
     // ドロップダウンを閉じる
     _toggleLanguageDropdown();
 

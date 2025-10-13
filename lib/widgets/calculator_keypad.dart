@@ -312,6 +312,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _closeFlick,
+        onPanUpdate: _handlePanUpdate,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -475,6 +476,25 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     });
   }
 
+  void _handlePanUpdate(DragUpdateDetails details) {
+    if (_activeFlick == null) return;
+    
+    // 下方向または上方向のスワイプを検出（閾値: 5ピクセル）
+    if (details.delta.dy.abs() > 5) {
+      final newCenter = Offset(
+        _activeFlick!.center.dx,
+        _activeFlick!.center.dy + details.delta.dy,
+      );
+      
+      setState(() {
+        _activeFlick = _FlickOverlayState(
+          categoryIndex: _activeFlick!.categoryIndex,
+          center: newCenter,
+        );
+      });
+    }
+  }
+
   void _handleFlickSelection(_KeySpec spec) {
     _triggerKey(spec);
     _closeFlick();
@@ -485,23 +505,20 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   }
 
   double _idealRadiusFor(int count) {
-    const double minGapFromCenter = 6;
+    const double minGapFromCenter = 12;
     if (count <= 1) {
       return _optionButtonSize + minGapFromCenter;
     }
 
-    final double optionSpacing = () {
-      if (count >= 11) {
-        return 18.0;
-      }
-      if (count >= 9) {
-        return 12.0;
-      }
-      if (count >= 7) {
-        return 10.0;
-      }
-      return 8.0;
-    }();
+    double optionSpacing;
+    if (count >= 11) {
+      optionSpacing = 28.0; // Numカテゴリ用
+    } else if (count >= 9) {
+      optionSpacing = 24.0; // Ops, Advカテゴリ用
+    } else {
+      optionSpacing = 16.0; // その他のカテゴリ用
+    }
+    
     final double minChord = _optionButtonSize + optionSpacing;
     final double sinValue = sin(pi / count).clamp(0.08, 1.0);
     final double radius = minChord / (2 * sinValue);
@@ -515,7 +532,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     int total,
     BoxConstraints constraints,
   ) {
-    const double margin = 4;
+    const double margin = 0;
     const double epsilon = 1e-3;
     final double halfButton = _optionButtonSize / 2;
     double radius = baseRadius;
@@ -551,14 +568,23 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       }
 
       final double limit = min(horizontalLimit, verticalLimit);
+      // 下方向の制限を特に緩和（Varカテゴリの下のアイコンが見えるように）
       if (limit.isFinite) {
-        radius = min(radius, limit);
+        if (sinValue > 0) { // 下方向の場合
+          if (limit > baseRadius * 0.3) {
+            radius = min(radius, limit);
+          }
+        } else { // 上方向、左右方向の場合
+          if (limit > baseRadius * 0.5) {
+            radius = min(radius, limit);
+          }
+        }
       }
     }
 
-    const double innerGap = 6;
+    const double innerGap = 12;
     final double minRadius = _optionButtonSize + innerGap;
-    radius = min(baseRadius, max(radius, minRadius));
+    radius = max(radius, minRadius);
     return radius;
   }
 }

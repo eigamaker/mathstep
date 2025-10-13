@@ -59,7 +59,7 @@ class ApiConfig {
     try {
       final key = openaiApiKey;
       debugPrint('ApiConfig.isConfigured: key length = ${key.length}');
-      debugPrint('ApiConfig.isConfigured: key preview = ${key.isNotEmpty ? key.substring(0, key.length > 10 ? 10 : key.length) + "..." : "empty"}');
+      debugPrint('ApiConfig.isConfigured: key preview = ${key.isNotEmpty ? "${key.substring(0, key.length > 10 ? 10 : key.length)}..." : "empty"}');
       debugPrint('ApiConfig.isConfigured: dotenv.env keys = ${dotenv.env.keys.toList()}');
       return key.isNotEmpty;
     } catch (e) {

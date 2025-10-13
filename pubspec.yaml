@@ -1,5 +1,5 @@
 name: mathstep
-description: "蜿鈴ｨ捺焚蟄ｦ繝｢繝舌う繝ｫ繧｢繝励Μ - 蠑丞・蜉帙°繧韻hatGPT隗｣隱ｬ縺ｾ縺ｧ"
+description: "Math Problem Solver App - Step-by-step explanations with ChatGPT"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

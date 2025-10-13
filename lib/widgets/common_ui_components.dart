@@ -43,10 +43,10 @@ class CommonUIComponents {
       width: double.infinity,
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: backgroundColor ?? theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: backgroundColor ?? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: (borderColor ?? theme.colorScheme.outline).withOpacity(0.2),
+          color: (borderColor ?? theme.colorScheme.outline).withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -58,7 +58,7 @@ class CommonUIComponents {
     return Container(
       width: double.infinity,
       height: 1,
-      color: theme.colorScheme.outline.withOpacity(0.2),
+      color: theme.colorScheme.outline.withValues(alpha: 0.2),
     );
   }
 

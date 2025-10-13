@@ -490,8 +490,6 @@ class PrivacyPolicyScreen extends ConsumerWidget {
       future: PackageInfo.fromPlatform(),
       builder: (context, snapshot) {
         final version = snapshot.hasData ? snapshot.data!.version : '1.0.0';
-        final l10n = context.l10n;
-        
         // 言語に応じてバージョン表示テキストを決定
         String versionText;
         if (date.contains('2025年10月1日')) {

@@ -17,7 +17,6 @@ import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
 import '../models/sample_expression.dart';
 import '../constants/app_colors.dart';
-import '../widgets/mathstep_logo.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -361,7 +360,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               return Container(
                 height: previewHeight,
                 margin: const EdgeInsets.fromLTRB(16, 16, 16, 8), // 下部マージンを削減
-                child: _buildLatexPreview(expressionState.latex),
+                child: _buildLatexPreview(expressionState),
               );
             },
           ),
@@ -514,8 +513,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildLatexPreview(String latexExpression) {
-    final hasExpression = latexExpression.isNotEmpty;
+  Widget _buildLatexPreview(ExpressionState expressionState) {
+    final rawExpression = expressionState.input.trimRight();
+    final latexExpression = expressionState.latex.trim();
+    final hasExpression =
+        rawExpression.isNotEmpty || latexExpression.isNotEmpty;
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -540,7 +542,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           border: Border.all(color: AppColors.primaryLight, width: 1),
         ),
         child: hasExpression
-            ? LatexPreview(expression: latexExpression)
+            ? LatexPreview(
+                expression: latexExpression,
+                rawExpression: rawExpression,
+              )
             : _buildPlaceholder(),
       ),
     );

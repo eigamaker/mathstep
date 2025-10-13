@@ -35,7 +35,6 @@ class SampleExpressions {
     SampleExpression(expression: 'd/dx[e^x]'),
     SampleExpression(expression: 'd/dx[ln(x)]'),
     SampleExpression(expression: 'integral_0^1 (x^2 + 2x + 1) dx'),
-    SampleExpression(expression: 'integral_0^(pi/2) sin(x) dx'),
     SampleExpression(expression: 'integral_1^e 1/x dx'),
     
     // 【標準レベル】三角関数
@@ -51,7 +50,7 @@ class SampleExpressions {
     SampleExpression(expression: '3^x = 27'),
     SampleExpression(expression: 'log_2(8) + log_2(4)'),
     SampleExpression(expression: 'log_3(9) + log_3(3)'),
-    SampleExpression(expression: 'e^(ln(x))'),
+    SampleExpression(expression: 'e^{ln(x)}'),
     SampleExpression(expression: 'log(100) + log(1000)'),
     SampleExpression(expression: '2^(x+1) = 16'),
     SampleExpression(expression: 'e^x = 5'),
@@ -73,9 +72,7 @@ class SampleExpressions {
     
     // 【応用レベル】部分積分・置換積分
     SampleExpression(expression: 'integral x * e^x dx'),
-    SampleExpression(expression: 'integral x * sin(x) dx'),
     SampleExpression(expression: 'integral_0^1 x * e^x dx'),
-    SampleExpression(expression: 'integral_0^(pi/2) x * sin(x) dx'),
     SampleExpression(expression: 'integral_0^2 (x^2 - 2x) dx'),
     
     // 【応用レベル】数列・極限
@@ -88,7 +85,6 @@ class SampleExpressions {
     SampleExpression(expression: 'f(x) = x^2 - 4x + 3', condition: 'x >= 0'),
     SampleExpression(expression: 'f(x) = x^3 - 3x^2 + 2', condition: 'x >= -1'),
     SampleExpression(expression: 'integral_0^1 (x^2 + 1) dx'),
-    SampleExpression(expression: 'integral_0^pi sin^2(x) dx'),
     SampleExpression(expression: 'd/dx[ln(x^2 + 4x + 3)]'),
     
     // 【条件付き問題】定義域・値域・最大最小
@@ -101,10 +97,38 @@ class SampleExpressions {
     SampleExpression(expression: 'f(x) = e^x - x', condition: 'xの極値を求めよ'),
     SampleExpression(expression: 'f(x) = x^2 * e^(-x)', condition: 'x >= 0'),
     SampleExpression(expression: 'integral_0^1 x * sqrt(1 - x^2) dx'),
-    SampleExpression(expression: 'integral_0^pi/2 sin(x) * cos(x) dx'),
     SampleExpression(expression: 'limit_{x->0} (sin(x))/x'),
     SampleExpression(expression: 'limit_{x->inf} (x^2 + 1)/(x^2 - 1)'),
     SampleExpression(expression: 'limit_{x->2} (x^2 - 4)/(x - 2)'),
+    
+    // 【グラフ・値域問題】関数のグラフと値域
+    SampleExpression(expression: 'y = 2x/(x-3)', condition: '0 <= x <= 2'),
+    SampleExpression(expression: 'y = (x+1)/(x-2)', condition: 'x >= 3'),
+    SampleExpression(expression: 'y = x^2 - 4x + 3', condition: '0 <= x <= 5'),
+    SampleExpression(expression: 'y = sqrt(x^2 - 4)', condition: 'x >= 2'),
+    SampleExpression(expression: 'y = 1/(x^2 - 1)', condition: 'x > 1'),
+    SampleExpression(expression: 'y = x^3 - 3x^2 + 2', condition: '-1 <= x <= 3'),
+    SampleExpression(expression: 'y = sin(x) + cos(x)', condition: '0 <= x <= 2pi'),
+    SampleExpression(expression: 'y = e^x - x', condition: 'x >= 0'),
+    SampleExpression(expression: 'y = ln(x^2 - 1)', condition: 'x > 1'),
+    SampleExpression(expression: 'y = x^2 * e^(-x)', condition: 'x >= 0'),
+    
+    // 【不等式問題】不等式の解法
+    SampleExpression(expression: 'sqrt(x-1) <= -x+3'),
+    SampleExpression(expression: 'sqrt(x+2) > x-1'),
+    SampleExpression(expression: 'sqrt(x^2-4) >= 2'),
+    SampleExpression(expression: 'x^2 - 4x + 3 > 0'),
+    SampleExpression(expression: 'x^3 - 3x^2 + 2 <= 0'),
+    SampleExpression(expression: '1/(x-2) > 1/(x+1)'),
+    SampleExpression(expression: 'ln(x^2-1) >= 0'),
+    SampleExpression(expression: 'e^x - x > 1'),
+    SampleExpression(expression: 'sin(x) + cos(x) >= sqrt(2)'),
+    SampleExpression(expression: 'x^2 * e^(-x) <= 1'),
+    SampleExpression(expression: 'sqrt(x) + sqrt(x+1) > sqrt(x+2)'),
+    SampleExpression(expression: 'x^2 - 3x + 2 < 0'),
+    SampleExpression(expression: 'sqrt(x^2-1) < x'),
+    SampleExpression(expression: 'ln(x) > x-1'),
+    SampleExpression(expression: 'e^x > x^2'),
   ];
 
   /// Gets a pseudo-random sample expression.

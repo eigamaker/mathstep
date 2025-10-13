@@ -7,20 +7,26 @@ class LatexPreview extends StatelessWidget {
   const LatexPreview({
     super.key, 
     required this.expression,
+    this.rawExpression,
     this.showBorder = true,
     this.padding = const EdgeInsets.all(12),
   });
 
   final String expression;
+  final String? rawExpression;
   final bool showBorder;
   final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
-    final trimmed = expression.trim();
-    if (trimmed.isEmpty) {
+    final trimmedExpression = expression.trim();
+    final trimmedRaw = rawExpression?.trim() ?? '';
+    if (trimmedExpression.isEmpty && trimmedRaw.isEmpty) {
       return const SizedBox.shrink();
     }
+
+    final effectiveExpression =
+        trimmedExpression.isNotEmpty ? trimmedExpression : trimmedRaw;
 
     return Container(
       width: double.infinity,
@@ -35,7 +41,10 @@ class LatexPreview extends StatelessWidget {
       ) : null,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: SimpleMathDisplay(expression: trimmed),
+        child: SimpleMathDisplay(
+          expression: effectiveExpression,
+          rawExpression: trimmedRaw.isNotEmpty ? trimmedRaw : null,
+        ),
       ),
     );
   }

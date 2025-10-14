@@ -43,21 +43,6 @@ class CalculatorKeypad extends StatefulWidget {
       ],
     ),
     _KeyCategory(
-      label: 'Ops',
-      icon: Icons.calculate_rounded,
-      keys: [
-        _KeySpec.input('+'),
-        _KeySpec.input('-'),
-        _KeySpec.input('*', label: '\u00D7'),
-        _KeySpec.input('/', label: '\u00F7'),
-        _KeySpec.input('^', label: 'x^y'),
-        _KeySpec.input('=', label: '='),
-        _KeySpec.input('(', label: '('),
-        _KeySpec.input(')', label: ')'),
-        _KeySpec.input(',', label: ','),
-      ],
-    ),
-    _KeyCategory(
       label: 'Func',
       icon: Icons.functions_rounded,
       keys: [
@@ -80,6 +65,7 @@ class CalculatorKeypad extends StatefulWidget {
       label: 'Adv',
       icon: Icons.science_rounded,
       keys: [
+        _KeySpec.input('^', label: 'x^y'),
         _KeySpec.input('sum(', label: '\u03A3'),
         _KeySpec.input('prod(', label: '\u03A0'),
         _KeySpec.input('integral(', label: '\u222B'),
@@ -104,16 +90,23 @@ class CalculatorKeypad extends StatefulWidget {
         _KeySpec.input('i'),
       ],
     ),
-    _KeyCategory(
-      label: 'Edit',
-      icon: Icons.edit_note_rounded,
-      keys: [_KeySpec.delete(), _KeySpec.moveLeft(), _KeySpec.moveRight()],
-    ),
   ];
-
-  static final List<_KeySpec> _scrollKeys = List<_KeySpec>.unmodifiable(
-    _categories.expand((category) => category.keys),
-  );
+  // Frequently used keys displayed below the category shortcuts.
+  static const List<_KeySpec> _commonKeys = [
+    // Keys originally in the edit category.
+    _KeySpec.delete(),
+    _KeySpec.moveLeft(),
+    _KeySpec.moveRight(),
+    // Keys originally in the operations category (except x^y).
+    _KeySpec.input('+'),
+    _KeySpec.input('-'),
+    _KeySpec.input('*', label: '\u00D7'),
+    _KeySpec.input('/', label: '\u00F7'),
+    _KeySpec.input('=', label: '='),
+    _KeySpec.input('(', label: '('),
+    _KeySpec.input(')', label: ')'),
+    _KeySpec.input(',', label: ','),
+  ];
 
   @override
   State<CalculatorKeypad> createState() => _CalculatorKeypadState();
@@ -154,35 +147,49 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             key: _flickStackKey,
             clipBehavior: Clip.none,
             children: [
-              Align(
-                alignment: Alignment.center,
-                child: LayoutBuilder(
-                  builder: (context, innerConstraints) {
-                    final double maxInset =
-                        (innerConstraints.maxWidth / 2) -
-                        (_categoryButtonSize / 2) -
-                        8;
-                    final double edgeInset = max(
-                      16.0,
-                      min(56.0, maxInset.isFinite ? maxInset : 56.0),
-                    );
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: edgeInset),
-                      child: Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: _categorySpacing,
-                        runSpacing: _categorySpacing,
-                        children: [
-                          for (
-                            var i = 0;
-                            i < CalculatorKeypad._categories.length;
-                            i++
-                          )
-                            _buildCategoryButton(i),
-                        ],
+              Positioned.fill(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
+                        child: LayoutBuilder(
+                          builder: (context, innerConstraints) {
+                            final double maxInset =
+                                (innerConstraints.maxWidth / 2) -
+                                (_categoryButtonSize / 2) -
+                                8;
+                            final double edgeInset = max(
+                              16.0,
+                              min(56.0, maxInset.isFinite ? maxInset : 56.0),
+                            );
+                            return Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: edgeInset,
+                                ),
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: _categorySpacing,
+                                  runSpacing: _categorySpacing,
+                                  children: [
+                                    for (
+                                      var i = 0;
+                                      i < CalculatorKeypad._categories.length;
+                                      i++
+                                    )
+                                      _buildCategoryButton(i),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 6),
+                    _buildCommonKeyPanel(),
+                  ],
                 ),
               ),
               if (_activeFlick != null) _buildFlickOverlay(constraints),
@@ -194,20 +201,115 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   }
 
   Widget _buildScrollableKeyboard() {
-    return Scrollbar(
-      thumbVisibility: false,
-      child: GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 6,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 0.92,
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: _buildCategoryButton(0),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: _buildCategoryButton(1),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: _buildCategoryButton(2),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: _buildCategoryButton(3),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        itemCount: CalculatorKeypad._scrollKeys.length,
-        itemBuilder: (context, index) {
-          final spec = CalculatorKeypad._scrollKeys[index];
-          return _buildRectKey(spec);
+        _buildCommonKeyPanel(),
+      ],
+    );
+  }
+
+  Widget _buildCommonKeyPanel() {
+    final keys = CalculatorKeypad._commonKeys;
+    if (keys.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(6, 16, 6, 6), // 上部の間隔を増やす
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const int columns = 6;
+          const int rows = 2;
+          const double horizontalSpacing = 4;
+          const double verticalSpacing = 8;
+          final double cellWidth =
+              (constraints.maxWidth - horizontalSpacing * (columns - 1)) /
+              columns;
+          final double cellHeight = _optionButtonSize * 0.8; // 基本キーを小さくする
+
+          const row1 = <_CommonKeyPlacement>[
+            _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
+            _CommonKeyPlacement(index: 1, column: 1, row: 0),
+            _CommonKeyPlacement(index: 2, column: 2, row: 0),
+            _CommonKeyPlacement(index: 3, column: 3, row: 0),
+            _CommonKeyPlacement(index: 4, column: 4, row: 0),
+            _CommonKeyPlacement(index: 5, column: 5, row: 0),
+          ];
+
+          const row2 = <_CommonKeyPlacement>[
+            _CommonKeyPlacement(index: 6, column: 1, row: 1),
+            _CommonKeyPlacement(index: 7, column: 2, row: 1),
+            _CommonKeyPlacement(index: 8, column: 3, row: 1),
+            _CommonKeyPlacement(index: 9, column: 4, row: 1),
+            _CommonKeyPlacement(index: 10, column: 5, row: 1),
+          ];
+
+          final placements = <_CommonKeyPlacement>[
+            ...row1,
+            ...row2,
+          ].where((placement) => placement.index < keys.length).toList();
+
+          final double totalHeight =
+              cellHeight * rows + verticalSpacing * (rows - 1);
+
+          return SizedBox(
+            width: constraints.maxWidth,
+            height: totalHeight,
+            child: Stack(
+              children: [
+                for (final placement in placements)
+                  Positioned(
+                    left: placement.column * (cellWidth + horizontalSpacing),
+                    top: placement.row * (cellHeight + verticalSpacing),
+                    width: cellWidth,
+                    height:
+                        cellHeight * placement.rowSpan +
+                        verticalSpacing * (placement.rowSpan - 1),
+                    child: _buildSmallRectKey(keys[placement.index]), // 小さなキー用のメソッドを使用
+                  ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -286,6 +388,39 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             spec.displayLabel,
             style: TextStyle(
               fontSize: spec.fontSize ?? 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSmallRectKey(_KeySpec spec) {
+    return Material(
+      color: AppColors.primaryContainer,
+      borderRadius: BorderRadius.circular(10),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _triggerKey(spec),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.05),
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              width: 1,
+            ),
+          ),
+          child: Text(
+            spec.displayLabel,
+            style: TextStyle(
+              fontSize: (spec.fontSize ?? 16) * 0.9, // フォントサイズも少し小さく
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
             ),
@@ -478,14 +613,14 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
   void _handlePanUpdate(DragUpdateDetails details) {
     if (_activeFlick == null) return;
-    
-    // 下方向または上方向のスワイプを検出（閾値: 5ピクセル）
+
+    // Detect vertical drag (threshold: 5 pixels)
     if (details.delta.dy.abs() > 5) {
       final newCenter = Offset(
         _activeFlick!.center.dx,
         _activeFlick!.center.dy + details.delta.dy,
       );
-      
+
       setState(() {
         _activeFlick = _FlickOverlayState(
           categoryIndex: _activeFlick!.categoryIndex,
@@ -512,13 +647,13 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
     double optionSpacing;
     if (count >= 11) {
-      optionSpacing = 28.0; // Numカテゴリ用
+      optionSpacing = 28.0; // Numeric-rich categories
     } else if (count >= 9) {
-      optionSpacing = 24.0; // Ops, Advカテゴリ用
+      optionSpacing = 24.0; // Extended categories
     } else {
-      optionSpacing = 16.0; // その他のカテゴリ用
+      optionSpacing = 16.0; // Compact categories
     }
-    
+
     final double minChord = _optionButtonSize + optionSpacing;
     final double sinValue = sin(pi / count).clamp(0.08, 1.0);
     final double radius = minChord / (2 * sinValue);
@@ -568,13 +703,15 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       }
 
       final double limit = min(horizontalLimit, verticalLimit);
-      // 下方向の制限を特に緩和（Varカテゴリの下のアイコンが見えるように）
+      // Relax constraints so options stay visible near edges.
       if (limit.isFinite) {
-        if (sinValue > 0) { // 下方向の場合
+        if (sinValue > 0) {
+          // downward direction
           if (limit > baseRadius * 0.3) {
             radius = min(radius, limit);
           }
-        } else { // 上方向、左右方向の場合
+        } else {
+          // upward or horizontal directions
           if (limit > baseRadius * 0.5) {
             radius = min(radius, limit);
           }
@@ -587,6 +724,20 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     radius = max(radius, minRadius);
     return radius;
   }
+}
+
+class _CommonKeyPlacement {
+  const _CommonKeyPlacement({
+    required this.index,
+    required this.column,
+    required this.row,
+    this.rowSpan = 1,
+  });
+
+  final int index;
+  final int column;
+  final int row;
+  final int rowSpan;
 }
 
 class _FlickOverlayState {

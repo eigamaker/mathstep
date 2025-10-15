@@ -9,7 +9,7 @@ final keypadSettingsProvider =
     );
 
 class KeypadSettingsNotifier extends StateNotifier<KeypadLayoutMode> {
-  KeypadSettingsNotifier() : super(KeypadLayoutMode.flick) {
+  KeypadSettingsNotifier() : super(KeypadLayoutMode.scroll) {
     _load();
   }
 

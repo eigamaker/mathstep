@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../constants/app_colors.dart';
 import '../models/keypad_layout_mode.dart';
@@ -116,6 +117,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   static const double _categorySpacing = 16;
   static const double _categoryButtonSize = 92;
   static const double _optionButtonSize = 52;
+  // iPhone用の配置（6列）
   static const List<_CommonKeyPlacement> _commonKeyPlacements = [
     _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
     _CommonKeyPlacement(index: 1, column: 1, row: 0),
@@ -128,6 +130,33 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     _CommonKeyPlacement(index: 8, column: 3, row: 1),
     _CommonKeyPlacement(index: 9, column: 4, row: 1),
     _CommonKeyPlacement(index: 10, column: 5, row: 1),
+  ];
+  
+  // iPad用の配置（12列）
+  static const List<_CommonKeyPlacement> _commonKeyPlacementsIPad = [
+    _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
+    _CommonKeyPlacement(index: 1, column: 1, row: 0),
+    _CommonKeyPlacement(index: 2, column: 2, row: 0),
+    _CommonKeyPlacement(index: 3, column: 3, row: 0),
+    _CommonKeyPlacement(index: 4, column: 4, row: 0),
+    _CommonKeyPlacement(index: 5, column: 5, row: 0),
+    _CommonKeyPlacement(index: 6, column: 6, row: 0),
+    _CommonKeyPlacement(index: 7, column: 7, row: 0),
+    _CommonKeyPlacement(index: 8, column: 8, row: 0),
+    _CommonKeyPlacement(index: 9, column: 9, row: 0),
+    _CommonKeyPlacement(index: 10, column: 10, row: 0),
+    _CommonKeyPlacement(index: 11, column: 11, row: 0),
+    _CommonKeyPlacement(index: 12, column: 1, row: 1),
+    _CommonKeyPlacement(index: 13, column: 2, row: 1),
+    _CommonKeyPlacement(index: 14, column: 3, row: 1),
+    _CommonKeyPlacement(index: 15, column: 4, row: 1),
+    _CommonKeyPlacement(index: 16, column: 5, row: 1),
+    _CommonKeyPlacement(index: 17, column: 6, row: 1),
+    _CommonKeyPlacement(index: 18, column: 7, row: 1),
+    _CommonKeyPlacement(index: 19, column: 8, row: 1),
+    _CommonKeyPlacement(index: 20, column: 9, row: 1),
+    _CommonKeyPlacement(index: 21, column: 10, row: 1),
+    _CommonKeyPlacement(index: 22, column: 11, row: 1),
   ];
 
   final GlobalKey _flickStackKey = GlobalKey();
@@ -177,44 +206,51 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
-                          child: LayoutBuilder(
-                            builder: (context, innerConstraints) {
-                              final double maxInset =
-                                  (innerConstraints.maxWidth / 2) -
-                                  (categoryButtonSize / 2) -
-                                  8;
-                              final double edgeInset = max(
-                                16.0,
-                                min(56.0, maxInset.isFinite ? maxInset : 56.0),
-                              );
-                              return Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: edgeInset,
-                                  ),
-                                  child: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    spacing: _categorySpacing,
-                                    runSpacing: _categorySpacing,
-                                    children: [
-                                      for (
-                                        var i = 0;
-                                        i < CalculatorKeypad._categories.length;
-                                        i++
-                                      )
-                                        _buildCategoryButton(i, categoryButtonSize),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                          padding: const EdgeInsets.fromLTRB(6, 6, 6, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              LayoutBuilder(
+                                builder: (context, innerConstraints) {
+                                  final double maxInset =
+                                      (innerConstraints.maxWidth / 2) -
+                                      (categoryButtonSize / 2) -
+                                      8;
+                                  final double edgeInset = max(
+                                    16.0,
+                                    min(
+                                      56.0,
+                                      maxInset.isFinite ? maxInset : 56.0,
+                                    ),
+                                  );
+                                  return Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: edgeInset,
+                                      ),
+                                      child: Wrap(
+                                        alignment: WrapAlignment.center,
+                                        spacing: _categorySpacing,
+                                        runSpacing: _categorySpacing,
+                                        children: [
+                                          for (var i = 0; i < CalculatorKeypad._categories.length; i++)
+                                            _buildCategoryButton(
+                                              i,
+                                              categoryButtonSize,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              _buildCommonKeyPanel(),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    _buildCommonKeyPanel(),
                   ],
                 ),
               ),
@@ -231,7 +267,10 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       builder: (context, constraints) {
         const double horizontalPadding = 12;
         const double gridSpacing = 8;
-        const int columns = 6;
+        
+        // iPad判定とキー数の調整
+        final bool isIPad = _isIPad(context);
+        final int columns = isIPad ? 12 : 6; // iPadでは12列、iPhoneでは6列
 
         final double availableWidth = max(
           constraints.maxWidth - horizontalPadding * 2,
@@ -239,7 +278,10 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
         );
         final double tileWidth =
             (availableWidth - gridSpacing * (columns - 1)) / columns;
-        final double tileHeight = max(_optionButtonSize, tileWidth * 1.1);
+        // iPadではキーをさらに小さくする
+        final double tileHeight = isIPad 
+            ? max(_optionButtonSize * 0.5, tileWidth * 0.7)
+            : max(_optionButtonSize, tileWidth * 1.1);
 
         // すべてのキーを一つのリストに統合
         final List<_KeySpec> allKeys = [
@@ -289,37 +331,51 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
 
   Widget _buildScrollableKey(_KeySpec spec) {
-    return Material(
-      color: AppColors.primarySurface,
-      borderRadius: BorderRadius.circular(12),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _triggerKey(spec),
-        splashColor: AppColors.primary.withValues(alpha: 0.08),
-        highlightColor: AppColors.primary.withValues(alpha: 0.05),
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.12),
-              width: 1.1,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // iPad判定とフォントサイズの調整
+        final bool isIPad = _isIPad(context);
+        final double baseFontSize = spec.fontSize ?? 14;
+        final double fontSize = isIPad 
+            ? min(baseFontSize * 2.2, 28) // iPadでは2.2倍大きく、最大28px
+            : min(baseFontSize, 16); // iPhoneでは従来通り
+        
+        return Material(
+          color: AppColors.primarySurface,
+          borderRadius: BorderRadius.circular(12),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => _triggerKey(spec),
+            splashColor: AppColors.primary.withValues(alpha: 0.08),
+            highlightColor: AppColors.primary.withValues(alpha: 0.05),
+            child: Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(
+                horizontal: isIPad ? 4 : 4, 
+                vertical: isIPad ? 6 : 8,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  width: 1.1,
+                ),
+              ),
+              child: Text(
+                spec.displayLabel,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
-          child: Text(
-            spec.displayLabel,
-            style: TextStyle(
-              fontSize: min(spec.fontSize ?? 14, 16),
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -331,7 +387,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 画面サイズに応じた調整
+        // iPad判定と画面サイズに応じた調整
+        final bool isIPad = _isIPad(context);
         final bool isSmallScreen = constraints.maxHeight < 600;
         final bool isVerySmallScreen = constraints.maxHeight < 500;
         
@@ -340,9 +397,12 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             ? _optionButtonSize * 0.6 
             : isSmallScreen 
                 ? _optionButtonSize * 0.7 
-                : _optionButtonSize * 0.8;
+                : isIPad
+                    ? _optionButtonSize * 0.6 // iPadではさらに小さく
+                    : _optionButtonSize * 0.8;
         
-        const int columns = 6;
+        // iPadでは横に12列、iPhoneでは6列
+        final int columns = isIPad ? 12 : 6;
         const int rows = 2;
         const double horizontalSpacing = 4;
         final double verticalSpacing = isVerySmallScreen ? 4 : 8;
@@ -351,7 +411,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             columns;
         final double cellHeight = baseButtonSize;
 
-        final placements = _commonKeyPlacements.where(
+        final placements = (isIPad ? _commonKeyPlacementsIPad : _commonKeyPlacements).where(
           (placement) => placement.index < keys.length,
         );
 
@@ -436,42 +496,50 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   }
 
   Widget _buildCommonKey(_KeySpec spec, [double? buttonSize]) {
-    final double size = buttonSize ?? _optionButtonSize * 0.8;
-    final double borderRadius = size * 0.2;
-    final double fontSize = (spec.fontSize ?? 16) * (size / _optionButtonSize);
-    
-    return Material(
-      color: AppColors.primaryContainer,
-      borderRadius: BorderRadius.circular(borderRadius),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _triggerKey(spec),
-        splashColor: AppColors.primary.withValues(alpha: 0.08),
-        highlightColor: AppColors.primary.withValues(alpha: 0.05),
-        child: Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(
-            horizontal: size * 0.12, 
-            vertical: size * 0.15,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.12),
-              width: 1,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isIPad = _isIPad(context);
+        final double size = buttonSize ?? _optionButtonSize * 0.8;
+        final double borderRadius = size * 0.2;
+        final double baseFontSize = spec.fontSize ?? 16;
+        final double fontSize = isIPad 
+            ? baseFontSize * 2.0 // iPadでは2.0倍大きく
+            : baseFontSize * (size / _optionButtonSize);
+        
+        return Material(
+          color: AppColors.primaryContainer,
+          borderRadius: BorderRadius.circular(borderRadius),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => _triggerKey(spec),
+            splashColor: AppColors.primary.withValues(alpha: 0.08),
+            highlightColor: AppColors.primary.withValues(alpha: 0.05),
+            child: Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(
+                horizontal: size * 0.12, 
+                vertical: size * 0.15,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(borderRadius),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                spec.displayLabel,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-          child: Text(
-            spec.displayLabel,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -681,6 +749,21 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
   void _triggerKey(_KeySpec spec) {
     widget.onKeyPressed(CalculatorKeyEvent(spec.type, spec.value));
+  }
+
+  /// iPad判定メソッド
+  bool _isIPad(BuildContext context) {
+    final mediaQuery = MediaQuery.maybeOf(context);
+    if (mediaQuery == null) {
+      return false;
+    }
+
+    final Size size = mediaQuery.size;
+    final double shortestSide = min(size.width, size.height);
+    final bool isCupertinoPlatform = defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS;
+
+    return isCupertinoPlatform && shortestSide >= 600;
   }
 
   double _idealRadiusFor(int count) {

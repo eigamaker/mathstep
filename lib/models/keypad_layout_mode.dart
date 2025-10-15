@@ -7,7 +7,7 @@ extension KeypadLayoutModeX on KeypadLayoutMode {
     }
     return KeypadLayoutMode.values.firstWhere(
       (mode) => mode.name == value,
-      orElse: () => KeypadLayoutMode.flick,
+      orElse: () => KeypadLayoutMode.scroll,
     );
   }
 

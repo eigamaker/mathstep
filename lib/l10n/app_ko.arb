@@ -151,6 +151,7 @@
   "solutionSimilarProblemTitle": "유사 문제",
   "solutionSimilarProblemDescription": "유사한 이유",
   "solutionSimilarProblemExpression": "문제식",
+  "solutionSimilarProblemSolutionSteps": "해법",
   "solutionSimilarProblemEmptyMessage": "아직 유사 문제가 없습니다.",
   "solutionTabGraph": "그래프",
   "solutionAlternativeSectionTitle": "대안 해법",

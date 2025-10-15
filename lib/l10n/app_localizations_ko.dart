@@ -351,6 +351,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get solutionSimilarProblemExpression => '문제식';
 
   @override
+  String get solutionSimilarProblemSolutionSteps => '해법';
+
+  @override
   String get solutionSimilarProblemEmptyMessage => '아직 유사 문제가 없습니다.';
 
   @override

@@ -151,6 +151,7 @@
   "solutionSimilarProblemTitle": "相似题目",
   "solutionSimilarProblemDescription": "相似原因",
   "solutionSimilarProblemExpression": "题目表达式",
+  "solutionSimilarProblemSolutionSteps": "解题步骤",
   "solutionSimilarProblemEmptyMessage": "暂无相似问题。",
   "solutionTabGraph": "图形",
   "solutionAlternativeSectionTitle": "其它解法",

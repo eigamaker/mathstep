@@ -349,6 +349,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get solutionSimilarProblemExpression => '题目表达式';
 
   @override
+  String get solutionSimilarProblemSolutionSteps => '解题步骤';
+
+  @override
   String get solutionSimilarProblemEmptyMessage => '暂无相似问题。';
 
   @override

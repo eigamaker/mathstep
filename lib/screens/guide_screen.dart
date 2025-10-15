@@ -24,6 +24,10 @@ class GuideScreen extends StatelessWidget {
             expression: 'e^{x^2}',
             keySequence: ['e', 'x^y', '(', 'x', 'x^y', '2', ')'],
           ),
+          _GuideExample(
+            expression: 'pow(2, 3)',
+            keySequence: ['x^()', '2', ',', '3', ')'],
+          ),
           _GuideExample(expression: '\\sqrt{9}', keySequence: ['√', '9', ')']),
           _GuideExample(
             expression: '\\sqrt[3]{8}',

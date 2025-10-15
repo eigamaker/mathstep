@@ -740,6 +740,12 @@ abstract class AppLocalizations {
   /// **'Problem Expression'**
   String get solutionSimilarProblemExpression;
 
+  /// No description provided for @solutionSimilarProblemSolutionSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Solution Steps'**
+  String get solutionSimilarProblemSolutionSteps;
+
   /// No description provided for @solutionSimilarProblemEmptyMessage.
   ///
   /// In en, this message translates to:

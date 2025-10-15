@@ -53,11 +53,11 @@ class CalculatorKeypad extends StatefulWidget {
         _KeySpec.input('frac(', label: 'a/b'),
         _KeySpec.input('abs(', label: '|x|'),
         _KeySpec.input('f(', label: 'f(x)'),
-        _KeySpec.input('sin('),
-        _KeySpec.input('cos('),
-        _KeySpec.input('tan('),
-        _KeySpec.input('ln('),
-        _KeySpec.input('log('),
+        _KeySpec.input('sin(', label: 'sin'),
+        _KeySpec.input('cos(', label: 'cos'),
+        _KeySpec.input('tan(', label: 'tan'),
+        _KeySpec.input('ln(', label: 'ln'),
+        _KeySpec.input('log(', label: 'log'),
         _KeySpec.input('n!', label: 'n!'),
       ],
     ),
@@ -153,6 +153,17 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   Widget _buildFlickKeyboard() {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // iOSでの画面サイズに応じた調整
+        final bool isSmallScreen = constraints.maxHeight < 600;
+        final bool isVerySmallScreen = constraints.maxHeight < 500;
+        
+        // カテゴリボタンのサイズを画面サイズに応じて調整
+        final double categoryButtonSize = isVerySmallScreen 
+            ? _categoryButtonSize * 0.8 
+            : isSmallScreen 
+                ? _categoryButtonSize * 0.9 
+                : _categoryButtonSize;
+        
         return SizedBox(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
@@ -164,39 +175,41 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
-                        child: LayoutBuilder(
-                          builder: (context, innerConstraints) {
-                            final double maxInset =
-                                (innerConstraints.maxWidth / 2) -
-                                (_categoryButtonSize / 2) -
-                                8;
-                            final double edgeInset = max(
-                              16.0,
-                              min(56.0, maxInset.isFinite ? maxInset : 56.0),
-                            );
-                            return Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: edgeInset,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
+                          child: LayoutBuilder(
+                            builder: (context, innerConstraints) {
+                              final double maxInset =
+                                  (innerConstraints.maxWidth / 2) -
+                                  (categoryButtonSize / 2) -
+                                  8;
+                              final double edgeInset = max(
+                                16.0,
+                                min(56.0, maxInset.isFinite ? maxInset : 56.0),
+                              );
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: edgeInset,
+                                  ),
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: _categorySpacing,
+                                    runSpacing: _categorySpacing,
+                                    children: [
+                                      for (
+                                        var i = 0;
+                                        i < CalculatorKeypad._categories.length;
+                                        i++
+                                      )
+                                        _buildCategoryButton(i, categoryButtonSize),
+                                    ],
+                                  ),
                                 ),
-                                child: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: _categorySpacing,
-                                  runSpacing: _categorySpacing,
-                                  children: [
-                                    for (
-                                      var i = 0;
-                                      i < CalculatorKeypad._categories.length;
-                                      i++
-                                    )
-                                      _buildCategoryButton(i),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -226,7 +239,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
         );
         final double tileWidth =
             (availableWidth - gridSpacing * (columns - 1)) / columns;
-        final double tileHeight = max(_optionButtonSize, tileWidth * 0.9);
+        final double tileHeight = max(_optionButtonSize, tileWidth * 1.1);
 
         // すべてのキーを一つのリストに統合
         final List<_KeySpec> allKeys = [
@@ -286,7 +299,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
         highlightColor: AppColors.primary.withValues(alpha: 0.05),
         child: Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -297,11 +310,13 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
           child: Text(
             spec.displayLabel,
             style: TextStyle(
-              fontSize: min(spec.fontSize ?? 16, 18),
+              fontSize: min(spec.fontSize ?? 14, 16),
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
             ),
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),
@@ -314,29 +329,39 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      // Add breathing room above the quick keys.
-      padding: const EdgeInsets.fromLTRB(6, 16, 6, 6),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const int columns = 6;
-          const int rows = 2;
-          const double horizontalSpacing = 4;
-          const double verticalSpacing = 8;
-          final double cellWidth =
-              (constraints.maxWidth - horizontalSpacing * (columns - 1)) /
-              columns;
-          final double cellHeight =
-              _optionButtonSize * 0.8; // Render common keys slightly smaller.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 画面サイズに応じた調整
+        final bool isSmallScreen = constraints.maxHeight < 600;
+        final bool isVerySmallScreen = constraints.maxHeight < 500;
+        
+        // 共通キーのサイズを画面サイズに応じて調整
+        final double baseButtonSize = isVerySmallScreen 
+            ? _optionButtonSize * 0.6 
+            : isSmallScreen 
+                ? _optionButtonSize * 0.7 
+                : _optionButtonSize * 0.8;
+        
+        const int columns = 6;
+        const int rows = 2;
+        const double horizontalSpacing = 4;
+        final double verticalSpacing = isVerySmallScreen ? 4 : 8;
+        final double cellWidth =
+            (constraints.maxWidth - horizontalSpacing * (columns - 1)) /
+            columns;
+        final double cellHeight = baseButtonSize;
 
-          final placements = _commonKeyPlacements.where(
-            (placement) => placement.index < keys.length,
-          );
+        final placements = _commonKeyPlacements.where(
+          (placement) => placement.index < keys.length,
+        );
 
-          final double totalHeight =
-              cellHeight * rows + verticalSpacing * (rows - 1);
+        final double totalHeight =
+            cellHeight * rows + verticalSpacing * (rows - 1);
 
-          return SizedBox(
+        return Container(
+          // Add breathing room above the quick keys.
+          padding: EdgeInsets.fromLTRB(6, isVerySmallScreen ? 8 : 16, 6, 6),
+          child: SizedBox(
             width: constraints.maxWidth,
             height: totalHeight,
             child: Stack(
@@ -349,50 +374,51 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                     height:
                         cellHeight * placement.rowSpan +
                         verticalSpacing * (placement.rowSpan - 1),
-                    child: _buildCommonKey(keys[placement.index]),
+                    child: _buildCommonKey(keys[placement.index], baseButtonSize),
                   ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildCategoryButton(int index) {
+  Widget _buildCategoryButton(int index, [double? buttonSize]) {
     final category = CalculatorKeypad._categories[index];
     final bool isActive = _activeFlick?.categoryIndex == index;
+    final double size = buttonSize ?? _categoryButtonSize;
 
     return Builder(
       builder: (buttonContext) {
         return SizedBox(
-          width: _categoryButtonSize,
-          height: _categoryButtonSize,
+          width: size,
+          height: size,
           child: Material(
             color: isActive ? AppColors.primary : AppColors.primaryContainer,
             elevation: isActive ? 6 : 2,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(size * 0.2), // サイズに応じた角丸
             shadowColor: Colors.black.withValues(alpha: 0.08),
             child: InkWell(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(size * 0.2),
               onTap: () => _toggleFlickMenu(index, buttonContext),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(size * 0.13), // サイズに応じたパディング
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       category.icon,
-                      size: 28,
+                      size: size * 0.3, // サイズに応じたアイコンサイズ
                       color: isActive
                           ? AppColors.textOnPrimary
                           : AppColors.primary,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: size * 0.09), // サイズに応じたスペース
                     Text(
                       category.label,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: size * 0.15, // サイズに応じたフォントサイズ
                         fontWeight: FontWeight.w700,
                         color: isActive
                             ? AppColors.textOnPrimary
@@ -409,10 +435,14 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     );
   }
 
-  Widget _buildCommonKey(_KeySpec spec) {
+  Widget _buildCommonKey(_KeySpec spec, [double? buttonSize]) {
+    final double size = buttonSize ?? _optionButtonSize * 0.8;
+    final double borderRadius = size * 0.2;
+    final double fontSize = (spec.fontSize ?? 16) * (size / _optionButtonSize);
+    
     return Material(
       color: AppColors.primaryContainer,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(borderRadius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _triggerKey(spec),
@@ -420,9 +450,12 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
         highlightColor: AppColors.primary.withValues(alpha: 0.05),
         child: Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: size * 0.12, 
+            vertical: size * 0.15,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
               color: AppColors.primary.withValues(alpha: 0.12),
               width: 1,
@@ -431,8 +464,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
           child: Text(
             spec.displayLabel,
             style: TextStyle(
-              // Slightly reduce the font size for compact buttons.
-              fontSize: (spec.fontSize ?? 16) * 0.9,
+              fontSize: fontSize,
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
             ),

@@ -350,6 +350,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get solutionSimilarProblemExpression => '問題式';
 
   @override
+  String get solutionSimilarProblemSolutionSteps => '解法';
+
+  @override
   String get solutionSimilarProblemEmptyMessage => '類似問題はまだありません。';
 
   @override

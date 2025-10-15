@@ -14,9 +14,9 @@ extension KeypadLayoutModeX on KeypadLayoutMode {
   String get displayLabel {
     switch (this) {
       case KeypadLayoutMode.flick:
-        return 'Flick';
+        return 'Radial';
       case KeypadLayoutMode.scroll:
-        return 'Scroll';
+        return 'Grid';
     }
   }
 }

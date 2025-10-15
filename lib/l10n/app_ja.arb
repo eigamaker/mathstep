@@ -151,6 +151,7 @@
   "solutionSimilarProblemTitle": "類似問題",
   "solutionSimilarProblemDescription": "なぜ類似しているか",
   "solutionSimilarProblemExpression": "問題式",
+  "solutionSimilarProblemSolutionSteps": "解法",
   "solutionSimilarProblemEmptyMessage": "類似問題はまだありません。",
   "solutionTabGraph": "グラフ",
   "solutionAlternativeSectionTitle": "別の解法",

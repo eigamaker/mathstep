@@ -385,6 +385,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get solutionSimilarProblemExpression => 'Problem Expression';
 
   @override
+  String get solutionSimilarProblemSolutionSteps => 'Solution Steps';
+
+  @override
   String get solutionSimilarProblemEmptyMessage =>
       'No similar problems available yet.';
 

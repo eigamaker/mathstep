@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 
 import '../localization/localization_extensions.dart';
 import '../models/solution.dart';
@@ -76,13 +77,7 @@ class SolutionStepCard extends StatelessWidget {
           theme: theme,
         ),
         const SizedBox(height: 8),
-        Text(
-          CommonUIComponents.cleanDescription(description),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            height: 1.6,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
+        _buildDescriptionWithMath(CommonUIComponents.cleanDescription(description), theme),
       ],
     );
   }
@@ -105,13 +100,162 @@ class SolutionStepCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (step.latexExpression != null)
-            LatexPreview(
-              expression: step.latexExpression!,
-              showBorder: false,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-            ),
+            _buildMathTex(step.latexExpression!),
         ],
       ),
     );
   }
+
+  Widget _buildMathTex(String latexExpression) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+      child: Math.tex(
+        latexExpression,
+        mathStyle: MathStyle.text,
+        textStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+        onErrorFallback: (_) => Text(
+          latexExpression,
+          style: const TextStyle(
+            fontSize: 16,
+            fontFamily: 'monospace',
+            color: Colors.black87,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDescriptionWithMath(String description, ThemeData theme) {
+    // 数式パターンを検出
+    final mathPatterns = [
+      // LaTeX数式（$...$ または $$...$$）
+      RegExp(r'\$([^$]+)\$'),
+      // 分数（a/b形式）
+      RegExp(r'\b\w+/\w+\b'),
+      // 累乗（x^y形式）
+      RegExp(r'\b\w+\^\w+\b'),
+      // 根号（sqrt(x)形式）
+      RegExp(r'sqrt\([^)]+\)'),
+      // 関数（sin, cos, tan, log, ln等）
+      RegExp(r'\b(sin|cos|tan|log|ln|sqrt|abs|exp|ln|log)\s*\([^)]+\)'),
+    ];
+
+    // テキストを分割
+    final parts = _splitTextByMath(description, mathPatterns);
+
+    return Wrap(
+      children: parts.map((part) {
+        if (part.isMath) {
+          return _buildInlineMath(part.content, theme);
+        } else {
+          return Text(
+            part.content,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              height: 1.6,
+              color: theme.colorScheme.onSurface,
+            ),
+          );
+        }
+      }).toList(),
+    );
+  }
+
+  Widget _buildInlineMath(String mathExpression, ThemeData theme) {
+    // LaTeX数式の場合は$を除去
+    String cleanExpression = mathExpression;
+    if (mathExpression.startsWith('\$') && mathExpression.endsWith('\$')) {
+      cleanExpression = mathExpression.substring(1, mathExpression.length - 1);
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Math.tex(
+        cleanExpression,
+        mathStyle: MathStyle.text,
+        textStyle: TextStyle(
+          fontSize: 14,
+          color: theme.colorScheme.onSurface,
+        ),
+        onErrorFallback: (_) => Text(
+          mathExpression,
+          style: TextStyle(
+            fontSize: 14,
+            fontFamily: 'monospace',
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<_TextPart> _splitTextByMath(String text, List<RegExp> patterns) {
+    final List<_TextPart> parts = [];
+    int currentIndex = 0;
+
+    while (currentIndex < text.length) {
+      int nextMathIndex = text.length;
+      RegExp? matchedPattern;
+
+      // 最も早い数式パターンを探す
+      for (final pattern in patterns) {
+        final match = pattern.firstMatch(text.substring(currentIndex));
+        if (match != null) {
+          final matchIndex = currentIndex + match.start;
+          if (matchIndex < nextMathIndex) {
+            nextMathIndex = matchIndex;
+            matchedPattern = pattern;
+          }
+        }
+      }
+
+      // テキスト部分を追加
+      if (nextMathIndex > currentIndex) {
+        final textPart = text.substring(currentIndex, nextMathIndex);
+        if (textPart.isNotEmpty) {
+          parts.add(_TextPart(content: textPart, isMath: false));
+        }
+      }
+
+      // 数式部分を追加
+      if (matchedPattern != null) {
+        final match = matchedPattern.firstMatch(text.substring(nextMathIndex));
+        if (match != null) {
+          final mathPart = text.substring(
+            nextMathIndex + match.start,
+            nextMathIndex + match.end,
+          );
+          parts.add(_TextPart(content: mathPart, isMath: true));
+          currentIndex = nextMathIndex + match.end;
+        } else {
+          currentIndex = nextMathIndex + 1;
+        }
+      } else {
+        // 残りのテキストを追加
+        final remainingText = text.substring(currentIndex);
+        if (remainingText.isNotEmpty) {
+          parts.add(_TextPart(content: remainingText, isMath: false));
+        }
+        break;
+      }
+    }
+
+    return parts;
+  }
+}
+
+class _TextPart {
+  const _TextPart({required this.content, required this.isMath});
+
+  final String content;
+  final bool isMath;
 }

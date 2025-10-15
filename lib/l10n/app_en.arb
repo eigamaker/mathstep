@@ -151,6 +151,7 @@
   "solutionSimilarProblemTitle": "Similar Problem",
   "solutionSimilarProblemDescription": "Why it's similar",
   "solutionSimilarProblemExpression": "Problem Expression",
+  "solutionSimilarProblemSolutionSteps": "Solution Steps",
   "solutionSimilarProblemEmptyMessage": "No similar problems available yet.",
   "solutionTabGraph": "Graph",
   "solutionAlternativeSectionTitle": "Alternative solutions",

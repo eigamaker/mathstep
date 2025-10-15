@@ -598,7 +598,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ),
@@ -670,9 +670,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 mode: KeypadLayoutMode.flick,
                 currentMode: keypadMode,
                 icon: Icons.touch_app_rounded,
-                title: 'Flick keyboard',
+                title: 'Radial keyboard',
                 description:
-                    'Category buttons expand into radial pads for quick flick input.',
+                    'Category buttons expand into radial menus for quick input selection.',
               ),
               const SizedBox(height: 12),
               _buildKeyboardModeOption(
@@ -681,7 +681,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 mode: KeypadLayoutMode.scroll,
                 currentMode: keypadMode,
                 icon: Icons.grid_view_rounded,
-                title: 'Scrollable keyboard',
+                title: 'Grid keyboard',
                 description:
                     'Shows every key in a compact 6-column grid that you can scroll vertically.',
               ),

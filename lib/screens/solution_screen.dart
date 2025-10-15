@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 
 import '../localization/localization_extensions.dart';
 import '../models/math_expression.dart';
@@ -369,16 +370,35 @@ class _SimilarProblemCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          LatexPreview(
-            expression: similarProblem.problemExpression,
-            showBorder: true,
+          Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Math.tex(
+              similarProblem.problemExpression,
+              mathStyle: MathStyle.text,
+              textStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+              onErrorFallback: (_) => Text(
+                similarProblem.problemExpression,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'monospace',
+                  color: Colors.black87,
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           
           // 解法ステップ
           Text(
-            '解法',
+            l10n.solutionSimilarProblemSolutionSteps,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),

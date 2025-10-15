@@ -217,7 +217,6 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     return LayoutBuilder(
       builder: (context, constraints) {
         const double horizontalPadding = 12;
-        const double sectionSpacing = 20;
         const double gridSpacing = 8;
         const int columns = 6;
 
@@ -229,90 +228,52 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             (availableWidth - gridSpacing * (columns - 1)) / columns;
         final double tileHeight = max(_optionButtonSize, tileWidth * 0.9);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildCommonKeyPanel(),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  8,
-                  horizontalPadding,
-                  sectionSpacing,
-                ),
-                itemCount: CalculatorKeypad._categories.length,
-                itemBuilder: (context, index) {
-                  final category = CalculatorKeypad._categories[index];
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: index == CalculatorKeypad._categories.length - 1
-                          ? 0
-                          : sectionSpacing,
-                    ),
-                    child: _buildScrollableCategorySection(
-                      category: category,
-                      tileWidth: tileWidth,
-                      tileHeight: tileHeight,
-                      spacing: gridSpacing,
-                    ),
-                  );
-                },
+        // すべてのキーを一つのリストに統合
+        final List<_KeySpec> allKeys = [
+          ...CalculatorKeypad._commonKeys,
+          for (final category in CalculatorKeypad._categories)
+            ...category.keys,
+        ];
+
+        return ListView.builder(
+          padding: EdgeInsets.all(horizontalPadding),
+          itemCount: (allKeys.length / columns).ceil(),
+          itemBuilder: (context, rowIndex) {
+            final int startIndex = rowIndex * columns;
+            final int endIndex = min(startIndex + columns, allKeys.length);
+            final List<_KeySpec> rowKeys = allKeys.sublist(startIndex, endIndex);
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: rowIndex < (allKeys.length / columns).ceil() - 1
+                    ? gridSpacing
+                    : 0,
               ),
-            ),
-          ],
+              child: Row(
+                children: [
+                  for (int i = 0; i < columns; i++)
+                    Expanded(
+                      child: i < rowKeys.length
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: gridSpacing / 2,
+                              ),
+                              child: SizedBox(
+                                height: tileHeight,
+                                child: _buildScrollableKey(rowKeys[i]),
+                              ),
+                            )
+                          : const SizedBox(),
+                    ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildScrollableCategorySection({
-    required _KeyCategory category,
-    required double tileWidth,
-    required double tileHeight,
-    required double spacing,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(category.icon, size: 18, color: AppColors.primary),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              category.label,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
-          children: [
-            for (final spec in category.keys)
-              SizedBox(
-                width: tileWidth,
-                height: tileHeight,
-                child: _buildScrollableKey(spec),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
 
   Widget _buildScrollableKey(_KeySpec spec) {
     return Material(

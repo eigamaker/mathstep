@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../constants/app_colors.dart';
 import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
 import '../providers/language_provider.dart';
@@ -119,7 +120,7 @@ class TermsOfServiceScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.green.shade50, Colors.blue.shade50],
+            colors: [AppColors.secondaryContainer, AppColors.primarySurface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -221,7 +222,7 @@ class TermsOfServiceScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.green.shade50, Colors.blue.shade50],
+            colors: [AppColors.secondaryContainer, AppColors.primarySurface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -323,7 +324,7 @@ class TermsOfServiceScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.green.shade50, Colors.blue.shade50],
+            colors: [AppColors.secondaryContainer, AppColors.primarySurface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -425,7 +426,7 @@ class TermsOfServiceScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.green.shade50, Colors.blue.shade50],
+            colors: [AppColors.secondaryContainer, AppColors.primarySurface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -588,15 +589,17 @@ class TermsOfServiceScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: AppColors.primarySurface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.shade200),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                ),
               ),
               child: Text(
                 versionText,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.blue.shade700,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),

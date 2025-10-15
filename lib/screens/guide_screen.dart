@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
+import '../constants/app_colors.dart';
 import '../localization/localization_extensions.dart';
 
 class GuideScreen extends StatelessWidget {
@@ -221,7 +222,7 @@ class GuideScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.blue,
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 12),
@@ -291,16 +292,18 @@ class GuideScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.blue.shade100,
+        color: AppColors.primaryContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.shade300),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+        ),
       ),
       child: Text(
         key,
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: Colors.blue.shade800,
+          color: AppColors.primaryDark,
         ),
       ),
     );
@@ -310,9 +313,11 @@ class GuideScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: AppColors.primarySurface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +327,7 @@ class GuideScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.blue.shade800,
+              color: AppColors.primaryDark,
             ),
           ),
           const SizedBox(height: 8),
@@ -331,7 +336,10 @@ class GuideScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
                 '• $tip',
-                style: TextStyle(fontSize: 14, color: Colors.blue.shade700),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.primary,
+                ),
               ),
             ),
         ],

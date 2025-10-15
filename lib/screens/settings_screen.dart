@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../constants/app_colors.dart';
 import '../localization/localization_extensions.dart';
 import '../localization/app_language.dart';
 import '../models/keypad_layout_mode.dart';
@@ -134,7 +135,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: AppColors.primary.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -157,7 +158,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.blue.shade50, Colors.purple.shade50],
+            colors: [AppColors.primarySurface, AppColors.primaryContainer],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -172,12 +173,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
+                      color: AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.language,
-                      color: Colors.blue.shade700,
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -187,7 +188,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade800,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ],
@@ -195,7 +196,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               const SizedBox(height: 16),
               Text(
                 l10n.languageSelectionDescription,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 16),
               _buildLanguageSelector(context, ref, languageState),
@@ -213,9 +217,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         children: [
@@ -227,7 +233,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Icon(Icons.language, color: Colors.blue.shade700, size: 20),
+          Icon(Icons.language, color: AppColors.primary, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -238,14 +244,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade800,
+                            color: AppColors.primaryDark,
                           ),
                         ),
                         Text(
                           languageState.language.englishName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -257,7 +263,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
+                      color: AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -265,7 +271,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade700,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -275,7 +281,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     duration: const Duration(milliseconds: 300),
                     child: Icon(
                       Icons.keyboard_arrow_down,
-                      color: Colors.blue.shade700,
+                      color: AppColors.primary,
                       size: 20,
                     ),
                   ),
@@ -295,14 +301,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   child: _isLanguageDropdownOpen
                       ? Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: AppColors.surface,
                             borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(12),
                               bottomRight: Radius.circular(12),
                             ),
-                            border: Border(
+                            border: const Border(
                               top: BorderSide(
-                                color: Colors.grey.shade300,
+                                color: AppColors.border,
                                 width: 1,
                               ),
                             ),
@@ -330,7 +336,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                         children: [
                                           Icon(
                                             Icons.radio_button_unchecked,
-                                            color: Colors.grey.shade400,
+                                            color: AppColors.border,
                                             size: 20,
                                           ),
                                           const SizedBox(width: 12),
@@ -343,15 +349,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                                   language.nativeName,
                                                   style: const TextStyle(
                                                     fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.black87,
+                                                    fontWeight:
+                                                        FontWeight.w500,
+                                                    color:
+                                                        AppColors.textPrimary,
                                                   ),
                                                 ),
                                                 Text(
                                                   language.englishName,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     fontSize: 12,
-                                                    color: Colors.grey.shade600,
+                                                    color:
+                                                        AppColors.textSecondary,
                                                   ),
                                                 ),
                                               ],
@@ -363,16 +372,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.shade100,
+                                              color: AppColors.primarySurface,
                                               borderRadius:
                                                   BorderRadius.circular(6),
                                             ),
                                             child: Text(
                                               language.code.toUpperCase(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.grey.shade600,
+                                                color: AppColors.textSecondary,
                                               ),
                                             ),
                                           ),
@@ -415,7 +424,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.orange.shade50, Colors.red.shade50],
+            colors: AppColors.primaryGradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -430,12 +439,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.orange.shade100,
+                      color: AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.gavel,
-                      color: Colors.orange.shade700,
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -445,7 +454,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange.shade800,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ],
@@ -453,14 +462,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               const SizedBox(height: 16),
               Text(
                 l10n.settingsLegalDocumentsDescription,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 16),
               _buildLegalDocumentItem(
                 context,
                 l10n.privacyPolicyTitle,
                 Icons.privacy_tip,
-                Colors.blue,
+                AppColors.primary,
                 () {
                   Navigator.push(
                     context,
@@ -475,7 +487,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 context,
                 l10n.termsOfServiceTitle,
                 Icons.description,
-                Colors.green,
+                AppColors.secondary,
                 () {
                   Navigator.push(
                     context,
@@ -505,7 +517,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: color.withValues(alpha: 0.3)),
           boxShadow: [
@@ -530,10 +542,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade800,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ),
@@ -554,7 +566,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.grey.shade50, Colors.grey.shade100],
+            colors: [AppColors.surface, AppColors.primarySurface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -569,12 +581,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                      color: AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.settings,
-                      color: Colors.grey.shade700,
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -584,18 +596,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade800,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Keyboard layout',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -640,10 +652,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     final theme = Theme.of(context);
     final borderColor = isSelected
         ? theme.colorScheme.primary.withValues(alpha: 0.35)
-        : Colors.grey.shade300;
+        : AppColors.border;
     final backgroundColor = isSelected
         ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
-        : Colors.white;
+        : AppColors.background;
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -681,7 +693,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             fontWeight: isSelected
                                 ? FontWeight.w700
                                 : FontWeight.w600,
-                            color: Colors.grey.shade800,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ),
@@ -700,7 +712,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     description,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey.shade600,
+                      color: AppColors.textSecondary,
                       height: 1.3,
                     ),
                   ),
@@ -730,7 +742,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.settingsLanguageChanged(language.nativeName)),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.success,
             duration: const Duration(seconds: 2),
           ),
         );

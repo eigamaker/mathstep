@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import '../utils/math_text_processor.dart';
 import '../utils/syntax_converter.dart';
 import 'latex_preview.dart';
@@ -139,9 +140,12 @@ class MathTextDisplay extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: AppColors.primarySurface,
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.blue.shade200, width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
@@ -253,9 +257,12 @@ class ReadableMathTextDisplay extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 2),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: AppColors.primarySurface,
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.blue.shade200, width: 1),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.2),
+                width: 1,
+              ),
             ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(

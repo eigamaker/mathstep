@@ -261,7 +261,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get guideTipIntegralNotation =>
-      'Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.';
+      '按下 ∫ 键，以 \"integral(下限,上限,被积函数,变量)\" 格式输入积分。';
 
   @override
   String get guideTipFractionKey => '使用 a/b 键输入分数，并用逗号区分分子和分母。';
@@ -337,20 +337,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get solutionTabAlternative => '其它解法与检验';
 
   @override
-  String get solutionSimilarProblemsSectionTitle => 'Similar Problems';
+  String get solutionSimilarProblemsSectionTitle => '相似问题';
 
   @override
-  String get solutionSimilarProblemTitle => 'Similar Problem';
+  String get solutionSimilarProblemTitle => '相似题目';
 
   @override
-  String get solutionSimilarProblemDescription => 'Why it\'s similar';
+  String get solutionSimilarProblemDescription => '相似原因';
 
   @override
-  String get solutionSimilarProblemExpression => 'Problem Expression';
+  String get solutionSimilarProblemExpression => '题目表达式';
 
   @override
-  String get solutionSimilarProblemEmptyMessage =>
-      'No similar problems available yet.';
+  String get solutionSimilarProblemEmptyMessage => '暂无相似问题。';
 
   @override
   String get solutionTabGraph => '图形';

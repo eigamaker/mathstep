@@ -116,6 +116,19 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   static const double _categorySpacing = 16;
   static const double _categoryButtonSize = 92;
   static const double _optionButtonSize = 52;
+  static const List<_CommonKeyPlacement> _commonKeyPlacements = [
+    _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
+    _CommonKeyPlacement(index: 1, column: 1, row: 0),
+    _CommonKeyPlacement(index: 2, column: 2, row: 0),
+    _CommonKeyPlacement(index: 3, column: 3, row: 0),
+    _CommonKeyPlacement(index: 4, column: 4, row: 0),
+    _CommonKeyPlacement(index: 5, column: 5, row: 0),
+    _CommonKeyPlacement(index: 6, column: 1, row: 1),
+    _CommonKeyPlacement(index: 7, column: 2, row: 1),
+    _CommonKeyPlacement(index: 8, column: 3, row: 1),
+    _CommonKeyPlacement(index: 9, column: 4, row: 1),
+    _CommonKeyPlacement(index: 10, column: 5, row: 1),
+  ];
 
   final GlobalKey _flickStackKey = GlobalKey();
   _FlickOverlayState? _activeFlick;
@@ -255,7 +268,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     }
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(6, 16, 6, 6), // 上部の間隔を増やす
+      // Add breathing room above the quick keys.
+      padding: const EdgeInsets.fromLTRB(6, 16, 6, 6),
       child: LayoutBuilder(
         builder: (context, constraints) {
           const int columns = 6;
@@ -265,29 +279,12 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
           final double cellWidth =
               (constraints.maxWidth - horizontalSpacing * (columns - 1)) /
               columns;
-          final double cellHeight = _optionButtonSize * 0.8; // 基本キーを小さくする
+          final double cellHeight =
+              _optionButtonSize * 0.8; // Render common keys slightly smaller.
 
-          const row1 = <_CommonKeyPlacement>[
-            _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
-            _CommonKeyPlacement(index: 1, column: 1, row: 0),
-            _CommonKeyPlacement(index: 2, column: 2, row: 0),
-            _CommonKeyPlacement(index: 3, column: 3, row: 0),
-            _CommonKeyPlacement(index: 4, column: 4, row: 0),
-            _CommonKeyPlacement(index: 5, column: 5, row: 0),
-          ];
-
-          const row2 = <_CommonKeyPlacement>[
-            _CommonKeyPlacement(index: 6, column: 1, row: 1),
-            _CommonKeyPlacement(index: 7, column: 2, row: 1),
-            _CommonKeyPlacement(index: 8, column: 3, row: 1),
-            _CommonKeyPlacement(index: 9, column: 4, row: 1),
-            _CommonKeyPlacement(index: 10, column: 5, row: 1),
-          ];
-
-          final placements = <_CommonKeyPlacement>[
-            ...row1,
-            ...row2,
-          ].where((placement) => placement.index < keys.length).toList();
+          final placements = _commonKeyPlacements.where(
+            (placement) => placement.index < keys.length,
+          );
 
           final double totalHeight =
               cellHeight * rows + verticalSpacing * (rows - 1);
@@ -305,7 +302,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                     height:
                         cellHeight * placement.rowSpan +
                         verticalSpacing * (placement.rowSpan - 1),
-                    child: _buildSmallRectKey(keys[placement.index]), // 小さなキー用のメソッドを使用
+                    child: _buildCommonKey(keys[placement.index]),
                   ),
               ],
             ),
@@ -365,40 +362,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     );
   }
 
-  Widget _buildRectKey(_KeySpec spec) {
-    return Material(
-      color: AppColors.primaryContainer,
-      borderRadius: BorderRadius.circular(12),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _triggerKey(spec),
-        splashColor: AppColors.primary.withValues(alpha: 0.08),
-        highlightColor: AppColors.primary.withValues(alpha: 0.05),
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.12),
-              width: 1,
-            ),
-          ),
-          child: Text(
-            spec.displayLabel,
-            style: TextStyle(
-              fontSize: spec.fontSize ?? 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSmallRectKey(_KeySpec spec) {
+  Widget _buildCommonKey(_KeySpec spec) {
     return Material(
       color: AppColors.primaryContainer,
       borderRadius: BorderRadius.circular(10),
@@ -420,7 +384,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
           child: Text(
             spec.displayLabel,
             style: TextStyle(
-              fontSize: (spec.fontSize ?? 16) * 0.9, // フォントサイズも少し小さく
+              // Slightly reduce the font size for compact buttons.
+              fontSize: (spec.fontSize ?? 16) * 0.9,
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
             ),

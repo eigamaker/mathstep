@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../../constants/app_colors.dart';
 import '../../constants/app_constants.dart';
 import '../../localization/localization_extensions.dart';
 import '../../providers/solution_storage_provider.dart';
@@ -78,7 +79,7 @@ class HistoryItemWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade50, Colors.purple.shade50],
+          colors: AppColors.primaryGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -86,7 +87,10 @@ class HistoryItemWidget extends StatelessWidget {
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
-        border: Border.all(color: Colors.blue.shade100, width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Center(
         child: LatexPreview(expression: item.expression.latexExpression),
@@ -120,14 +124,16 @@ class HistoryItemWidget extends StatelessWidget {
               // 闕ｳ・ｭ髴・ｽｫ郢ｧ螳夲ｽｦ荵晢ｽ狗ｹ晄㈱縺｡郢晢ｽｳ
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: AppColors.primarySurface,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: IconButton(
                   icon: Icon(
                     Icons.visibility,
-                    color: Colors.blue.shade700,
+                    color: AppColors.primary,
                     size: 20,
                   ),
                   onPressed: onView,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../constants/app_colors.dart';
 import '../localization/localization_extensions.dart';
 import '../utils/expression_evaluator.dart';
 
@@ -242,13 +243,13 @@ class _MathGraphDisplayState extends State<MathGraphDisplay> {
               LineChartBarData(
                 spots: _dataPoints!,
                 isCurved: true,
-                color: Colors.blue,
+                color: AppColors.primary,
                 barWidth: 2,
                 isStrokeCapRound: true,
                 dotData: const FlDotData(show: false),
                 belowBarData: BarAreaData(
                   show: true,
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                 ),
               ),
             ],

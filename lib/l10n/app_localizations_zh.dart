@@ -322,7 +322,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privacyPolicyTitle => '隐私政策';
 
   @override
-  String get termsOfServiceTitle => '服务条款';
+  String get termsOfServiceTitle => '最终用户许可协议';
 
   @override
   String get solutionAppBarTitle => '解答';
@@ -727,7 +727,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get privacyPolicyTitle => '隐私政策';
 
   @override
-  String get termsOfServiceTitle => '服务条款';
+  String get termsOfServiceTitle => '最终用户许可协议';
 
   @override
   String get solutionAppBarTitle => '解答';
@@ -1132,7 +1132,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get privacyPolicyTitle => '隱私政策';
 
   @override
-  String get termsOfServiceTitle => '服務條款';
+  String get termsOfServiceTitle => '終端使用者授權合約';
 
   @override
   String get solutionAppBarTitle => '解說';

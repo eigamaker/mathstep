@@ -324,7 +324,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get privacyPolicyTitle => '개인정보처리방침';
 
   @override
-  String get termsOfServiceTitle => '이용약관';
+  String get termsOfServiceTitle => '최종 사용자 라이선스 계약';
 
   @override
   String get solutionAppBarTitle => '해설';

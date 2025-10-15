@@ -689,7 +689,7 @@ abstract class AppLocalizations {
   /// No description provided for @termsOfServiceTitle.
   ///
   /// In en, this message translates to:
-  /// **'Terms of Service'**
+  /// **'End User License Agreement'**
   String get termsOfServiceTitle;
 
   /// No description provided for @solutionAppBarTitle.

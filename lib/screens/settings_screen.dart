@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/app_colors.dart';
 import '../localization/localization_extensions.dart';
@@ -7,8 +8,8 @@ import '../localization/app_language.dart';
 import '../models/keypad_layout_mode.dart';
 import '../providers/keypad_settings_provider.dart';
 import '../providers/language_provider.dart';
-import 'privacy_policy_screen.dart';
-import 'terms_of_service_screen.dart';
+
+enum _LegalDocument { privacyPolicy, termsOfService }
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -19,6 +20,22 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen>
     with TickerProviderStateMixin {
+  static const Map<String, String> _privacyPolicyUrls = {
+    'en': 'https://mathstep.profilecode.codes/privacy-en.html',
+    'ja': 'https://mathstep.profilecode.codes/privacy-ja.html',
+    'ko': 'https://mathstep.profilecode.codes/privacy-ko.html',
+    'zh_CN': 'https://mathstep.profilecode.codes/privacy-zh-cn.html',
+    'zh_TW': 'https://mathstep.profilecode.codes/privacy-zh-tw.html',
+  };
+
+  static const Map<String, String> _termsOfServiceUrls = {
+    'en': 'https://mathstep.profilecode.codes/eula-en.html',
+    'ja': 'https://mathstep.profilecode.codes/eula-ja.html',
+    'ko': 'https://mathstep.profilecode.codes/eula-ko.html',
+    'zh_CN': 'https://mathstep.profilecode.codes/eula-zh-cn.html',
+    'zh_TW': 'https://mathstep.profilecode.codes/eula-zh-tw.html',
+  };
+
   bool _isLanguageDropdownOpen = false;
   late AnimationController _dropdownController;
   late Animation<double> _dropdownAnimation;
@@ -59,7 +76,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             const SizedBox(height: 24),
 
             // 法的文書セクション
-            _buildLegalDocumentsSection(context),
+            _buildLegalDocumentsSection(context, languageState.language),
 
             const SizedBox(height: 24),
 
@@ -415,7 +432,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     }
   }
 
-  Widget _buildLegalDocumentsSection(BuildContext context) {
+  Widget _buildLegalDocumentsSection(
+    BuildContext context,
+    AppLanguage language,
+  ) {
     final l10n = context.l10n;
     return Card(
       elevation: 2,
@@ -451,10 +471,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   const SizedBox(width: 12),
                   Text(
                     l10n.settingsLegalDocumentsTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -464,7 +484,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 l10n.settingsLegalDocumentsDescription,
                 style: const TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
@@ -473,14 +493,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 l10n.privacyPolicyTitle,
                 Icons.privacy_tip,
                 AppColors.primary,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PrivacyPolicyScreen(),
-                    ),
-                  );
-                },
+                () => _openLegalDocument(
+                  context,
+                  language,
+                  _LegalDocument.privacyPolicy,
+                ),
               ),
               const SizedBox(height: 12),
               _buildLegalDocumentItem(
@@ -488,19 +505,55 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 l10n.termsOfServiceTitle,
                 Icons.description,
                 AppColors.secondary,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TermsOfServiceScreen(),
-                    ),
-                  );
-                },
+                () => _openLegalDocument(
+                  context,
+                  language,
+                  _LegalDocument.termsOfService,
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _openLegalDocument(
+    BuildContext context,
+    AppLanguage language,
+    _LegalDocument document,
+  ) async {
+    final uri = _resolveLegalDocumentUrl(language, document);
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && mounted) {
+        _showLegalDocumentError(context);
+      }
+    } catch (_) {
+      if (mounted) {
+        _showLegalDocumentError(context);
+      }
+    }
+  }
+
+  Uri _resolveLegalDocumentUrl(
+    AppLanguage language,
+    _LegalDocument document,
+  ) {
+    final urls = document == _LegalDocument.privacyPolicy
+        ? _privacyPolicyUrls
+        : _termsOfServiceUrls;
+    final url = urls[language.code] ?? urls['en']!;
+    return Uri.parse(url);
+  }
+
+  void _showLegalDocumentError(BuildContext context) {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.commonErrorTitle)),
     );
   }
 
@@ -545,7 +598,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: Colors.white,
                 ),
               ),
             ),

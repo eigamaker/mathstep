@@ -323,7 +323,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyPolicyTitle => 'プライバシーポリシー';
 
   @override
-  String get termsOfServiceTitle => '利用規約';
+  String get termsOfServiceTitle => 'エンドユーザーライセンス契約';
 
   @override
   String get solutionAppBarTitle => '解説';

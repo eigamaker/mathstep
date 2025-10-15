@@ -214,50 +214,136 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   }
 
   Widget _buildScrollableKeyboard() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const double horizontalPadding = 12;
+        const double sectionSpacing = 20;
+        const double gridSpacing = 8;
+        const int columns = 6;
+
+        final double availableWidth = max(
+          constraints.maxWidth - horizontalPadding * 2,
+          columns * 32,
+        );
+        final double tileWidth =
+            (availableWidth - gridSpacing * (columns - 1)) / columns;
+        final double tileHeight = max(_optionButtonSize, tileWidth * 0.9);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildCommonKeyPanel(),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  8,
+                  horizontalPadding,
+                  sectionSpacing,
+                ),
+                itemCount: CalculatorKeypad._categories.length,
+                itemBuilder: (context, index) {
+                  final category = CalculatorKeypad._categories[index];
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      bottom: index == CalculatorKeypad._categories.length - 1
+                          ? 0
+                          : sectionSpacing,
+                    ),
+                    child: _buildScrollableCategorySection(
+                      category: category,
+                      tileWidth: tileWidth,
+                      tileHeight: tileHeight,
+                      spacing: gridSpacing,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildScrollableCategorySection({
+    required _KeyCategory category,
+    required double tileWidth,
+    required double tileHeight,
+    required double spacing,
+  }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: _buildCategoryButton(0),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: _buildCategoryButton(1),
-                    ),
-                  ),
-                ],
+        Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: _buildCategoryButton(2),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: _buildCategoryButton(3),
-                    ),
-                  ),
-                ],
+              child: Icon(category.icon, size: 18, color: AppColors.primary),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              category.label,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
               ),
-            ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            for (final spec in category.keys)
+              SizedBox(
+                width: tileWidth,
+                height: tileHeight,
+                child: _buildScrollableKey(spec),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScrollableKey(_KeySpec spec) {
+    return Material(
+      color: AppColors.primarySurface,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _triggerKey(spec),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.05),
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              width: 1.1,
+            ),
+          ),
+          child: Text(
+            spec.displayLabel,
+            style: TextStyle(
+              fontSize: min(spec.fontSize ?? 16, 18),
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
-        _buildCommonKeyPanel(),
-      ],
+      ),
     );
   }
 

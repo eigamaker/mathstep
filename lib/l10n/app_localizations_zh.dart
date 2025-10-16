@@ -410,6 +410,83 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get verificationCommonPitfallsTitle => '常见误区';
+
+  @override
+  String get tutorialWelcomeTitle => '欢迎使用教程';
+
+  @override
+  String get tutorialWelcomeDescription =>
+      '让我们一步步学习 MathStep 的用法。在每个步骤中通过实际按键来掌握功能。';
+
+  @override
+  String get tutorialBasicOperationsTitle => '基本四则运算';
+
+  @override
+  String get tutorialBasicOperationsDescription => '首先使用 +、-、×、÷ 键输入计算式。';
+
+  @override
+  String get tutorialExponentsTitle => '指数与幂输入';
+
+  @override
+  String get tutorialExponentsDescription =>
+      '使用 x^y 键输入指数，可创建 x^2 或 2^(x+1) 等表达式。';
+
+  @override
+  String get tutorialSquareRootTitle => '平方根输入';
+
+  @override
+  String get tutorialSquareRootDescription => '使用 √ 键输入平方根，例如 √(9)。';
+
+  @override
+  String get tutorialFractionsTitle => '分数输入';
+
+  @override
+  String get tutorialFractionsDescription => '使用 a/b 键输入分数，用逗号分隔分子和分母。';
+
+  @override
+  String get tutorialSummationTitle => '求和符号输入';
+
+  @override
+  String get tutorialSummationDescription => '使用 Σ 键输入求和，依次输入变量、下限、上限和表达式。';
+
+  @override
+  String get tutorialIntegralTitle => '积分符号输入';
+
+  @override
+  String get tutorialIntegralDescription => '使用 ∫ 键输入积分，依次输入下限、上限、被积函数和变量。';
+
+  @override
+  String get tutorialTrigonometricTitle => '三角函数输入';
+
+  @override
+  String get tutorialTrigonometricDescription => '使用 sin、cos、tan 键输入三角函数。';
+
+  @override
+  String get tutorialCompletionTitle => '教程完成';
+
+  @override
+  String get tutorialCompletionDescription =>
+      '恭喜！教程已完成。现在你已经掌握了 MathStep 的基本用法。';
+
+  @override
+  String tutorialStepIndicator(int current, int total) {
+    return '步骤 $current / $total';
+  }
+
+  @override
+  String get tutorialKeySequenceLabel => '按键顺序：';
+
+  @override
+  String get tutorialSkipButton => '跳过';
+
+  @override
+  String get tutorialPreviousButton => '上一步';
+
+  @override
+  String get tutorialNextButton => '下一步';
+
+  @override
+  String get tutorialCompleteButton => '完成';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -757,6 +834,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get solutionSimilarProblemExpression => '问题表达式';
 
   @override
+  String get solutionSimilarProblemSolutionSteps => '解题步骤';
+
+  @override
   String get solutionSimilarProblemEmptyMessage => '暂无类似问题。';
 
   @override
@@ -815,6 +895,83 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get verificationCommonPitfallsTitle => '常见误区';
+
+  @override
+  String get tutorialWelcomeTitle => '欢迎使用教程';
+
+  @override
+  String get tutorialWelcomeDescription =>
+      '让我们一步步学习 MathStep 的用法。在每个步骤中通过实际按键来掌握功能。';
+
+  @override
+  String get tutorialBasicOperationsTitle => '基本四则运算';
+
+  @override
+  String get tutorialBasicOperationsDescription => '首先使用 +、-、×、÷ 键输入计算式。';
+
+  @override
+  String get tutorialExponentsTitle => '指数与幂输入';
+
+  @override
+  String get tutorialExponentsDescription =>
+      '使用 x^y 键输入指数，可创建 x^2 或 2^(x+1) 等表达式。';
+
+  @override
+  String get tutorialSquareRootTitle => '平方根输入';
+
+  @override
+  String get tutorialSquareRootDescription => '使用 √ 键输入平方根，例如 √(9)。';
+
+  @override
+  String get tutorialFractionsTitle => '分数输入';
+
+  @override
+  String get tutorialFractionsDescription => '使用 a/b 键输入分数，用逗号分隔分子和分母。';
+
+  @override
+  String get tutorialSummationTitle => '求和符号输入';
+
+  @override
+  String get tutorialSummationDescription => '使用 Σ 键输入求和，依次输入变量、下限、上限和表达式。';
+
+  @override
+  String get tutorialIntegralTitle => '积分符号输入';
+
+  @override
+  String get tutorialIntegralDescription => '使用 ∫ 键输入积分，依次输入下限、上限、被积函数和变量。';
+
+  @override
+  String get tutorialTrigonometricTitle => '三角函数输入';
+
+  @override
+  String get tutorialTrigonometricDescription => '使用 sin、cos、tan 键输入三角函数。';
+
+  @override
+  String get tutorialCompletionTitle => '教程完成';
+
+  @override
+  String get tutorialCompletionDescription =>
+      '恭喜！教程已完成。现在你已经掌握了 MathStep 的基本用法。';
+
+  @override
+  String tutorialStepIndicator(int current, int total) {
+    return '步骤 $current / $total';
+  }
+
+  @override
+  String get tutorialKeySequenceLabel => '按键顺序：';
+
+  @override
+  String get tutorialSkipButton => '跳过';
+
+  @override
+  String get tutorialPreviousButton => '上一步';
+
+  @override
+  String get tutorialNextButton => '下一步';
+
+  @override
+  String get tutorialCompleteButton => '完成';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1162,6 +1319,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get solutionSimilarProblemExpression => '問題表達式';
 
   @override
+  String get solutionSimilarProblemSolutionSteps => '解題步驟';
+
+  @override
   String get solutionSimilarProblemEmptyMessage => '暫無類似問題。';
 
   @override
@@ -1220,4 +1380,81 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get verificationCommonPitfallsTitle => '常見錯誤';
+
+  @override
+  String get tutorialWelcomeTitle => '歡迎使用教學';
+
+  @override
+  String get tutorialWelcomeDescription =>
+      '讓我們一步步學習 MathStep 的用法。每個步驟都可以實際按鍵來熟悉功能。';
+
+  @override
+  String get tutorialBasicOperationsTitle => '基本四則運算';
+
+  @override
+  String get tutorialBasicOperationsDescription => '先使用 +、-、×、÷ 鍵輸入計算式。';
+
+  @override
+  String get tutorialExponentsTitle => '指數與冪次輸入';
+
+  @override
+  String get tutorialExponentsDescription =>
+      '使用 x^y 鍵輸入指數，可以建立 x^2 或 2^(x+1) 等表示式。';
+
+  @override
+  String get tutorialSquareRootTitle => '平方根輸入';
+
+  @override
+  String get tutorialSquareRootDescription => '使用 √ 鍵輸入平方根，例如 √(9)。';
+
+  @override
+  String get tutorialFractionsTitle => '分數輸入';
+
+  @override
+  String get tutorialFractionsDescription => '使用 a/b 鍵輸入分數，並以逗號分隔分子與分母。';
+
+  @override
+  String get tutorialSummationTitle => '總和符號輸入';
+
+  @override
+  String get tutorialSummationDescription => '使用 Σ 鍵輸入總和，依序輸入變數、下限、上限與表示式。';
+
+  @override
+  String get tutorialIntegralTitle => '積分符號輸入';
+
+  @override
+  String get tutorialIntegralDescription => '使用 ∫ 鍵輸入積分，依序輸入下限、上限、被積函數與變數。';
+
+  @override
+  String get tutorialTrigonometricTitle => '三角函數輸入';
+
+  @override
+  String get tutorialTrigonometricDescription => '使用 sin、cos、tan 鍵輸入三角函數。';
+
+  @override
+  String get tutorialCompletionTitle => '教學完成';
+
+  @override
+  String get tutorialCompletionDescription =>
+      '恭喜！教學已完成。現在你已經掌握 MathStep 的基本用法。';
+
+  @override
+  String tutorialStepIndicator(int current, int total) {
+    return '步驟 $current / $total';
+  }
+
+  @override
+  String get tutorialKeySequenceLabel => '按鍵順序：';
+
+  @override
+  String get tutorialSkipButton => '略過';
+
+  @override
+  String get tutorialPreviousButton => '上一步';
+
+  @override
+  String get tutorialNextButton => '下一步';
+
+  @override
+  String get tutorialCompleteButton => '完成';
 }

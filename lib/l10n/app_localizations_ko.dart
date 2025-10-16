@@ -412,4 +412,87 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get verificationCommonPitfallsTitle => '자주 하는 실수';
+
+  @override
+  String get tutorialWelcomeTitle => '튜토리얼에 오신 것을 환영합니다';
+
+  @override
+  String get tutorialWelcomeDescription =>
+      'MathStep 사용법을 단계별로 배워봅시다. 각 단계에서 실제로 키를 눌러 기능을 익힐 수 있습니다.';
+
+  @override
+  String get tutorialBasicOperationsTitle => '기본 사칙연산';
+
+  @override
+  String get tutorialBasicOperationsDescription =>
+      '+, -, ×, ÷ 키를 사용하여 계산식을 입력하는 방법을 먼저 살펴봅니다.';
+
+  @override
+  String get tutorialExponentsTitle => '지수와 거듭제곱 입력';
+
+  @override
+  String get tutorialExponentsDescription =>
+      'x^y 키를 사용해 지수를 입력하세요. x^2 또는 2^(x+1)과 같은 식을 만들 수 있습니다.';
+
+  @override
+  String get tutorialSquareRootTitle => '제곱근 입력';
+
+  @override
+  String get tutorialSquareRootDescription =>
+      '√ 키로 제곱근을 입력하세요. √(9)처럼 입력할 수 있습니다.';
+
+  @override
+  String get tutorialFractionsTitle => '분수 입력';
+
+  @override
+  String get tutorialFractionsDescription =>
+      'a/b 키를 사용하여 분수를 입력하세요. 분자와 분모를 쉼표로 구분합니다.';
+
+  @override
+  String get tutorialSummationTitle => '시그마(Σ) 입력';
+
+  @override
+  String get tutorialSummationDescription =>
+      'Σ 키를 사용해 총합을 입력하세요. 변수, 하한, 상한, 식 순서로 입력합니다.';
+
+  @override
+  String get tutorialIntegralTitle => '적분 기호 입력';
+
+  @override
+  String get tutorialIntegralDescription =>
+      '∫ 키를 사용해 적분을 입력하세요. 하한, 상한, 피적분함수, 변수 순으로 입력합니다.';
+
+  @override
+  String get tutorialTrigonometricTitle => '삼각함수 입력';
+
+  @override
+  String get tutorialTrigonometricDescription =>
+      'sin, cos, tan 키로 삼각함수를 입력하세요.';
+
+  @override
+  String get tutorialCompletionTitle => '튜토리얼 완료';
+
+  @override
+  String get tutorialCompletionDescription =>
+      '축하합니다! 튜토리얼이 완료되었습니다. 이제 MathStep의 기본 사용법을 익혔습니다.';
+
+  @override
+  String tutorialStepIndicator(int current, int total) {
+    return '단계 $current / $total';
+  }
+
+  @override
+  String get tutorialKeySequenceLabel => '키 순서:';
+
+  @override
+  String get tutorialSkipButton => '건너뛰기';
+
+  @override
+  String get tutorialPreviousButton => '이전';
+
+  @override
+  String get tutorialNextButton => '다음';
+
+  @override
+  String get tutorialCompleteButton => '완료';
 }

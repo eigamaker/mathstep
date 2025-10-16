@@ -8,6 +8,7 @@ import '../localization/app_language.dart';
 import '../models/keypad_layout_mode.dart';
 import '../providers/keypad_settings_provider.dart';
 import '../providers/language_provider.dart';
+import '../providers/tutorial_provider.dart';
 
 enum _LegalDocument { privacyPolicy, termsOfService }
 
@@ -50,6 +51,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _dropdownAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _dropdownController, curve: Curves.easeInOut),
     );
+    
+    // 設定画面でチュートリアル設定を読み込み
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(tutorialProvider.notifier).loadTutorialSettings();
+    });
   }
 
   @override
@@ -77,6 +83,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
             // 法的文書セクション
             _buildLegalDocumentsSection(context, languageState.language),
+
+            const SizedBox(height: 24),
+
+            // チュートリアル設定セクション
+            _buildTutorialSettingsSection(context, ref),
 
             const SizedBox(height: 24),
 
@@ -605,6 +616,120 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             Icon(Icons.arrow_forward_ios, color: color, size: 16),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTutorialSettingsSection(BuildContext context, WidgetRef ref) {
+    final tutorialState = ref.watch(tutorialProvider);
+    
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [AppColors.secondaryContainer, AppColors.primarySurface],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.school,
+                      color: AppColors.secondary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'チュートリアル設定',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'アプリ起動時にチュートリアルを表示するかどうかを設定できます。',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildTutorialToggle(context, ref, tutorialState),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTutorialToggle(BuildContext context, WidgetRef ref, TutorialState tutorialState) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.secondary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.play_circle_outline,
+            color: AppColors.secondary,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'チュートリアルを表示',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  tutorialState.isDisabled ? '無効' : '有効',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: !tutorialState.isDisabled,
+            onChanged: (value) {
+              ref.read(tutorialProvider.notifier).toggleTutorial();
+            },
+            activeColor: AppColors.secondary,
+          ),
+        ],
       ),
     );
   }

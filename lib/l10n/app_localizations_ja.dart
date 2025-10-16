@@ -411,4 +411,87 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get verificationCommonPitfallsTitle => 'よくある間違い';
+
+  @override
+  String get tutorialWelcomeTitle => 'チュートリアルへようこそ';
+
+  @override
+  String get tutorialWelcomeDescription =>
+      'MathStepの使い方を順番に学んでいきましょう。各ステップで実際のキーを押して操作を覚えることができます。';
+
+  @override
+  String get tutorialBasicOperationsTitle => '基本的な四則演算';
+
+  @override
+  String get tutorialBasicOperationsDescription =>
+      'まずは基本的な四則演算から始めましょう。+、-、×、÷のキーを使って計算式を入力できます。';
+
+  @override
+  String get tutorialExponentsTitle => '指数・累乗の入力';
+
+  @override
+  String get tutorialExponentsDescription =>
+      'x^yキーを使って指数を入力しましょう。x^2や2^（x+1）のような式が作れます。';
+
+  @override
+  String get tutorialSquareRootTitle => '平方根の入力';
+
+  @override
+  String get tutorialSquareRootDescription =>
+      '√キーを使って平方根を入力しましょう。√(9)のように入力できます。';
+
+  @override
+  String get tutorialFractionsTitle => '分数の入力';
+
+  @override
+  String get tutorialFractionsDescription =>
+      'a/bキーを使って分数を入力しましょう。分子と分母をカンマで区切って入力します。';
+
+  @override
+  String get tutorialSummationTitle => '総和記号の入力';
+
+  @override
+  String get tutorialSummationDescription =>
+      'Σキーを使って総和を入力しましょう。変数、下限、上限、式の順で入力します。';
+
+  @override
+  String get tutorialIntegralTitle => '積分記号の入力';
+
+  @override
+  String get tutorialIntegralDescription =>
+      '∫キーを使って積分を入力しましょう。下限、上限、被積分関数、変数の順で入力します。';
+
+  @override
+  String get tutorialTrigonometricTitle => '三角関数の入力';
+
+  @override
+  String get tutorialTrigonometricDescription =>
+      'sin、cos、tanキーを使って三角関数を入力しましょう。';
+
+  @override
+  String get tutorialCompletionTitle => 'チュートリアル完了';
+
+  @override
+  String get tutorialCompletionDescription =>
+      'おめでとうございます！チュートリアルが完了しました。これでMathStepの基本的な使い方をマスターできました。';
+
+  @override
+  String tutorialStepIndicator(int current, int total) {
+    return 'ステップ $current / $total';
+  }
+
+  @override
+  String get tutorialKeySequenceLabel => 'キーの順番:';
+
+  @override
+  String get tutorialSkipButton => 'スキップ';
+
+  @override
+  String get tutorialPreviousButton => '前へ';
+
+  @override
+  String get tutorialNextButton => '次へ';
+
+  @override
+  String get tutorialCompleteButton => '完了';
 }

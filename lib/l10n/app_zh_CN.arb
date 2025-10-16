@@ -151,6 +151,7 @@
   "solutionSimilarProblemTitle": "类似问题",
   "solutionSimilarProblemDescription": "相似原因",
   "solutionSimilarProblemExpression": "问题表达式",
+  "solutionSimilarProblemSolutionSteps": "解题步骤",
   "solutionSimilarProblemEmptyMessage": "暂无类似问题。",
   "solutionTabGraph": "图形",
   "solutionAlternativeSectionTitle": "其它解法",
@@ -211,6 +212,40 @@
     "placeholders": {
       "language": {
         "type": "String"
+      }
+    }
+  },
+  "tutorialWelcomeTitle": "欢迎使用教程",
+  "tutorialWelcomeDescription": "让我们一步步学习 MathStep 的用法。在每个步骤中通过实际按键来掌握功能。",
+  "tutorialBasicOperationsTitle": "基本四则运算",
+  "tutorialBasicOperationsDescription": "首先使用 +、-、×、÷ 键输入计算式。",
+  "tutorialExponentsTitle": "指数与幂输入",
+  "tutorialExponentsDescription": "使用 x^y 键输入指数，可创建 x^2 或 2^(x+1) 等表达式。",
+  "tutorialSquareRootTitle": "平方根输入",
+  "tutorialSquareRootDescription": "使用 √ 键输入平方根，例如 √(9)。",
+  "tutorialFractionsTitle": "分数输入",
+  "tutorialFractionsDescription": "使用 a/b 键输入分数，用逗号分隔分子和分母。",
+  "tutorialSummationTitle": "求和符号输入",
+  "tutorialSummationDescription": "使用 Σ 键输入求和，依次输入变量、下限、上限和表达式。",
+  "tutorialIntegralTitle": "积分符号输入",
+  "tutorialIntegralDescription": "使用 ∫ 键输入积分，依次输入下限、上限、被积函数和变量。",
+  "tutorialTrigonometricTitle": "三角函数输入",
+  "tutorialTrigonometricDescription": "使用 sin、cos、tan 键输入三角函数。",
+  "tutorialCompletionTitle": "教程完成",
+  "tutorialCompletionDescription": "恭喜！教程已完成。现在你已经掌握了 MathStep 的基本用法。",
+  "tutorialStepIndicator": "步骤 {current} / {total}",
+  "tutorialKeySequenceLabel": "按键顺序：",
+  "tutorialSkipButton": "跳过",
+  "tutorialPreviousButton": "上一步",
+  "tutorialNextButton": "下一步",
+  "tutorialCompleteButton": "完成",
+  "@tutorialStepIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
       }
     }
   }

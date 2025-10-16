@@ -18,6 +18,8 @@ import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
 import '../models/sample_expression.dart';
 import '../constants/app_colors.dart';
+import '../providers/tutorial_provider.dart';
+import '../widgets/tutorial_overlay.dart';
 import 'guide_screen.dart';
 import 'solution_screen.dart';
 
@@ -43,7 +45,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // _textFieldFocus.requestFocus();
       // AdMob初期化後に広告を読み込み
       _loadAdAfterDelay();
+      // チュートリアルを開始（設定読み込み後に）
+      _startTutorialAfterDelay();
     });
+  }
+
+  void _startTutorialAfterDelay() async {
+    // 少し待ってからチュートリアルを開始
+    await Future.delayed(const Duration(milliseconds: 200));
+    _startTutorialIfNeeded();
+  }
+
+  void _startTutorialIfNeeded() {
+    final tutorialState = ref.read(tutorialProvider);
+
+    if (!tutorialState.isDisabled &&
+        !tutorialState.isCompleted &&
+        !tutorialState.isActive) {
+      ref.read(tutorialProvider.notifier).startTutorial(context);
+    }
   }
 
   Future<void> _loadAdAfterDelay() async {
@@ -71,7 +91,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onTextChanged() {
-    ref.read(expressionProvider.notifier).updateInput(_textController.text);
+    final text = _textController.text;
+    ref.read(expressionProvider.notifier).updateInput(text);
+    ref.read(tutorialProvider.notifier).handleExpressionChange(text);
   }
 
   void _focusInput() {
@@ -360,62 +382,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<TutorialState>(tutorialProvider, (previous, next) {
+      if (previous?.inputClearRequest != next.inputClearRequest) {
+        _textController.clear();
+        ref.read(expressionProvider.notifier).updateInput('');
+      }
+    });
     final expressionState = ref.watch(expressionProvider);
 
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Column(
+      body: Stack(
         children: [
-          // プレビューエリア（動的高さ）
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final previewHeight = _calculatePreviewHeight(context);
-              return Container(
-                height: previewHeight,
-                margin: const EdgeInsets.fromLTRB(16, 16, 16, 8), // 下部マージンを削減
-                child: _buildLatexPreview(expressionState),
-              );
-            },
-          ),
-          // 入力フィールドエリア
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildExpressionField(expressionState.input),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildConditionField(),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildGenerateButton(expressionState.isLoading),
-          ),
-          if (expressionState.errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  expressionState.errorMessage!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+          Column(
+            children: [
+              // プレビューエリア（動的高さ）
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final previewHeight = _calculatePreviewHeight(context);
+                  return Container(
+                    height: previewHeight,
+                    margin: const EdgeInsets.fromLTRB(
+                      16,
+                      16,
+                      16,
+                      8,
+                    ), // 下部マージンを削減
+                    child: _buildLatexPreview(expressionState),
+                  );
+                },
+              ),
+              // 入力フィールドエリア
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildExpressionField(expressionState.input),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildConditionField(),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildGenerateButton(expressionState.isLoading),
+              ),
+              if (expressionState.errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      expressionState.errorMessage!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ),
+              const SizedBox(height: 4),
+              // キーパッドエリア（残りのスペースを使用）
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildCalculator(),
+                ),
               ),
-            ),
-          const SizedBox(height: 4),
-          // キーパッドエリア（残りのスペースを使用）
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildCalculator(),
-            ),
+              const SizedBox(height: 4),
+            ],
           ),
-          const SizedBox(height: 4),
+          // チュートリアルオーバーレイ
+          const TutorialOverlay(),
         ],
       ),
     );

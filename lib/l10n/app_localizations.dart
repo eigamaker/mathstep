@@ -853,6 +853,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Common pitfalls'**
   String get verificationCommonPitfallsTitle;
+
+  /// No description provided for @tutorialWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Tutorial'**
+  String get tutorialWelcomeTitle;
+
+  /// No description provided for @tutorialWelcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s learn how to use MathStep step by step. You can learn operations by actually pressing keys in each step.'**
+  String get tutorialWelcomeDescription;
+
+  /// No description provided for @tutorialBasicOperationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Arithmetic Operations'**
+  String get tutorialBasicOperationsTitle;
+
+  /// No description provided for @tutorialBasicOperationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s start with basic arithmetic operations. You can input calculation expressions using +, -, ×, ÷ keys.'**
+  String get tutorialBasicOperationsDescription;
+
+  /// No description provided for @tutorialExponentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exponent and Power Input'**
+  String get tutorialExponentsTitle;
+
+  /// No description provided for @tutorialExponentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the x^y key to input exponents. You can create expressions like x^2 or 2^(x+1).'**
+  String get tutorialExponentsDescription;
+
+  /// No description provided for @tutorialSquareRootTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Square Root Input'**
+  String get tutorialSquareRootTitle;
+
+  /// No description provided for @tutorialSquareRootDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the √ key to input square roots. You can input like √(9).'**
+  String get tutorialSquareRootDescription;
+
+  /// No description provided for @tutorialFractionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fraction Input'**
+  String get tutorialFractionsTitle;
+
+  /// No description provided for @tutorialFractionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the a/b key to input fractions. Separate the numerator and denominator with a comma.'**
+  String get tutorialFractionsDescription;
+
+  /// No description provided for @tutorialSummationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Summation Symbol Input'**
+  String get tutorialSummationTitle;
+
+  /// No description provided for @tutorialSummationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the Σ key to input summations. Enter in the order: variable, lower bound, upper bound, expression.'**
+  String get tutorialSummationDescription;
+
+  /// No description provided for @tutorialIntegralTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Integral Symbol Input'**
+  String get tutorialIntegralTitle;
+
+  /// No description provided for @tutorialIntegralDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the ∫ key to input integrals. Enter in the order: lower bound, upper bound, integrand, variable.'**
+  String get tutorialIntegralDescription;
+
+  /// No description provided for @tutorialTrigonometricTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigonometric Function Input'**
+  String get tutorialTrigonometricTitle;
+
+  /// No description provided for @tutorialTrigonometricDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use sin, cos, tan keys to input trigonometric functions.'**
+  String get tutorialTrigonometricDescription;
+
+  /// No description provided for @tutorialCompletionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutorial Complete'**
+  String get tutorialCompletionTitle;
+
+  /// No description provided for @tutorialCompletionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! The tutorial is complete. You have now mastered the basic usage of MathStep.'**
+  String get tutorialCompletionDescription;
+
+  /// No description provided for @tutorialStepIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} / {total}'**
+  String tutorialStepIndicator(int current, int total);
+
+  /// No description provided for @tutorialKeySequenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Key sequence:'**
+  String get tutorialKeySequenceLabel;
+
+  /// No description provided for @tutorialSkipButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get tutorialSkipButton;
+
+  /// No description provided for @tutorialPreviousButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get tutorialPreviousButton;
+
+  /// No description provided for @tutorialNextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get tutorialNextButton;
+
+  /// No description provided for @tutorialCompleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get tutorialCompleteButton;
 }
 
 class _AppLocalizationsDelegate

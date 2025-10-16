@@ -5,6 +5,7 @@ import '../localization/localization_extensions.dart';
 import '../providers/reward_ad_provider.dart';
 import '../services/reward_ad_service.dart';
 import '../constants/app_colors.dart';
+import '../providers/tutorial_provider.dart';
 
 class RewardAdButton extends ConsumerStatefulWidget {
   const RewardAdButton({
@@ -107,7 +108,20 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
 
   Future<void> _showRewardAd(RewardAdNotifier adNotifier) async {
     if (_isShowingAd || widget.isLoading) {
-      debugPrint('RewardAdButton: Cannot show ad - _isShowingAd: $_isShowingAd, isLoading: ${widget.isLoading}');
+      debugPrint(
+        'RewardAdButton: Cannot show ad - _isShowingAd: $_isShowingAd, isLoading: ${widget.isLoading}',
+      );
+      return;
+    }
+
+    final tutorialNotifier = ref.read(tutorialProvider.notifier);
+    if (tutorialNotifier.isAwaitingShowSolutionAction) {
+      debugPrint(
+        'RewardAdButton: Tutorial mode detected, skipping ad and generating solution directly.',
+      );
+      widget.onRewardEarned();
+      _showSuccessSnackBar(context.l10n.adRewardMessage);
+      tutorialNotifier.completeFollowUpAction(tutorialActionShowSolutionId);
       return;
     }
 
@@ -134,7 +148,7 @@ class _RewardAdButtonState extends ConsumerState<RewardAdButton> {
       debugPrint('RewardAdButton: Ad loaded, showing ad...');
       final rewarded = await adNotifier.showAd();
       if (!mounted) return;
-      
+
       debugPrint('RewardAdButton: Ad shown, rewarded: $rewarded');
       if (rewarded) {
         _showSuccessSnackBar(context.l10n.adRewardMessage);

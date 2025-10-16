@@ -449,4 +449,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verificationCommonPitfallsTitle => 'Common pitfalls';
+
+  @override
+  String get tutorialWelcomeTitle => 'Welcome to Tutorial';
+
+  @override
+  String get tutorialWelcomeDescription =>
+      'Let\'s learn how to use MathStep step by step. You can learn operations by actually pressing keys in each step.';
+
+  @override
+  String get tutorialBasicOperationsTitle => 'Basic Arithmetic Operations';
+
+  @override
+  String get tutorialBasicOperationsDescription =>
+      'Let\'s start with basic arithmetic operations. You can input calculation expressions using +, -, ×, ÷ keys.';
+
+  @override
+  String get tutorialExponentsTitle => 'Exponent and Power Input';
+
+  @override
+  String get tutorialExponentsDescription =>
+      'Use the x^y key to input exponents. You can create expressions like x^2 or 2^(x+1).';
+
+  @override
+  String get tutorialSquareRootTitle => 'Square Root Input';
+
+  @override
+  String get tutorialSquareRootDescription =>
+      'Use the √ key to input square roots. You can input like √(9).';
+
+  @override
+  String get tutorialFractionsTitle => 'Fraction Input';
+
+  @override
+  String get tutorialFractionsDescription =>
+      'Use the a/b key to input fractions. Separate the numerator and denominator with a comma.';
+
+  @override
+  String get tutorialSummationTitle => 'Summation Symbol Input';
+
+  @override
+  String get tutorialSummationDescription =>
+      'Use the Σ key to input summations. Enter in the order: variable, lower bound, upper bound, expression.';
+
+  @override
+  String get tutorialIntegralTitle => 'Integral Symbol Input';
+
+  @override
+  String get tutorialIntegralDescription =>
+      'Use the ∫ key to input integrals. Enter in the order: lower bound, upper bound, integrand, variable.';
+
+  @override
+  String get tutorialTrigonometricTitle => 'Trigonometric Function Input';
+
+  @override
+  String get tutorialTrigonometricDescription =>
+      'Use sin, cos, tan keys to input trigonometric functions.';
+
+  @override
+  String get tutorialCompletionTitle => 'Tutorial Complete';
+
+  @override
+  String get tutorialCompletionDescription =>
+      'Congratulations! The tutorial is complete. You have now mastered the basic usage of MathStep.';
+
+  @override
+  String tutorialStepIndicator(int current, int total) {
+    return 'Step $current / $total';
+  }
+
+  @override
+  String get tutorialKeySequenceLabel => 'Key sequence:';
+
+  @override
+  String get tutorialSkipButton => 'Skip';
+
+  @override
+  String get tutorialPreviousButton => 'Previous';
+
+  @override
+  String get tutorialNextButton => 'Next';
+
+  @override
+  String get tutorialCompleteButton => 'Complete';
 }

@@ -151,6 +151,7 @@
   "solutionSimilarProblemTitle": "類似問題",
   "solutionSimilarProblemDescription": "相似原因",
   "solutionSimilarProblemExpression": "問題表達式",
+  "solutionSimilarProblemSolutionSteps": "解題步驟",
   "solutionSimilarProblemEmptyMessage": "暫無類似問題。",
   "solutionTabGraph": "圖形",
   "solutionAlternativeSectionTitle": "其它解法",
@@ -211,6 +212,40 @@
     "placeholders": {
       "language": {
         "type": "String"
+      }
+    }
+  },
+  "tutorialWelcomeTitle": "歡迎使用教學",
+  "tutorialWelcomeDescription": "讓我們一步步學習 MathStep 的用法。每個步驟都可以實際按鍵來熟悉功能。",
+  "tutorialBasicOperationsTitle": "基本四則運算",
+  "tutorialBasicOperationsDescription": "先使用 +、-、×、÷ 鍵輸入計算式。",
+  "tutorialExponentsTitle": "指數與冪次輸入",
+  "tutorialExponentsDescription": "使用 x^y 鍵輸入指數，可以建立 x^2 或 2^(x+1) 等表示式。",
+  "tutorialSquareRootTitle": "平方根輸入",
+  "tutorialSquareRootDescription": "使用 √ 鍵輸入平方根，例如 √(9)。",
+  "tutorialFractionsTitle": "分數輸入",
+  "tutorialFractionsDescription": "使用 a/b 鍵輸入分數，並以逗號分隔分子與分母。",
+  "tutorialSummationTitle": "總和符號輸入",
+  "tutorialSummationDescription": "使用 Σ 鍵輸入總和，依序輸入變數、下限、上限與表示式。",
+  "tutorialIntegralTitle": "積分符號輸入",
+  "tutorialIntegralDescription": "使用 ∫ 鍵輸入積分，依序輸入下限、上限、被積函數與變數。",
+  "tutorialTrigonometricTitle": "三角函數輸入",
+  "tutorialTrigonometricDescription": "使用 sin、cos、tan 鍵輸入三角函數。",
+  "tutorialCompletionTitle": "教學完成",
+  "tutorialCompletionDescription": "恭喜！教學已完成。現在你已經掌握 MathStep 的基本用法。",
+  "tutorialStepIndicator": "步驟 {current} / {total}",
+  "tutorialKeySequenceLabel": "按鍵順序：",
+  "tutorialSkipButton": "略過",
+  "tutorialPreviousButton": "上一步",
+  "tutorialNextButton": "下一步",
+  "tutorialCompleteButton": "完成",
+  "@tutorialStepIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
       }
     }
   }

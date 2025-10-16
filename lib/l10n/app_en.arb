@@ -214,5 +214,39 @@
         "type": "String"
       }
     }
+  },
+  "tutorialWelcomeTitle": "Welcome to Tutorial",
+  "tutorialWelcomeDescription": "Let's learn how to use MathStep step by step. You can learn operations by actually pressing keys in each step.",
+  "tutorialBasicOperationsTitle": "Basic Arithmetic Operations",
+  "tutorialBasicOperationsDescription": "Let's start with basic arithmetic operations. You can input calculation expressions using +, -, ×, ÷ keys.",
+  "tutorialExponentsTitle": "Exponent and Power Input",
+  "tutorialExponentsDescription": "Use the x^y key to input exponents. You can create expressions like x^2 or 2^(x+1).",
+  "tutorialSquareRootTitle": "Square Root Input",
+  "tutorialSquareRootDescription": "Use the √ key to input square roots. You can input like √(9).",
+  "tutorialFractionsTitle": "Fraction Input",
+  "tutorialFractionsDescription": "Use the a/b key to input fractions. Separate the numerator and denominator with a comma.",
+  "tutorialSummationTitle": "Summation Symbol Input",
+  "tutorialSummationDescription": "Use the Σ key to input summations. Enter in the order: variable, lower bound, upper bound, expression.",
+  "tutorialIntegralTitle": "Integral Symbol Input",
+  "tutorialIntegralDescription": "Use the ∫ key to input integrals. Enter in the order: lower bound, upper bound, integrand, variable.",
+  "tutorialTrigonometricTitle": "Trigonometric Function Input",
+  "tutorialTrigonometricDescription": "Use sin, cos, tan keys to input trigonometric functions.",
+  "tutorialCompletionTitle": "Tutorial Complete",
+  "tutorialCompletionDescription": "Congratulations! The tutorial is complete. You have now mastered the basic usage of MathStep.",
+  "tutorialStepIndicator": "Step {current} / {total}",
+  "tutorialKeySequenceLabel": "Key sequence:",
+  "tutorialSkipButton": "Skip",
+  "tutorialPreviousButton": "Previous",
+  "tutorialNextButton": "Next",
+  "tutorialCompleteButton": "Complete",
+  "@tutorialStepIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

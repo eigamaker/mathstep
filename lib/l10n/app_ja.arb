@@ -214,5 +214,39 @@
         "type": "String"
       }
     }
+  },
+  "tutorialWelcomeTitle": "チュートリアルへようこそ",
+  "tutorialWelcomeDescription": "MathStepの使い方を順番に学んでいきましょう。各ステップで実際のキーを押して操作を覚えることができます。",
+  "tutorialBasicOperationsTitle": "基本的な四則演算",
+  "tutorialBasicOperationsDescription": "まずは基本的な四則演算から始めましょう。+、-、×、÷のキーを使って計算式を入力できます。",
+  "tutorialExponentsTitle": "指数・累乗の入力",
+  "tutorialExponentsDescription": "x^yキーを使って指数を入力しましょう。x^2や2^（x+1）のような式が作れます。",
+  "tutorialSquareRootTitle": "平方根の入力",
+  "tutorialSquareRootDescription": "√キーを使って平方根を入力しましょう。√(9)のように入力できます。",
+  "tutorialFractionsTitle": "分数の入力",
+  "tutorialFractionsDescription": "a/bキーを使って分数を入力しましょう。分子と分母をカンマで区切って入力します。",
+  "tutorialSummationTitle": "総和記号の入力",
+  "tutorialSummationDescription": "Σキーを使って総和を入力しましょう。変数、下限、上限、式の順で入力します。",
+  "tutorialIntegralTitle": "積分記号の入力",
+  "tutorialIntegralDescription": "∫キーを使って積分を入力しましょう。下限、上限、被積分関数、変数の順で入力します。",
+  "tutorialTrigonometricTitle": "三角関数の入力",
+  "tutorialTrigonometricDescription": "sin、cos、tanキーを使って三角関数を入力しましょう。",
+  "tutorialCompletionTitle": "チュートリアル完了",
+  "tutorialCompletionDescription": "おめでとうございます！チュートリアルが完了しました。これでMathStepの基本的な使い方をマスターできました。",
+  "tutorialStepIndicator": "ステップ {current} / {total}",
+  "tutorialKeySequenceLabel": "キーの順番:",
+  "tutorialSkipButton": "スキップ",
+  "tutorialPreviousButton": "前へ",
+  "tutorialNextButton": "次へ",
+  "tutorialCompleteButton": "完了",
+  "@tutorialStepIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

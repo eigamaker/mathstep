@@ -2,11 +2,6 @@
     <!-- インターネット接続権限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     
-    <!-- 音声認識権限 -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    
-    <!-- カメラ権限 -->
-    <uses-permission android:name="android.permission.CAMERA" />
     
     <!-- ストレージ権限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

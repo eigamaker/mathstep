@@ -47,10 +47,6 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
-		<key>NSCameraUsageDescription</key>
-		<string>このアプリは数学の問題を写真で撮影して解析するためにカメラを使用します。</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>このアプリは音声で数学の問題を入力するためにマイクを使用します。</string>
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-1998641949557439~4269683652</string>
 		<key>ITSAppUsesNonExemptEncryption</key>

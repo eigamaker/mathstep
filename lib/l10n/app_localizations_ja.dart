@@ -271,11 +271,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get guideTipCloseParenthesis => '必要に応じて ) キーで括弧を閉じてください。';
 
   @override
-  String homeSampleLoaded(String expression) {
-    return 'サンプル数式を読み込みました: $expression';
-  }
-
-  @override
   String get homeClipboardPasteSuccess => 'クリップボードから数式を貼り付けました。';
 
   @override
@@ -283,9 +278,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get homeClipboardPasteFailed => '貼り付けに失敗しました。';
-
-  @override
-  String get homeSampleTooltip => 'サンプル数式を読み込み';
 
   @override
   String get homePasteTooltip => 'クリップボードから貼り付け';
@@ -318,6 +310,51 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsLegalDocumentsDescription => 'プライバシーポリシーと利用規約をご確認ください。';
+
+  @override
+  String get settingsTutorialSectionTitle => 'チュートリアル設定';
+
+  @override
+  String get settingsTutorialSectionDescription =>
+      'アプリ起動時にチュートリアルを表示するかどうかを設定できます。';
+
+  @override
+  String get settingsTutorialToggleLabel => 'チュートリアルを表示';
+
+  @override
+  String get settingsTutorialStatusEnabled => '有効';
+
+  @override
+  String get settingsTutorialStatusDisabled => '無効';
+
+  @override
+  String get settingsKeyboardLayoutLabel => 'キーボードレイアウト';
+
+  @override
+  String get settingsKeyboardModeRadialTitle => 'ラジアルキーボード';
+
+  @override
+  String get settingsKeyboardModeRadialDescription =>
+      'カテゴリボタンが放射状メニューとして展開され、素早く入力を選択できます。';
+
+  @override
+  String get settingsKeyboardModeGridTitle => 'グリッドキーボード';
+
+  @override
+  String get settingsKeyboardModeGridDescription =>
+      'すべてのキーを6列のコンパクトなグリッドで表示し、縦方向にスクロールできます。';
+
+  @override
+  String get keypadCategoryNumbers => '数字';
+
+  @override
+  String get keypadCategoryFunctions => '関数';
+
+  @override
+  String get keypadCategoryAdvanced => '応用';
+
+  @override
+  String get keypadCategoryVariables => '変数';
 
   @override
   String get privacyPolicyTitle => 'プライバシーポリシー';

@@ -270,11 +270,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get guideTipCloseParenthesis => '需要时请使用 ) 键闭合括号。';
 
   @override
-  String homeSampleLoaded(String expression) {
-    return '已载入示例表达式：$expression';
-  }
-
-  @override
   String get homeClipboardPasteSuccess => '已从剪贴板粘贴表达式。';
 
   @override
@@ -282,9 +277,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeClipboardPasteFailed => '粘贴失败。';
-
-  @override
-  String get homeSampleTooltip => '载入示例表达式';
 
   @override
   String get homePasteTooltip => '从剪贴板粘贴';
@@ -317,6 +309,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsLegalDocumentsDescription => '请查看我们的隐私政策和服务条款。';
+
+  @override
+  String get settingsTutorialSectionTitle => '教程设置';
+
+  @override
+  String get settingsTutorialSectionDescription => '设置是否在应用启动时显示教程。';
+
+  @override
+  String get settingsTutorialToggleLabel => '显示教程';
+
+  @override
+  String get settingsTutorialStatusEnabled => '启用';
+
+  @override
+  String get settingsTutorialStatusDisabled => '停用';
+
+  @override
+  String get settingsKeyboardLayoutLabel => '键盘布局';
+
+  @override
+  String get settingsKeyboardModeRadialTitle => '环形键盘';
+
+  @override
+  String get settingsKeyboardModeRadialDescription => '类别按钮展开成环形菜单，快速选择所需的输入。';
+
+  @override
+  String get settingsKeyboardModeGridTitle => '网格键盘';
+
+  @override
+  String get settingsKeyboardModeGridDescription => '以紧凑的六列网格显示所有按键，可纵向滚动。';
+
+  @override
+  String get keypadCategoryNumbers => '数字';
+
+  @override
+  String get keypadCategoryFunctions => '函数';
+
+  @override
+  String get keypadCategoryAdvanced => '高级';
+
+  @override
+  String get keypadCategoryVariables => '变量';
 
   @override
   String get privacyPolicyTitle => '隐私政策';
@@ -770,11 +804,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get guideTipCloseParenthesis => '需要时请使用 ) 键闭合括号。';
 
   @override
-  String homeSampleLoaded(String expression) {
-    return '已载入示例表达式：$expression';
-  }
-
-  @override
   String get homeClipboardPasteSuccess => '已从剪贴板粘贴表达式。';
 
   @override
@@ -782,9 +811,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get homeClipboardPasteFailed => '粘贴失败。';
-
-  @override
-  String get homeSampleTooltip => '载入示例表达式';
 
   @override
   String get homePasteTooltip => '从剪贴板粘贴';
@@ -817,6 +843,48 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get settingsLegalDocumentsDescription => '请查看我们的隐私政策和服务条款。';
+
+  @override
+  String get settingsTutorialSectionTitle => '教程设置';
+
+  @override
+  String get settingsTutorialSectionDescription => '设置是否在应用启动时显示教程。';
+
+  @override
+  String get settingsTutorialToggleLabel => '显示教程';
+
+  @override
+  String get settingsTutorialStatusEnabled => '启用';
+
+  @override
+  String get settingsTutorialStatusDisabled => '停用';
+
+  @override
+  String get settingsKeyboardLayoutLabel => '键盘布局';
+
+  @override
+  String get settingsKeyboardModeRadialTitle => '环形键盘';
+
+  @override
+  String get settingsKeyboardModeRadialDescription => '类别按钮展开成环形菜单，快速选择所需的输入。';
+
+  @override
+  String get settingsKeyboardModeGridTitle => '网格键盘';
+
+  @override
+  String get settingsKeyboardModeGridDescription => '以紧凑的六列网格显示所有按键，可纵向滚动。';
+
+  @override
+  String get keypadCategoryNumbers => '数字';
+
+  @override
+  String get keypadCategoryFunctions => '函数';
+
+  @override
+  String get keypadCategoryAdvanced => '高级';
+
+  @override
+  String get keypadCategoryVariables => '变量';
 
   @override
   String get privacyPolicyTitle => '隐私政策';
@@ -1270,11 +1338,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get guideTipCloseParenthesis => '需要時請使用 ) 鍵關閉括號。';
 
   @override
-  String homeSampleLoaded(String expression) {
-    return '已載入範例數式：$expression';
-  }
-
-  @override
   String get homeClipboardPasteSuccess => '已從剪貼簿貼上數式。';
 
   @override
@@ -1282,9 +1345,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get homeClipboardPasteFailed => '貼上失敗。';
-
-  @override
-  String get homeSampleTooltip => '載入範例數式';
 
   @override
   String get homePasteTooltip => '從剪貼簿貼上';
@@ -1317,6 +1377,48 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get settingsLegalDocumentsDescription => '請查看我們的隱私政策和服務條款。';
+
+  @override
+  String get settingsTutorialSectionTitle => '教學設定';
+
+  @override
+  String get settingsTutorialSectionDescription => '設定是否在啟動應用程式時顯示教學。';
+
+  @override
+  String get settingsTutorialToggleLabel => '顯示教學';
+
+  @override
+  String get settingsTutorialStatusEnabled => '啟用';
+
+  @override
+  String get settingsTutorialStatusDisabled => '停用';
+
+  @override
+  String get settingsKeyboardLayoutLabel => '鍵盤配置';
+
+  @override
+  String get settingsKeyboardModeRadialTitle => '環形鍵盤';
+
+  @override
+  String get settingsKeyboardModeRadialDescription => '類別按鈕會展開成環形選單，快速選擇所需的輸入。';
+
+  @override
+  String get settingsKeyboardModeGridTitle => '格狀鍵盤';
+
+  @override
+  String get settingsKeyboardModeGridDescription => '以緊湊的六欄格狀顯示所有按鍵，並可垂直捲動。';
+
+  @override
+  String get keypadCategoryNumbers => '數字';
+
+  @override
+  String get keypadCategoryFunctions => '函數';
+
+  @override
+  String get keypadCategoryAdvanced => '進階';
+
+  @override
+  String get keypadCategoryVariables => '變數';
 
   @override
   String get privacyPolicyTitle => '隱私政策';

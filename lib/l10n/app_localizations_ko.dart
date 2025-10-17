@@ -272,11 +272,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get guideTipCloseParenthesis => '필요할 때 ) 키로 괄호를 닫아 주세요.';
 
   @override
-  String homeSampleLoaded(String expression) {
-    return '샘플 수식을 불러왔습니다: $expression';
-  }
-
-  @override
   String get homeClipboardPasteSuccess => '클립보드에서 수식을 붙여넣었습니다.';
 
   @override
@@ -284,9 +279,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get homeClipboardPasteFailed => '붙여넣기에 실패했습니다.';
-
-  @override
-  String get homeSampleTooltip => '샘플 수식 불러오기';
 
   @override
   String get homePasteTooltip => '클립보드에서 붙여넣기';
@@ -319,6 +311,50 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsLegalDocumentsDescription => '개인정보처리방침과 이용약관을 확인해 주세요.';
+
+  @override
+  String get settingsTutorialSectionTitle => '튜토리얼 설정';
+
+  @override
+  String get settingsTutorialSectionDescription => '앱 시작 시 튜토리얼을 표시할지 설정합니다.';
+
+  @override
+  String get settingsTutorialToggleLabel => '튜토리얼 표시';
+
+  @override
+  String get settingsTutorialStatusEnabled => '사용';
+
+  @override
+  String get settingsTutorialStatusDisabled => '사용 안 함';
+
+  @override
+  String get settingsKeyboardLayoutLabel => '키보드 레이아웃';
+
+  @override
+  String get settingsKeyboardModeRadialTitle => '라디얼 키보드';
+
+  @override
+  String get settingsKeyboardModeRadialDescription =>
+      '카테고리 버튼이 원형 메뉴로 펼쳐져 빠르게 입력을 선택할 수 있습니다.';
+
+  @override
+  String get settingsKeyboardModeGridTitle => '그리드 키보드';
+
+  @override
+  String get settingsKeyboardModeGridDescription =>
+      '모든 키를 6열의 컴팩트한 그리드로 표시하며 세로로 스크롤할 수 있습니다.';
+
+  @override
+  String get keypadCategoryNumbers => '숫자';
+
+  @override
+  String get keypadCategoryFunctions => '함수';
+
+  @override
+  String get keypadCategoryAdvanced => '고급';
+
+  @override
+  String get keypadCategoryVariables => '변수';
 
   @override
   String get privacyPolicyTitle => '개인정보처리방침';

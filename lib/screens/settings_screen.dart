@@ -51,7 +51,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _dropdownAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _dropdownController, curve: Curves.easeInOut),
     );
-    
+
     // 設定画面でチュートリアル設定を読み込み
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(tutorialProvider.notifier).loadTutorialSettings();
@@ -247,9 +247,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -261,7 +259,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-          Icon(Icons.language, color: AppColors.primary, size: 20),
+                  Icon(Icons.language, color: AppColors.primary, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -377,8 +375,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                                   language.nativeName,
                                                   style: const TextStyle(
                                                     fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w500,
+                                                    fontWeight: FontWeight.w500,
                                                     color:
                                                         AppColors.textPrimary,
                                                   ),
@@ -493,10 +490,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               const SizedBox(height: 16),
               Text(
                 l10n.settingsLegalDocumentsDescription,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
               const SizedBox(height: 16),
               _buildLegalDocumentItem(
@@ -540,20 +534,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         uri,
         mode: LaunchMode.externalApplication,
       );
-      if (!launched && mounted) {
+      if (!context.mounted) return;
+      if (!launched) {
         _showLegalDocumentError(context);
       }
     } catch (_) {
-      if (mounted) {
-        _showLegalDocumentError(context);
-      }
+      if (!context.mounted) return;
+      _showLegalDocumentError(context);
     }
   }
 
-  Uri _resolveLegalDocumentUrl(
-    AppLanguage language,
-    _LegalDocument document,
-  ) {
+  Uri _resolveLegalDocumentUrl(AppLanguage language, _LegalDocument document) {
     final urls = document == _LegalDocument.privacyPolicy
         ? _privacyPolicyUrls
         : _termsOfServiceUrls;
@@ -563,9 +554,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
   void _showLegalDocumentError(BuildContext context) {
     final l10n = context.l10n;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.commonErrorTitle)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.commonErrorTitle)));
   }
 
   Widget _buildLegalDocumentItem(
@@ -622,7 +613,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
   Widget _buildTutorialSettingsSection(BuildContext context, WidgetRef ref) {
     final tutorialState = ref.watch(tutorialProvider);
-    
+    final l10n = context.l10n;
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -656,7 +648,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'チュートリアル設定',
+                    l10n.settingsTutorialSectionTitle,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -667,7 +659,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'アプリ起動時にチュートリアルを表示するかどうかを設定できます。',
+                l10n.settingsTutorialSectionDescription,
                 style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
@@ -682,30 +674,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  Widget _buildTutorialToggle(BuildContext context, WidgetRef ref, TutorialState tutorialState) {
+  Widget _buildTutorialToggle(
+    BuildContext context,
+    WidgetRef ref,
+    TutorialState tutorialState,
+  ) {
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.secondary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.play_circle_outline,
-            color: AppColors.secondary,
-            size: 24,
-          ),
+          Icon(Icons.play_circle_outline, color: AppColors.secondary, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'チュートリアルを表示',
+                  l10n.settingsTutorialToggleLabel,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -713,7 +704,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   ),
                 ),
                 Text(
-                  tutorialState.isDisabled ? '無効' : '有効',
+                  tutorialState.isDisabled
+                      ? l10n.settingsTutorialStatusDisabled
+                      : l10n.settingsTutorialStatusEnabled,
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
@@ -780,9 +773,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Keyboard layout',
-                style: TextStyle(
+              Text(
+                l10n.settingsKeyboardLayoutLabel,
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
@@ -795,9 +788,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 mode: KeypadLayoutMode.flick,
                 currentMode: keypadMode,
                 icon: Icons.touch_app_rounded,
-                title: 'Radial keyboard',
-                description:
-                    'Category buttons expand into radial menus for quick input selection.',
+                title: l10n.settingsKeyboardModeRadialTitle,
+                description: l10n.settingsKeyboardModeRadialDescription,
               ),
               const SizedBox(height: 12),
               _buildKeyboardModeOption(
@@ -806,9 +798,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 mode: KeypadLayoutMode.scroll,
                 currentMode: keypadMode,
                 icon: Icons.grid_view_rounded,
-                title: 'Grid keyboard',
-                description:
-                    'Shows every key in a compact 6-column grid that you can scroll vertically.',
+                title: l10n.settingsKeyboardModeGridTitle,
+                description: l10n.settingsKeyboardModeGridDescription,
               ),
             ],
           ),

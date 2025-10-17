@@ -126,11 +126,9 @@
   "guideTipIntegralNotation": "按 ∫ 键可以按 \"integral(下限,上限,被积函数,变量)\" 格式输入积分。",
   "guideTipFractionKey": "使用 a/b 键输入分数，并用逗号区分分子和分母。",
   "guideTipCloseParenthesis": "需要时请使用 ) 键闭合括号。",
-  "homeSampleLoaded": "已载入示例表达式：{expression}",
   "homeClipboardPasteSuccess": "已从剪贴板粘贴表达式。",
   "homeClipboardEmpty": "剪贴板为空。",
   "homeClipboardPasteFailed": "粘贴失败。",
-  "homeSampleTooltip": "载入示例表达式",
   "homePasteTooltip": "从剪贴板粘贴",
   "historyDeleteDialogTitle": "从历史记录中删除",
   "historyCopyAndPasteMessage": "已复制表达式并粘贴到输入框。",
@@ -141,6 +139,20 @@
   "settingsLanguageChanged": "语言已切换为 {language}。",
   "settingsLegalDocumentsTitle": "法律文件",
   "settingsLegalDocumentsDescription": "请查看我们的隐私政策和服务条款。",
+  "settingsTutorialSectionTitle": "教程设置",
+  "settingsTutorialSectionDescription": "设置是否在应用启动时显示教程。",
+  "settingsTutorialToggleLabel": "显示教程",
+  "settingsTutorialStatusEnabled": "启用",
+  "settingsTutorialStatusDisabled": "停用",
+  "settingsKeyboardLayoutLabel": "键盘布局",
+  "settingsKeyboardModeRadialTitle": "环形键盘",
+  "settingsKeyboardModeRadialDescription": "类别按钮展开成环形菜单，快速选择所需的输入。",
+  "settingsKeyboardModeGridTitle": "网格键盘",
+  "settingsKeyboardModeGridDescription": "以紧凑的六列网格显示所有按键，可纵向滚动。",
+  "keypadCategoryNumbers": "数字",
+  "keypadCategoryFunctions": "函数",
+  "keypadCategoryAdvanced": "高级",
+  "keypadCategoryVariables": "变量",
   "privacyPolicyTitle": "隐私政策",
   "termsOfServiceTitle": "最终用户许可协议",
   "solutionAppBarTitle": "解答",
@@ -195,13 +207,6 @@
   "verificationVerificationTitle": "检验",
   "verificationCommonPitfallsTitle": "常见误区",
   "@guideExpressionLabel": {
-    "placeholders": {
-      "expression": {
-        "type": "String"
-      }
-    }
-  },
-  "@homeSampleLoaded": {
     "placeholders": {
       "expression": {
         "type": "String"

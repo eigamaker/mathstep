@@ -4,7 +4,6 @@ import 'package:flutter_math_fork/flutter_math.dart';
 import '../localization/localization_extensions.dart';
 import '../models/solution.dart';
 import 'common_ui_components.dart';
-import 'latex_preview.dart';
 
 class SolutionStepCard extends StatelessWidget {
   const SolutionStepCard({super.key, required this.step, required this.index});
@@ -77,7 +76,10 @@ class SolutionStepCard extends StatelessWidget {
           theme: theme,
         ),
         const SizedBox(height: 8),
-        _buildDescriptionWithMath(CommonUIComponents.cleanDescription(description), theme),
+        _buildDescriptionWithMath(
+          CommonUIComponents.cleanDescription(description),
+          theme,
+        ),
       ],
     );
   }
@@ -182,10 +184,7 @@ class SolutionStepCard extends StatelessWidget {
       child: Math.tex(
         cleanExpression,
         mathStyle: MathStyle.text,
-        textStyle: TextStyle(
-          fontSize: 14,
-          color: theme.colorScheme.onSurface,
-        ),
+        textStyle: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface),
         onErrorFallback: (_) => Text(
           mathExpression,
           style: TextStyle(

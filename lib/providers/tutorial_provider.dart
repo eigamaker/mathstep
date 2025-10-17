@@ -186,7 +186,10 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
       TutorialStep(
         id: 'basic_function_practice',
         mode: TutorialStepMode.practice,
-        title: _composePracticeTitle(localeName, l10n.tutorialBasicFunctionTitle),
+        title: _composePracticeTitle(
+          localeName,
+          l10n.tutorialBasicFunctionTitle,
+        ),
         description: l10n.tutorialBasicFunctionDescription,
         keySequence: const <TutorialKeyHint>[
           TutorialKeyHint(label: 'f(x)', value: 'f('),
@@ -394,8 +397,7 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
   bool get isAwaitingShowSolutionAction =>
       state.awaitingActionId == tutorialActionShowSolutionId;
 
-  bool get isAwaitingNextStepAction =>
-      state.awaitingActionId == 'next_step';
+  bool get isAwaitingNextStepAction => state.awaitingActionId == 'next_step';
 
   void handleNextStepAction() {
     if (state.awaitingActionId == 'next_step') {
@@ -446,8 +448,7 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
 
   List<TutorialStep> get allSteps => _tutorialSteps;
 
-  bool get canStartTutorial =>
-      !state.isDisabled && !state.isActive;
+  bool get canStartTutorial => !state.isDisabled && !state.isActive;
 
   bool get isInProgress =>
       state.isActive && !state.isCompleted && !state.isSkipped;
@@ -600,14 +601,6 @@ TutorialFollowUpAction _createNextStepAction(String localeName) {
   );
 }
 
-TutorialFollowUpAction _createShowSolutionAction(String localeName) {
-  return TutorialFollowUpAction(
-    id: tutorialActionShowSolutionId,
-    title: _showSolutionTitle(localeName),
-    description: _showSolutionDescription(localeName),
-  );
-}
-
 String _nextStepTitle(String localeName) {
   switch (localeName) {
     case 'ja':
@@ -639,39 +632,5 @@ String _nextStepDescription(String localeName) {
       return '确认输入内容后，点击「下一步」按钮。';
     default:
       return 'Review your input and tap the "Next Step" button.';
-  }
-}
-
-String _showSolutionTitle(String localeName) {
-  switch (localeName) {
-    case 'ja':
-      return '解答を生成してみましょう';
-    case 'ko':
-      return '풀이를 생성해 봅시다';
-    case 'zh_TW':
-      return '生成解題步驟';
-    case 'zh_CN':
-      return '生成解题步骤';
-    case 'zh':
-      return '生成解题步骤';
-    default:
-      return 'Generate the solution';
-  }
-}
-
-String _showSolutionDescription(String localeName) {
-  switch (localeName) {
-    case 'ja':
-      return '下部の「Show solution」ボタンをタップして、MathStep に解答を生成させましょう。';
-    case 'ko':
-      return '아래의 "Show solution" 버튼을 눌러 MathStep이 풀이를 만들어 보도록 하세요.';
-    case 'zh_TW':
-      return '點擊下方的「Show solution」按鈕，讓 MathStep 產生解題步驟。';
-    case 'zh_CN':
-      return '点击下方的“Show solution”按钮，让 MathStep 生成解题步骤。';
-    case 'zh':
-      return '点击下方的“Show solution”按钮，让 MathStep 生成解题步骤。';
-    default:
-      return 'Tap the "Show solution" button below to let MathStep create the step-by-step answer.';
   }
 }

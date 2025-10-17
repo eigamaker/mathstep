@@ -126,11 +126,9 @@
   "guideTipIntegralNotation": "按 ∫ 鍵可以按 \"integral(下限,上限,被積函數,變數)\" 格式輸入積分。",
   "guideTipFractionKey": "使用 a/b 鍵輸入分數，並以逗號區分分子與分母。",
   "guideTipCloseParenthesis": "需要時請使用 ) 鍵關閉括號。",
-  "homeSampleLoaded": "已載入範例數式：{expression}",
   "homeClipboardPasteSuccess": "已從剪貼簿貼上數式。",
   "homeClipboardEmpty": "剪貼簿為空。",
   "homeClipboardPasteFailed": "貼上失敗。",
-  "homeSampleTooltip": "載入範例數式",
   "homePasteTooltip": "從剪貼簿貼上",
   "historyDeleteDialogTitle": "從歷史紀錄刪除",
   "historyCopyAndPasteMessage": "已複製數式並貼到輸入欄位。",
@@ -141,6 +139,20 @@
   "settingsLanguageChanged": "語言已變更為 {language}。",
   "settingsLegalDocumentsTitle": "法律文件",
   "settingsLegalDocumentsDescription": "請查看我們的隱私政策和服務條款。",
+  "settingsTutorialSectionTitle": "教學設定",
+  "settingsTutorialSectionDescription": "設定是否在啟動應用程式時顯示教學。",
+  "settingsTutorialToggleLabel": "顯示教學",
+  "settingsTutorialStatusEnabled": "啟用",
+  "settingsTutorialStatusDisabled": "停用",
+  "settingsKeyboardLayoutLabel": "鍵盤配置",
+  "settingsKeyboardModeRadialTitle": "環形鍵盤",
+  "settingsKeyboardModeRadialDescription": "類別按鈕會展開成環形選單，快速選擇所需的輸入。",
+  "settingsKeyboardModeGridTitle": "格狀鍵盤",
+  "settingsKeyboardModeGridDescription": "以緊湊的六欄格狀顯示所有按鍵，並可垂直捲動。",
+  "keypadCategoryNumbers": "數字",
+  "keypadCategoryFunctions": "函數",
+  "keypadCategoryAdvanced": "進階",
+  "keypadCategoryVariables": "變數",
   "privacyPolicyTitle": "隱私政策",
   "termsOfServiceTitle": "終端使用者授權合約",
   "solutionAppBarTitle": "解說",
@@ -195,13 +207,6 @@
   "verificationVerificationTitle": "檢算",
   "verificationCommonPitfallsTitle": "常見錯誤",
   "@guideExpressionLabel": {
-    "placeholders": {
-      "expression": {
-        "type": "String"
-      }
-    }
-  },
-  "@homeSampleLoaded": {
     "placeholders": {
       "expression": {
         "type": "String"

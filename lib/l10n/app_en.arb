@@ -126,11 +126,9 @@
   "guideTipIntegralNotation": "Press the ∫ key to enter integrals as \"integral(lower,upper,integrand,variable)\" format.",
   "guideTipFractionKey": "Use the a/b key for fractions and separate the numerator and denominator with the comma key.",
   "guideTipCloseParenthesis": "Close parentheses with the ) key whenever necessary.",
-  "homeSampleLoaded": "Loaded sample expression: {expression}",
   "homeClipboardPasteSuccess": "Pasted the expression from the clipboard.",
   "homeClipboardEmpty": "Clipboard is empty.",
   "homeClipboardPasteFailed": "Failed to paste from the clipboard.",
-  "homeSampleTooltip": "Load a sample expression",
   "homePasteTooltip": "Paste from clipboard",
   "historyDeleteDialogTitle": "Remove from history",
   "historyCopyAndPasteMessage": "Copied the expression and pasted it into the input field.",
@@ -141,6 +139,20 @@
   "settingsLanguageChanged": "Language changed to {language}",
   "settingsLegalDocumentsTitle": "Legal Documents",
   "settingsLegalDocumentsDescription": "Please review our Privacy Policy and Terms of Service.",
+  "settingsTutorialSectionTitle": "Tutorial settings",
+  "settingsTutorialSectionDescription": "Choose whether to show the tutorial when the app starts.",
+  "settingsTutorialToggleLabel": "Show tutorial",
+  "settingsTutorialStatusEnabled": "Enabled",
+  "settingsTutorialStatusDisabled": "Disabled",
+  "settingsKeyboardLayoutLabel": "Keyboard layout",
+  "settingsKeyboardModeRadialTitle": "Radial keyboard",
+  "settingsKeyboardModeRadialDescription": "Expand category buttons into radial menus for quick input selection.",
+  "settingsKeyboardModeGridTitle": "Grid keyboard",
+  "settingsKeyboardModeGridDescription": "Display every key in a compact six-column grid you can scroll vertically.",
+  "keypadCategoryNumbers": "Num",
+  "keypadCategoryFunctions": "Func",
+  "keypadCategoryAdvanced": "Adv",
+  "keypadCategoryVariables": "Var",
   "privacyPolicyTitle": "Privacy Policy",
   "termsOfServiceTitle": "End User License Agreement",
   "solutionAppBarTitle": "Solution",
@@ -195,13 +207,6 @@
   "verificationVerificationTitle": "Verification",
   "verificationCommonPitfallsTitle": "Common pitfalls",
   "@guideExpressionLabel": {
-    "placeholders": {
-      "expression": {
-        "type": "String"
-      }
-    }
-  },
-  "@homeSampleLoaded": {
     "placeholders": {
       "expression": {
         "type": "String"

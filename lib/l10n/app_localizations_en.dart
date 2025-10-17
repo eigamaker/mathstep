@@ -302,11 +302,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Close parentheses with the ) key whenever necessary.';
 
   @override
-  String homeSampleLoaded(String expression) {
-    return 'Loaded sample expression: $expression';
-  }
-
-  @override
   String get homeClipboardPasteSuccess =>
       'Pasted the expression from the clipboard.';
 
@@ -315,9 +310,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClipboardPasteFailed => 'Failed to paste from the clipboard.';
-
-  @override
-  String get homeSampleTooltip => 'Load a sample expression';
 
   @override
   String get homePasteTooltip => 'Paste from clipboard';
@@ -353,6 +345,51 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsLegalDocumentsDescription =>
       'Please review our Privacy Policy and Terms of Service.';
+
+  @override
+  String get settingsTutorialSectionTitle => 'Tutorial settings';
+
+  @override
+  String get settingsTutorialSectionDescription =>
+      'Choose whether to show the tutorial when the app starts.';
+
+  @override
+  String get settingsTutorialToggleLabel => 'Show tutorial';
+
+  @override
+  String get settingsTutorialStatusEnabled => 'Enabled';
+
+  @override
+  String get settingsTutorialStatusDisabled => 'Disabled';
+
+  @override
+  String get settingsKeyboardLayoutLabel => 'Keyboard layout';
+
+  @override
+  String get settingsKeyboardModeRadialTitle => 'Radial keyboard';
+
+  @override
+  String get settingsKeyboardModeRadialDescription =>
+      'Expand category buttons into radial menus for quick input selection.';
+
+  @override
+  String get settingsKeyboardModeGridTitle => 'Grid keyboard';
+
+  @override
+  String get settingsKeyboardModeGridDescription =>
+      'Display every key in a compact six-column grid you can scroll vertically.';
+
+  @override
+  String get keypadCategoryNumbers => 'Num';
+
+  @override
+  String get keypadCategoryFunctions => 'Func';
+
+  @override
+  String get keypadCategoryAdvanced => 'Adv';
+
+  @override
+  String get keypadCategoryVariables => 'Var';
 
   @override
   String get privacyPolicyTitle => 'Privacy Policy';

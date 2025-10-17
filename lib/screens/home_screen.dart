@@ -16,7 +16,6 @@ import '../providers/keypad_settings_provider.dart';
 import '../localization/localization_extensions.dart';
 import '../providers/language_provider.dart';
 import '../services/chatgpt_service.dart';
-import '../models/sample_expression.dart';
 import '../constants/app_colors.dart';
 import '../providers/tutorial_provider.dart';
 import '../widgets/tutorial_overlay.dart';
@@ -60,15 +59,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _startTutorialIfNeeded() {
     final tutorialNotifier = ref.read(tutorialProvider.notifier);
-    
+
     // デバッグ情報を出力
-    print('Tutorial Debug Info: ${tutorialNotifier.tutorialDebugInfo}');
-    
+    debugPrint('Tutorial Debug Info: ${tutorialNotifier.tutorialDebugInfo}');
+
     if (tutorialNotifier.canStartTutorial) {
-      print('Starting tutorial...');
+      debugPrint('Starting tutorial...');
       tutorialNotifier.startTutorial(context);
     } else {
-      print('Cannot start tutorial - conditions not met');
+      debugPrint('Cannot start tutorial - conditions not met');
     }
   }
 
@@ -166,18 +165,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     final newPosition = (cursor + direction).clamp(0, value.text.length);
     _textController.selection = TextSelection.collapsed(offset: newPosition);
-  }
-
-  void _loadRandomSample() {
-    final sample = SampleExpressions.getRandom();
-    final l10n = context.l10n;
-
-    _textController.text = sample.expression;
-    _conditionController.text = sample.condition ?? '';
-
-    ref.read(expressionProvider.notifier).updateInput(sample.expression);
-
-    _showSnackBar(l10n.homeSampleLoaded(sample.expression));
   }
 
   Future<void> _pasteFromClipboard() async {
@@ -539,19 +526,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 8),
-          decoration: BoxDecoration(
-            color: AppColors.warningContainer,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.warningLight, width: 1),
-          ),
-          child: IconButton(
-            icon: Icon(Icons.auto_awesome, color: AppColors.warning),
-            onPressed: _loadRandomSample,
-            tooltip: context.l10n.homeSampleTooltip,
-          ),
-        ),
         Container(
           margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(

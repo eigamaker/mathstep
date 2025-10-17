@@ -590,12 +590,6 @@ abstract class AppLocalizations {
   /// **'Close parentheses with the ) key whenever necessary.'**
   String get guideTipCloseParenthesis;
 
-  /// No description provided for @homeSampleLoaded.
-  ///
-  /// In en, this message translates to:
-  /// **'Loaded sample expression: {expression}'**
-  String homeSampleLoaded(String expression);
-
   /// No description provided for @homeClipboardPasteSuccess.
   ///
   /// In en, this message translates to:
@@ -613,12 +607,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to paste from the clipboard.'**
   String get homeClipboardPasteFailed;
-
-  /// No description provided for @homeSampleTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Load a sample expression'**
-  String get homeSampleTooltip;
 
   /// No description provided for @homePasteTooltip.
   ///
@@ -679,6 +667,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please review our Privacy Policy and Terms of Service.'**
   String get settingsLegalDocumentsDescription;
+
+  /// No description provided for @settingsTutorialSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutorial settings'**
+  String get settingsTutorialSectionTitle;
+
+  /// No description provided for @settingsTutorialSectionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether to show the tutorial when the app starts.'**
+  String get settingsTutorialSectionDescription;
+
+  /// No description provided for @settingsTutorialToggleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tutorial'**
+  String get settingsTutorialToggleLabel;
+
+  /// No description provided for @settingsTutorialStatusEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get settingsTutorialStatusEnabled;
+
+  /// No description provided for @settingsTutorialStatusDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get settingsTutorialStatusDisabled;
+
+  /// No description provided for @settingsKeyboardLayoutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard layout'**
+  String get settingsKeyboardLayoutLabel;
+
+  /// No description provided for @settingsKeyboardModeRadialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Radial keyboard'**
+  String get settingsKeyboardModeRadialTitle;
+
+  /// No description provided for @settingsKeyboardModeRadialDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand category buttons into radial menus for quick input selection.'**
+  String get settingsKeyboardModeRadialDescription;
+
+  /// No description provided for @settingsKeyboardModeGridTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid keyboard'**
+  String get settingsKeyboardModeGridTitle;
+
+  /// No description provided for @settingsKeyboardModeGridDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Display every key in a compact six-column grid you can scroll vertically.'**
+  String get settingsKeyboardModeGridDescription;
+
+  /// No description provided for @keypadCategoryNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Num'**
+  String get keypadCategoryNumbers;
+
+  /// No description provided for @keypadCategoryFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'Func'**
+  String get keypadCategoryFunctions;
+
+  /// No description provided for @keypadCategoryAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Adv'**
+  String get keypadCategoryAdvanced;
+
+  /// No description provided for @keypadCategoryVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'Var'**
+  String get keypadCategoryVariables;
 
   /// No description provided for @privacyPolicyTitle.
   ///

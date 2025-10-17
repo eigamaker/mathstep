@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../constants/app_colors.dart';
 import '../models/keypad_layout_mode.dart';
+import '../localization/localization_extensions.dart';
 
 enum CalculatorKeyType { input, delete, moveLeft, moveRight }
 
@@ -27,7 +28,7 @@ class CalculatorKeypad extends StatefulWidget {
 
   static const List<_KeyCategory> _categories = [
     _KeyCategory(
-      label: 'Num',
+      type: _KeyCategoryType.numbers,
       icon: Icons.pin_rounded,
       keys: [
         _KeySpec.input('0'),
@@ -44,7 +45,7 @@ class CalculatorKeypad extends StatefulWidget {
       ],
     ),
     _KeyCategory(
-      label: 'Func',
+      type: _KeyCategoryType.functions,
       icon: Icons.functions_rounded,
       keys: [
         _KeySpec.input('pow(', label: 'x^()'),
@@ -63,7 +64,7 @@ class CalculatorKeypad extends StatefulWidget {
       ],
     ),
     _KeyCategory(
-      label: 'Adv',
+      type: _KeyCategoryType.advanced,
       icon: Icons.science_rounded,
       keys: [
         _KeySpec.input('^', label: 'x^y'),
@@ -79,7 +80,7 @@ class CalculatorKeypad extends StatefulWidget {
       ],
     ),
     _KeyCategory(
-      label: 'Var',
+      type: _KeyCategoryType.variables,
       icon: Icons.text_fields_rounded,
       keys: [
         _KeySpec.input('x'),
@@ -117,7 +118,14 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   static const double _categorySpacing = 16;
   static const double _categoryButtonSize = 92;
   static const double _optionButtonSize = 52;
-  // iPhone用の配置（6列）
+  static const double _horizontalPadding = 12;
+  static const double _gridSpacing = 8;
+  static const double _minTileExtent = 32;
+  static const double _inkSplashAlpha = 0.08;
+  static const double _inkHighlightAlpha = 0.05;
+  static const double _inkBorderAlpha = 0.12;
+  static const double _commonKeyHorizontalSpacing = 4;
+  // Phone layout: delete key spans two rows.
   static const List<_CommonKeyPlacement> _commonKeyPlacements = [
     _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
     _CommonKeyPlacement(index: 1, column: 1, row: 0),
@@ -131,8 +139,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     _CommonKeyPlacement(index: 9, column: 4, row: 1),
     _CommonKeyPlacement(index: 10, column: 5, row: 1),
   ];
-  
-  // iPad用の配置（12列）
+
+  // Tablet layout: wider grid with two rows.
   static const List<_CommonKeyPlacement> _commonKeyPlacementsIPad = [
     _CommonKeyPlacement(index: 0, column: 0, row: 0, rowSpan: 2),
     _CommonKeyPlacement(index: 1, column: 1, row: 0),
@@ -182,17 +190,10 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   Widget _buildFlickKeyboard() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // iOSでの画面サイズに応じた調整
-        final bool isSmallScreen = constraints.maxHeight < 600;
-        final bool isVerySmallScreen = constraints.maxHeight < 500;
-        
-        // カテゴリボタンのサイズを画面サイズに応じて調整
-        final double categoryButtonSize = isVerySmallScreen 
-            ? _categoryButtonSize * 0.8 
-            : isSmallScreen 
-                ? _categoryButtonSize * 0.9 
-                : _categoryButtonSize;
-        
+        // Adapt flick layout when vertical space is limited.
+        final heightClass = _heightClassFor(constraints);
+        final double categoryButtonSize = _categoryButtonSizeFor(heightClass);
+
         return SizedBox(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
@@ -233,7 +234,14 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                                         spacing: _categorySpacing,
                                         runSpacing: _categorySpacing,
                                         children: [
-                                          for (var i = 0; i < CalculatorKeypad._categories.length; i++)
+                                          for (
+                                            var i = 0;
+                                            i <
+                                                CalculatorKeypad
+                                                    ._categories
+                                                    .length;
+                                            i++
+                                          )
                                             _buildCategoryButton(
                                               i,
                                               categoryButtonSize,
@@ -254,7 +262,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                   ],
                 ),
               ),
-              if (_activeFlick != null) _buildFlickOverlay(constraints),
+              if (_activeFlick != null)
+                _buildFlickOverlay(context, constraints),
             ],
           ),
         );
@@ -265,44 +274,41 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   Widget _buildScrollableKeyboard() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        const double horizontalPadding = 12;
-        const double gridSpacing = 8;
-        
-        // iPad判定とキー数の調整
-        final bool isIPad = _isIPad(context);
-        final int columns = isIPad ? 12 : 6; // iPadでは12列、iPhoneでは6列
+        // Determine grid width based on platform.
+        final bool isTablet = _isIPad(context);
+        final int columns = _columnCount(isTablet);
 
         final double availableWidth = max(
-          constraints.maxWidth - horizontalPadding * 2,
-          columns * 32,
+          constraints.maxWidth - _horizontalPadding * 2,
+          columns * _minTileExtent,
         );
         final double tileWidth =
-            (availableWidth - gridSpacing * (columns - 1)) / columns;
-        // iPadではキーをさらに小さくする
-        final double tileHeight = isIPad 
-            ? max(_optionButtonSize * 0.5, tileWidth * 0.7)
-            : max(_optionButtonSize, tileWidth * 1.1);
+            (availableWidth - _gridSpacing * (columns - 1)) / columns;
+        // Compress tile height to keep the grid balanced on tablets.
+        final double tileHeight = _scrollableTileHeight(isTablet, tileWidth);
 
-        // すべてのキーを一つのリストに統合
+        // Flatten categories into a single list for the scrollable view.
         final List<_KeySpec> allKeys = [
           ...CalculatorKeypad._commonKeys,
-          for (final category in CalculatorKeypad._categories)
-            ...category.keys,
+          for (final category in CalculatorKeypad._categories) ...category.keys,
         ];
 
+        final int rowCount = (allKeys.length / columns).ceil();
+
         return ListView.builder(
-          padding: EdgeInsets.all(horizontalPadding),
-          itemCount: (allKeys.length / columns).ceil(),
+          padding: EdgeInsets.all(_horizontalPadding),
+          itemCount: rowCount,
           itemBuilder: (context, rowIndex) {
             final int startIndex = rowIndex * columns;
             final int endIndex = min(startIndex + columns, allKeys.length);
-            final List<_KeySpec> rowKeys = allKeys.sublist(startIndex, endIndex);
+            final List<_KeySpec> rowKeys = allKeys.sublist(
+              startIndex,
+              endIndex,
+            );
 
             return Padding(
               padding: EdgeInsets.only(
-                bottom: rowIndex < (allKeys.length / columns).ceil() - 1
-                    ? gridSpacing
-                    : 0,
+                bottom: rowIndex < rowCount - 1 ? _gridSpacing : 0,
               ),
               child: Row(
                 children: [
@@ -311,7 +317,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
                       child: i < rowKeys.length
                           ? Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: gridSpacing / 2,
+                                horizontal: _gridSpacing / 2,
                               ),
                               child: SizedBox(
                                 height: tileHeight,
@@ -329,35 +335,36 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     );
   }
 
-
   Widget _buildScrollableKey(_KeySpec spec) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // iPad判定とフォントサイズの調整
-        final bool isIPad = _isIPad(context);
-        final double baseFontSize = spec.fontSize ?? 14;
-        final double fontSize = isIPad 
-            ? min(baseFontSize * 2.2, 28) // iPadでは2.2倍大きく、最大28px
-            : min(baseFontSize, 16); // iPhoneでは従来通り
-        
+        // Adjust typography for phone and tablet layouts.
+        final bool isTablet = _isIPad(context);
+        final double fontSize = _scrollableFontSize(spec, isTablet);
+        const double horizontalPadding = 4.0;
+        final double verticalPadding = isTablet ? 6.0 : 8.0;
+        final BorderRadius borderRadius = BorderRadius.circular(12);
+
         return Material(
           color: AppColors.primarySurface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: borderRadius,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () => _triggerKey(spec),
-            splashColor: AppColors.primary.withValues(alpha: 0.08),
-            highlightColor: AppColors.primary.withValues(alpha: 0.05),
+            splashColor: AppColors.primary.withValues(alpha: _inkSplashAlpha),
+            highlightColor: AppColors.primary.withValues(
+              alpha: _inkHighlightAlpha,
+            ),
             child: Container(
               alignment: Alignment.center,
               padding: EdgeInsets.symmetric(
-                horizontal: isIPad ? 4 : 4, 
-                vertical: isIPad ? 6 : 8,
+                horizontal: horizontalPadding,
+                vertical: verticalPadding,
               ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: borderRadius,
                 border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  color: AppColors.primary.withValues(alpha: _inkBorderAlpha),
                   width: 1.1,
                 ),
               ),
@@ -387,40 +394,34 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // iPad判定と画面サイズに応じた調整
-        final bool isIPad = _isIPad(context);
-        final bool isSmallScreen = constraints.maxHeight < 600;
-        final bool isVerySmallScreen = constraints.maxHeight < 500;
-        
-        // 共通キーのサイズを画面サイズに応じて調整
-        final double baseButtonSize = isVerySmallScreen 
-            ? _optionButtonSize * 0.6 
-            : isSmallScreen 
-                ? _optionButtonSize * 0.7 
-                : isIPad
-                    ? _optionButtonSize * 0.6 // iPadではさらに小さく
-                    : _optionButtonSize * 0.8;
-        
-        // iPadでは横に12列、iPhoneでは6列
-        final int columns = isIPad ? 12 : 6;
-        const int rows = 2;
-        const double horizontalSpacing = 4;
-        final double verticalSpacing = isVerySmallScreen ? 4 : 8;
+        final bool isTablet = _isIPad(context);
+        final _HeightClass heightClass = _heightClassFor(constraints);
+        final double baseButtonSize = _commonKeyBaseSize(
+          isTablet: isTablet,
+          heightClass: heightClass,
+        );
+        final int columns = _columnCount(isTablet);
+        final double verticalSpacing = _commonKeyVerticalSpacing(heightClass);
         final double cellWidth =
-            (constraints.maxWidth - horizontalSpacing * (columns - 1)) /
+            (constraints.maxWidth -
+                _commonKeyHorizontalSpacing * (columns - 1)) /
             columns;
         final double cellHeight = baseButtonSize;
-
-        final placements = (isIPad ? _commonKeyPlacementsIPad : _commonKeyPlacements).where(
-          (placement) => placement.index < keys.length,
-        );
-
-        final double totalHeight =
-            cellHeight * rows + verticalSpacing * (rows - 1);
+        final List<_CommonKeyPlacement> placements = _effectiveCommonPlacements(
+          isTablet,
+          keys.length,
+        ).toList();
+        final int rows = placements.isEmpty ? 0 : _rowCount(placements);
+        final double totalHeight = rows <= 0
+            ? cellHeight
+            : cellHeight * rows + verticalSpacing * (rows - 1);
+        final double topPadding = heightClass == _HeightClass.verySmall
+            ? 8
+            : 16;
 
         return Container(
           // Add breathing room above the quick keys.
-          padding: EdgeInsets.fromLTRB(6, isVerySmallScreen ? 8 : 16, 6, 6),
+          padding: EdgeInsets.fromLTRB(6, topPadding, 6, 6),
           child: SizedBox(
             width: constraints.maxWidth,
             height: totalHeight,
@@ -428,13 +429,18 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
               children: [
                 for (final placement in placements)
                   Positioned(
-                    left: placement.column * (cellWidth + horizontalSpacing),
+                    left:
+                        placement.column *
+                        (cellWidth + _commonKeyHorizontalSpacing),
                     top: placement.row * (cellHeight + verticalSpacing),
                     width: cellWidth,
                     height:
                         cellHeight * placement.rowSpan +
                         verticalSpacing * (placement.rowSpan - 1),
-                    child: _buildCommonKey(keys[placement.index], baseButtonSize),
+                    child: _buildCommonKey(
+                      keys[placement.index],
+                      baseButtonSize,
+                    ),
                   ),
               ],
             ),
@@ -449,6 +455,12 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     final bool isActive = _activeFlick?.categoryIndex == index;
     final double size = buttonSize ?? _categoryButtonSize;
 
+    final BorderRadius borderRadius = BorderRadius.circular(size * 0.2);
+    final EdgeInsets contentPadding = EdgeInsets.all(size * 0.13);
+    final double iconSize = size * 0.3;
+    final double labelGap = size * 0.09;
+    final double labelFontSize = size * 0.15;
+
     return Builder(
       builder: (buttonContext) {
         return SizedBox(
@@ -457,28 +469,28 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
           child: Material(
             color: isActive ? AppColors.primary : AppColors.primaryContainer,
             elevation: isActive ? 6 : 2,
-            borderRadius: BorderRadius.circular(size * 0.2), // サイズに応じた角丸
+            borderRadius: borderRadius,
             shadowColor: Colors.black.withValues(alpha: 0.08),
             child: InkWell(
-              borderRadius: BorderRadius.circular(size * 0.2),
+              borderRadius: borderRadius,
               onTap: () => _toggleFlickMenu(index, buttonContext),
               child: Padding(
-                padding: EdgeInsets.all(size * 0.13), // サイズに応じたパディング
+                padding: contentPadding,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       category.icon,
-                      size: size * 0.3, // サイズに応じたアイコンサイズ
+                      size: iconSize,
                       color: isActive
                           ? AppColors.textOnPrimary
                           : AppColors.primary,
                     ),
-                    SizedBox(height: size * 0.09), // サイズに応じたスペース
+                    SizedBox(height: labelGap),
                     Text(
-                      category.label,
+                      category.label(buttonContext),
                       style: TextStyle(
-                        fontSize: size * 0.15, // サイズに応じたフォントサイズ
+                        fontSize: labelFontSize,
                         fontWeight: FontWeight.w700,
                         color: isActive
                             ? AppColors.textOnPrimary
@@ -498,32 +510,32 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   Widget _buildCommonKey(_KeySpec spec, [double? buttonSize]) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isIPad = _isIPad(context);
+        final bool isTablet = _isIPad(context);
         final double size = buttonSize ?? _optionButtonSize * 0.8;
-        final double borderRadius = size * 0.2;
-        final double baseFontSize = spec.fontSize ?? 16;
-        final double fontSize = isIPad 
-            ? baseFontSize * 2.0 // iPadでは2.0倍大きく
-            : baseFontSize * (size / _optionButtonSize);
-        
+        final BorderRadius borderRadius = BorderRadius.circular(size * 0.2);
+        final double fontSize = _commonKeyFontSize(spec, size, isTablet);
+        final EdgeInsets padding = EdgeInsets.symmetric(
+          horizontal: size * 0.12,
+          vertical: size * 0.15,
+        );
+
         return Material(
           color: AppColors.primaryContainer,
-          borderRadius: BorderRadius.circular(borderRadius),
+          borderRadius: borderRadius,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () => _triggerKey(spec),
-            splashColor: AppColors.primary.withValues(alpha: 0.08),
-            highlightColor: AppColors.primary.withValues(alpha: 0.05),
+            splashColor: AppColors.primary.withValues(alpha: _inkSplashAlpha),
+            highlightColor: AppColors.primary.withValues(
+              alpha: _inkHighlightAlpha,
+            ),
             child: Container(
               alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(
-                horizontal: size * 0.12, 
-                vertical: size * 0.15,
-              ),
+              padding: padding,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius),
+                borderRadius: borderRadius,
                 border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  color: AppColors.primary.withValues(alpha: _inkBorderAlpha),
                   width: 1,
                 ),
               ),
@@ -543,7 +555,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     );
   }
 
-  Widget _buildFlickOverlay(BoxConstraints constraints) {
+  Widget _buildFlickOverlay(BuildContext context, BoxConstraints constraints) {
     final overlay = _activeFlick!;
     final category = CalculatorKeypad._categories[overlay.categoryIndex];
     final keys = category.keys;
@@ -591,7 +603,9 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
             Positioned(
               left: overlay.center.dx - (_optionButtonSize / 2),
               top: overlay.center.dy - (_optionButtonSize / 2),
-              child: IgnorePointer(child: _buildCenterMarker(category)),
+              child: IgnorePointer(
+                child: _buildCenterMarker(context, category),
+              ),
             ),
             for (var i = 0; i < keys.length; i++)
               _buildFlickOption(
@@ -607,7 +621,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     );
   }
 
-  Widget _buildCenterMarker(_KeyCategory category) {
+  Widget _buildCenterMarker(BuildContext context, _KeyCategory category) {
+    final label = category.label(context);
     return SizedBox(
       width: _optionButtonSize,
       height: _optionButtonSize,
@@ -625,7 +640,7 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
         ),
         child: Center(
           child: Text(
-            category.label,
+            label,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -751,7 +766,94 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
     widget.onKeyPressed(CalculatorKeyEvent(spec.type, spec.value));
   }
 
-  /// iPad判定メソッド
+  _HeightClass _heightClassFor(BoxConstraints constraints) {
+    final height = constraints.maxHeight;
+    if (!height.isFinite) {
+      return _HeightClass.regular;
+    }
+    if (height < 500) {
+      return _HeightClass.verySmall;
+    }
+    if (height < 600) {
+      return _HeightClass.small;
+    }
+    return _HeightClass.regular;
+  }
+
+  double _categoryButtonSizeFor(_HeightClass heightClass) {
+    switch (heightClass) {
+      case _HeightClass.verySmall:
+        return _categoryButtonSize * 0.8;
+      case _HeightClass.small:
+        return _categoryButtonSize * 0.9;
+      case _HeightClass.regular:
+        return _categoryButtonSize;
+    }
+  }
+
+  double _commonKeyBaseSize({
+    required bool isTablet,
+    required _HeightClass heightClass,
+  }) {
+    switch (heightClass) {
+      case _HeightClass.verySmall:
+        return _optionButtonSize * 0.6;
+      case _HeightClass.small:
+        return _optionButtonSize * 0.7;
+      case _HeightClass.regular:
+        return isTablet ? _optionButtonSize * 0.6 : _optionButtonSize * 0.8;
+    }
+  }
+
+  double _commonKeyVerticalSpacing(_HeightClass heightClass) {
+    return heightClass == _HeightClass.verySmall ? 4 : 8;
+  }
+
+  Iterable<_CommonKeyPlacement> _effectiveCommonPlacements(
+    bool isTablet,
+    int keyCount,
+  ) {
+    final source = isTablet ? _commonKeyPlacementsIPad : _commonKeyPlacements;
+    return source.where((placement) => placement.index < keyCount);
+  }
+
+  int _rowCount(Iterable<_CommonKeyPlacement> placements) {
+    var maxRow = 0;
+    for (final placement in placements) {
+      final rowEnd = placement.row + placement.rowSpan;
+      if (rowEnd > maxRow) {
+        maxRow = rowEnd;
+      }
+    }
+    return maxRow;
+  }
+
+  int _columnCount(bool isTablet) => isTablet ? 12 : 6;
+
+  double _scrollableTileHeight(bool isTablet, double tileWidth) {
+    if (isTablet) {
+      return max(_optionButtonSize * 0.5, tileWidth * 0.7);
+    }
+    return max(_optionButtonSize, tileWidth * 1.1);
+  }
+
+  double _scrollableFontSize(_KeySpec spec, bool isTablet) {
+    final base = spec.fontSize ?? 14;
+    if (isTablet) {
+      return min(base * 2.2, 28);
+    }
+    return min(base, 16);
+  }
+
+  double _commonKeyFontSize(_KeySpec spec, double size, bool isTablet) {
+    final baseFontSize = spec.fontSize ?? 16;
+    if (isTablet) {
+      return baseFontSize * 2.0;
+    }
+    return baseFontSize * (size / _optionButtonSize);
+  }
+
+  /// Determine whether the current device should use the tablet layout.
   bool _isIPad(BuildContext context) {
     final mediaQuery = MediaQuery.maybeOf(context);
     if (mediaQuery == null) {
@@ -760,7 +862,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
 
     final Size size = mediaQuery.size;
     final double shortestSide = min(size.width, size.height);
-    final bool isCupertinoPlatform = defaultTargetPlatform == TargetPlatform.iOS ||
+    final bool isCupertinoPlatform =
+        defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS;
 
     return isCupertinoPlatform && shortestSide >= 600;
@@ -853,6 +956,8 @@ class _CalculatorKeypadState extends State<CalculatorKeypad> {
   }
 }
 
+enum _HeightClass { regular, small, verySmall }
+
 class _CommonKeyPlacement {
   const _CommonKeyPlacement({
     required this.index,
@@ -874,16 +979,32 @@ class _FlickOverlayState {
   final Offset center;
 }
 
+enum _KeyCategoryType { numbers, functions, advanced, variables }
+
 class _KeyCategory {
   const _KeyCategory({
-    required this.label,
+    required this.type,
     required this.keys,
     required this.icon,
   });
 
-  final String label;
+  final _KeyCategoryType type;
   final List<_KeySpec> keys;
   final IconData icon;
+
+  String label(BuildContext context) {
+    final l10n = context.l10n;
+    switch (type) {
+      case _KeyCategoryType.numbers:
+        return l10n.keypadCategoryNumbers;
+      case _KeyCategoryType.functions:
+        return l10n.keypadCategoryFunctions;
+      case _KeyCategoryType.advanced:
+        return l10n.keypadCategoryAdvanced;
+      case _KeyCategoryType.variables:
+        return l10n.keypadCategoryVariables;
+    }
+  }
 }
 
 class _KeySpec {

@@ -126,11 +126,9 @@
   "guideTipIntegralNotation": "∫ キーを押すと「integral(下限,上限,被積分関数,変数)」の形式で入力できます。",
   "guideTipFractionKey": "a/bキーで分数を入力し、カンマで分子と分母を区切ります。",
   "guideTipCloseParenthesis": "必要に応じて ) キーで括弧を閉じてください。",
-  "homeSampleLoaded": "サンプル数式を読み込みました: {expression}",
   "homeClipboardPasteSuccess": "クリップボードから数式を貼り付けました。",
   "homeClipboardEmpty": "クリップボードが空です。",
   "homeClipboardPasteFailed": "貼り付けに失敗しました。",
-  "homeSampleTooltip": "サンプル数式を読み込み",
   "homePasteTooltip": "クリップボードから貼り付け",
   "historyDeleteDialogTitle": "履歴から削除",
   "historyCopyAndPasteMessage": "数式をコピーして入力欄に貼り付けました。",
@@ -141,6 +139,20 @@
   "settingsLanguageChanged": "言語を{language}に変更しました。",
   "settingsLegalDocumentsTitle": "法的文書",
   "settingsLegalDocumentsDescription": "プライバシーポリシーと利用規約をご確認ください。",
+  "settingsTutorialSectionTitle": "チュートリアル設定",
+  "settingsTutorialSectionDescription": "アプリ起動時にチュートリアルを表示するかどうかを設定できます。",
+  "settingsTutorialToggleLabel": "チュートリアルを表示",
+  "settingsTutorialStatusEnabled": "有効",
+  "settingsTutorialStatusDisabled": "無効",
+  "settingsKeyboardLayoutLabel": "キーボードレイアウト",
+  "settingsKeyboardModeRadialTitle": "ラジアルキーボード",
+  "settingsKeyboardModeRadialDescription": "カテゴリボタンが放射状メニューとして展開され、素早く入力を選択できます。",
+  "settingsKeyboardModeGridTitle": "グリッドキーボード",
+  "settingsKeyboardModeGridDescription": "すべてのキーを6列のコンパクトなグリッドで表示し、縦方向にスクロールできます。",
+  "keypadCategoryNumbers": "数字",
+  "keypadCategoryFunctions": "関数",
+  "keypadCategoryAdvanced": "応用",
+  "keypadCategoryVariables": "変数",
   "privacyPolicyTitle": "プライバシーポリシー",
   "termsOfServiceTitle": "エンドユーザーライセンス契約",
   "solutionAppBarTitle": "解説",
@@ -195,13 +207,6 @@
   "verificationVerificationTitle": "検算",
   "verificationCommonPitfallsTitle": "よくある間違い",
   "@guideExpressionLabel": {
-    "placeholders": {
-      "expression": {
-        "type": "String"
-      }
-    }
-  },
-  "@homeSampleLoaded": {
     "placeholders": {
       "expression": {
         "type": "String"

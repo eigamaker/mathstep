@@ -75,6 +75,7 @@ class RewardAdService {
     debugPrint('RewardAdService: Ad Unit ID: ${_getAdUnitId()}');
     debugPrint('RewardAdService: Platform: ${Platform.operatingSystem}');
     debugPrint('RewardAdService: Debug mode: $kDebugMode');
+    debugPrint('RewardAdService: Is simulator: ${Platform.isIOS && Platform.environment['SIMULATOR_DEVICE_NAME'] != null}');
 
     final completer = Completer<void>();
     _loadingCompleter = completer;

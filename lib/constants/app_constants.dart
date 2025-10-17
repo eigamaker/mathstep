@@ -23,13 +23,13 @@ class AppConstants {
 
   static String getRewardedAdUnitId() {
     // TEST Ad Unit ID (uncomment for testing)
-    // return 'ca-app-pub-3940256099942544/5224354917';
+    return 'ca-app-pub-3940256099942544/5224354917';
 
     // PRODUCTION Ad Unit IDs (uncomment for production)
-    if (Platform.isIOS) {
-      return 'ca-app-pub-1998641949557439/4530086849';
-    }
-    return 'ca-app-pub-1998641949557439/3057244181';
+    // if (Platform.isIOS) {
+    //   return 'ca-app-pub-1998641949557439/4530086849';
+    // }
+    // return 'ca-app-pub-1998641949557439/3057244181';
   }
 
   // Default identifiers

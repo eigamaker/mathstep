@@ -33,14 +33,14 @@ void main() async {
   // Configure a consistent debug-friendly request.
   await mobileAds.updateRequestConfiguration(
     RequestConfiguration(
-      testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'],
+      // testDeviceIds: ['6BBFA936FB1B9164941690327A3F1F82'], // Commented out for production
       tagForChildDirectedTreatment: TagForChildDirectedTreatment.unspecified,
       tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.unspecified,
       maxAdContentRating: MaxAdContentRating.g,
     ),
   );
 
-  debugPrint('AdMob initialized successfully with debug logging');
+  debugPrint('AdMob initialized successfully');
 
   runApp(const ProviderScope(child: MathStepApp()));
 }

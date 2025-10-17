@@ -19,35 +19,19 @@ class AppConstants {
   static const double largeIconSize = 64.0;
 
   // AdMob configuration (Rewarded Ad only)
-  // Test Ad Unit IDs (commented out for production)
-  // static const String testRewardedAdUnitId =
-  //     'ca-app-pub-3940256099942544/5224354917';
-
-  // Production Ad Unit IDs
-  static const String productionRewardedAdUnitIdAndroid =
-      'ca-app-pub-1998641949557439/3057244181';
-
-  static const String productionRewardedAdUnitIdIOS =
-      'ca-app-pub-1998641949557439/4530086849';
+  // Switch between test and production by commenting/uncommenting the appropriate lines below
 
   static String getRewardedAdUnitId() {
-    // Always use production IDs (test IDs are commented out above)
-    // if (kDebugMode) {
-    //   return testRewardedAdUnitId;
-    // }
+    // TEST Ad Unit ID (uncomment for testing)
+    // return 'ca-app-pub-3940256099942544/5224354917';
 
+    // PRODUCTION Ad Unit IDs (uncomment for production)
     if (Platform.isIOS) {
-      return productionRewardedAdUnitIdIOS;
+      return 'ca-app-pub-1998641949557439/4530086849';
     }
-
-    if (Platform.isAndroid) {
-      return productionRewardedAdUnitIdAndroid;
-    }
-
-    return productionRewardedAdUnitIdAndroid;
+    return 'ca-app-pub-1998641949557439/3057244181';
   }
 
   // Default identifiers
   static const String unknownId = 'unknown';
 }
-

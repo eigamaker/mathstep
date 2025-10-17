@@ -387,67 +387,146 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: _buildAppBar(),
       body: Stack(
         children: [
-          Column(
-            children: [
-              // プレビューエリア（動的高さ）
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final previewHeight = _calculatePreviewHeight(context);
-                  return Container(
-                    height: previewHeight,
-                    margin: const EdgeInsets.fromLTRB(
-                      16,
-                      16,
-                      16,
-                      8,
-                    ), // 下部マージンを削減
-                    child: _buildLatexPreview(expressionState),
-                  );
-                },
-              ),
-              // 入力フィールドエリア
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildExpressionField(expressionState.input),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildConditionField(),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildGenerateButton(expressionState.isLoading),
-              ),
-              if (expressionState.errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      expressionState.errorMessage!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // 横向きの場合はスクロール可能にする
+              if (constraints.maxWidth > constraints.maxHeight) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          // プレビューエリア（動的高さ）
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final previewHeight = _calculatePreviewHeight(context);
+                              return Container(
+                                height: previewHeight,
+                                margin: const EdgeInsets.fromLTRB(
+                                  16,
+                                  16,
+                                  16,
+                                  8,
+                                ),
+                                child: _buildLatexPreview(expressionState),
+                              );
+                            },
+                          ),
+                          // 入力フィールドエリア
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: _buildExpressionField(expressionState.input),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: _buildConditionField(),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: _buildGenerateButton(expressionState.isLoading),
+                          ),
+                          if (expressionState.errorMessage != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  expressionState.errorMessage!,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 4),
+                          // キーパッドエリア（固定高さ）
+                          Container(
+                            height: 300, // 横向きの場合は固定高さ
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: _buildCalculator(),
+                          ),
+                          const SizedBox(height: 4),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              const SizedBox(height: 4),
-              // キーパッドエリア（残りのスペースを使用）
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _buildCalculator(),
-                ),
-              ),
-              const SizedBox(height: 4),
-            ],
+                );
+              } else {
+                // 縦向きの場合は従来のレイアウト
+                return Column(
+                  children: [
+                    // プレビューエリア（動的高さ）
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final previewHeight = _calculatePreviewHeight(context);
+                        return Container(
+                          height: previewHeight,
+                          margin: const EdgeInsets.fromLTRB(
+                            16,
+                            16,
+                            16,
+                            8,
+                          ),
+                          child: _buildLatexPreview(expressionState),
+                        );
+                      },
+                    ),
+                    // 入力フィールドエリア
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildExpressionField(expressionState.input),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildConditionField(),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildGenerateButton(expressionState.isLoading),
+                    ),
+                    if (expressionState.errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            expressionState.errorMessage!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 4),
+                    // キーパッドエリア（残りのスペースを使用）
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildCalculator(),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
+                );
+              }
+            },
           ),
           // チュートリアルオーバーレイ
           const TutorialOverlay(),

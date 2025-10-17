@@ -25,12 +25,20 @@ class TutorialOverlay extends ConsumerWidget {
         ? tutorialState.practiceKeyProgress.clamp(0, step.keySequence.length)
         : 0;
 
+    // 画面の向きに応じてアライメントを調整
+    final screenSize = MediaQuery.of(context).size;
+    final isLandscape = screenSize.width > screenSize.height;
+    
     final AlignmentGeometry alignment = isPracticeStep
-        ? Alignment.bottomCenter
-        : Alignment.topCenter;
+        ? (isLandscape ? Alignment.centerLeft : Alignment.bottomCenter)
+        : (isLandscape ? Alignment.centerRight : Alignment.topCenter);
     final EdgeInsets padding = isPracticeStep
-        ? const EdgeInsets.fromLTRB(16, 0, 16, 24)
-        : const EdgeInsets.fromLTRB(16, 16, 16, 0);
+        ? (isLandscape 
+            ? const EdgeInsets.fromLTRB(16, 16, 0, 16)
+            : const EdgeInsets.fromLTRB(16, 0, 16, 24))
+        : (isLandscape
+            ? const EdgeInsets.fromLTRB(0, 16, 16, 16)
+            : const EdgeInsets.fromLTRB(16, 16, 16, 0));
 
     return Stack(
       children: [
@@ -700,13 +708,18 @@ class _DraggablePracticeSequencePanelState extends State<_DraggablePracticeSeque
 
   @override
   Widget build(BuildContext context) {
-    // 初期位置を画面の中央下部に設定（キーパッドの上）
-    final initialY = _screenSize.height - _panelHeight - 200;
+    final isLandscape = _screenSize.width > _screenSize.height;
+    
+    // 画面の向きに応じて初期位置を調整
+    final initialY = isLandscape 
+        ? _screenSize.height / 2 - _panelHeight / 2  // 横向き：中央
+        : _screenSize.height - _panelHeight - 200;   // 縦向き：下部
     
     return Positioned(
-      left: 16 + _position.dx,
+      left: isLandscape ? 16 + _position.dx : 16 + _position.dx,
       top: initialY + _position.dy,
-      right: 16 - _position.dx,
+      right: isLandscape ? null : 16 - _position.dx,
+      width: isLandscape ? 300 : null, // 横向きの場合は固定幅
       child: GestureDetector(
         onPanStart: (details) {
           setState(() {
@@ -718,18 +731,29 @@ class _DraggablePracticeSequencePanelState extends State<_DraggablePracticeSeque
             final newY = _position.dy + details.delta.dy;
             final newX = _position.dx + details.delta.dx;
             
-            // 上下の制限：画面の上端から下端まで（より広い範囲）
-            final minY = -(_screenSize.height - _panelHeight - 100); // 上端制限
-            final maxY = _screenSize.height - _panelHeight - 100; // 下端制限
-            
-            // 左右の制限：画面幅内
-            final minX = -(_screenSize.width - 100); // 左端制限
-            final maxX = _screenSize.width - 100; // 右端制限
-            
-            _position = Offset(
-              newX.clamp(minX, maxX).toDouble(),
-              newY.clamp(minY, maxY).toDouble(),
-            );
+            if (isLandscape) {
+              // 横向きの場合：左右の制限を厳しく、上下の制限を緩く
+              final minY = -(_screenSize.height - _panelHeight - 50);
+              final maxY = _screenSize.height - _panelHeight - 50;
+              final minX = -(_screenSize.width - 320); // パネル幅を考慮
+              final maxX = _screenSize.width - 320;
+              
+              _position = Offset(
+                newX.clamp(minX, maxX).toDouble(),
+                newY.clamp(minY, maxY).toDouble(),
+              );
+            } else {
+              // 縦向きの場合：従来の制限
+              final minY = -(_screenSize.height - _panelHeight - 100);
+              final maxY = _screenSize.height - _panelHeight - 100;
+              final minX = -(_screenSize.width - 100);
+              final maxX = _screenSize.width - 100;
+              
+              _position = Offset(
+                newX.clamp(minX, maxX).toDouble(),
+                newY.clamp(minY, maxY).toDouble(),
+              );
+            }
           });
         },
         onPanEnd: (details) {

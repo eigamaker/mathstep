@@ -420,6 +420,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'MathStepの使い方を順番に学んでいきましょう。各ステップで実際のキーを押して操作を覚えることができます。';
 
   @override
+  String get tutorialBasicFunctionTitle => '基本的な関数の入力';
+
+  @override
+  String get tutorialBasicFunctionDescription =>
+      'まずは基本的な関数から始めましょう。f(x)=x²+1のような簡単な式を入力してみます。';
+
+  @override
   String get tutorialBasicOperationsTitle => '基本的な四則演算';
 
   @override
@@ -452,7 +459,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tutorialSummationDescription =>
-      'Σキーを使って総和を入力しましょう。変数、下限、上限、式の順で入力します。';
+      'Σキーを使って総和を入力しましょう。Σ(i=1,5,i²)のような簡単な式から始めます。';
 
   @override
   String get tutorialIntegralTitle => '積分記号の入力';
@@ -474,6 +481,13 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get tutorialCompletionDescription =>
       'おめでとうございます！チュートリアルが完了しました。これでMathStepの基本的な使い方をマスターできました。';
+
+  @override
+  String get tutorialHelpGuidanceTitle => 'HELPボタンで詳細を確認';
+
+  @override
+  String get tutorialHelpGuidanceDescription =>
+      'チュートリアルお疲れ様でした！基本的な操作はマスターできました。右上のHELPボタンをタップすると、より詳細な記号の入力方法や高度な機能について確認できます。';
 
   @override
   String tutorialStepIndicator(int current, int total) {

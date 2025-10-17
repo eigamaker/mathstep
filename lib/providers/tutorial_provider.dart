@@ -177,11 +177,41 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
         description: l10n.tutorialWelcomeDescription,
       ),
       TutorialStep(
+        id: 'basic_function_overview',
+        mode: TutorialStepMode.info,
+        title: l10n.tutorialBasicFunctionTitle,
+        description: l10n.tutorialBasicFunctionDescription,
+        exampleExpression: 'f(x) = x^2 + 1',
+      ),
+      TutorialStep(
+        id: 'basic_function_practice',
+        mode: TutorialStepMode.practice,
+        title: _composePracticeTitle(localeName, l10n.tutorialBasicFunctionTitle),
+        description: l10n.tutorialBasicFunctionDescription,
+        keySequence: const <TutorialKeyHint>[
+          TutorialKeyHint(label: 'f(x)', value: 'f('),
+          TutorialKeyHint(label: 'x', value: 'x'),
+          TutorialKeyHint(label: ')', value: ')'),
+          TutorialKeyHint(label: '=', value: '='),
+          TutorialKeyHint(label: 'x', value: 'x'),
+          TutorialKeyHint(label: 'x^y', value: '^'),
+          TutorialKeyHint(label: '2', value: '2'),
+          TutorialKeyHint(label: '+', value: '+'),
+          TutorialKeyHint(label: '1', value: '1'),
+        ],
+        exampleExpression: 'f(x) = x^2 + 1',
+        expectedInput: 'f(x)=x^2+1',
+        clearInputOnEnter: true,
+        clearInputOnComplete: false, // 入力完了時はプレビューを保持
+        autoAdvanceOnComplete: false,
+        followUpAction: _createNextStepAction(localeName),
+      ),
+      TutorialStep(
         id: 'summation_overview',
         mode: TutorialStepMode.info,
         title: l10n.tutorialSummationTitle,
         description: l10n.tutorialSummationDescription,
-        exampleExpression: '\\sum_{i=1}^{n} \\frac{\\sqrt{i^2+1}}{i}',
+        exampleExpression: '\\sum_{i=1}^{5} i^2',
       ),
       TutorialStep(
         id: 'summation_practice',
@@ -194,77 +224,25 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
           TutorialKeyHint(label: '=', value: '='),
           TutorialKeyHint(label: '1', value: '1'),
           TutorialKeyHint(label: ',', value: ','),
-          TutorialKeyHint(label: 'n', value: 'n'),
+          TutorialKeyHint(label: '5', value: '5'),
           TutorialKeyHint(label: ',', value: ','),
-          TutorialKeyHint(label: '√', value: 'sqrt('),
           TutorialKeyHint(label: 'i', value: 'i'),
-          TutorialKeyHint(label: '^', value: '^'),
+          TutorialKeyHint(label: 'x^y', value: '^'),
           TutorialKeyHint(label: '2', value: '2'),
-          TutorialKeyHint(label: '+', value: '+'),
-          TutorialKeyHint(label: '1', value: '1'),
-          TutorialKeyHint(label: ')', value: ')'),
-          TutorialKeyHint(label: '/', value: '/'),
-          TutorialKeyHint(label: 'i', value: 'i'),
           TutorialKeyHint(label: ')', value: ')'),
         ],
-        exampleExpression: '\\sum_{i=1}^{n} \\frac{\\sqrt{i^2+1}}{i}',
-        expectedInput: 'sum(i=1,n,sqrt(i^2+1)/i)',
+        exampleExpression: '\\sum_{i=1}^{5} i^2',
+        expectedInput: 'sum(i=1,5,i^2)',
         clearInputOnEnter: true,
-        clearInputOnComplete: true,
+        clearInputOnComplete: false, // 入力完了時はプレビューを保持
         autoAdvanceOnComplete: false,
+        followUpAction: _createNextStepAction(localeName),
       ),
       TutorialStep(
-        id: 'integral_overview',
+        id: 'help_guidance',
         mode: TutorialStepMode.info,
-        title: l10n.tutorialIntegralTitle,
-        description: l10n.tutorialIntegralDescription,
-        exampleExpression:
-            '\\int_{0}^{\\pi/2} \\frac{\\sin^2(x) \\cdot e^x}{x+1} \\, dx',
-      ),
-      TutorialStep(
-        id: 'integral_practice',
-        mode: TutorialStepMode.practice,
-        title: _composePracticeTitle(localeName, l10n.tutorialIntegralTitle),
-        description: l10n.tutorialIntegralDescription,
-        keySequence: const <TutorialKeyHint>[
-          TutorialKeyHint(label: '∫', value: 'integral('),
-          TutorialKeyHint(label: '0', value: '0'),
-          TutorialKeyHint(label: ',', value: ','),
-          TutorialKeyHint(label: 'π', value: 'pi'),
-          TutorialKeyHint(label: '/', value: '/'),
-          TutorialKeyHint(label: '2', value: '2'),
-          TutorialKeyHint(label: ',', value: ','),
-          TutorialKeyHint(label: 'sin', value: 'sin('),
-          TutorialKeyHint(label: 'x', value: 'x'),
-          TutorialKeyHint(label: ')', value: ')'),
-          TutorialKeyHint(label: '^', value: '^'),
-          TutorialKeyHint(label: '2', value: '2'),
-          TutorialKeyHint(label: '*', value: '*'),
-          TutorialKeyHint(label: 'e', value: 'e'),
-          TutorialKeyHint(label: '^', value: '^'),
-          TutorialKeyHint(label: 'x', value: 'x'),
-          TutorialKeyHint(label: '/', value: '/'),
-          TutorialKeyHint(label: '(', value: '('),
-          TutorialKeyHint(label: 'x', value: 'x'),
-          TutorialKeyHint(label: '+', value: '+'),
-          TutorialKeyHint(label: '1', value: '1'),
-          TutorialKeyHint(label: ')', value: ')'),
-          TutorialKeyHint(label: ',', value: ','),
-          TutorialKeyHint(label: 'x', value: 'x'),
-          TutorialKeyHint(label: ')', value: ')'),
-        ],
-        exampleExpression:
-            '\\int_{0}^{\\pi/2} \\frac{\\sin^2(x) \\cdot e^x}{x+1} \\, dx',
-        expectedInput: 'integral(0,pi/2,sin(x)^2*e^x/(x+1),x)',
-        clearInputOnEnter: true,
-        autoAdvanceOnComplete: false,
-        followUpAction: _createShowSolutionAction(localeName),
-      ),
-      TutorialStep(
-        id: 'completion',
-        mode: TutorialStepMode.info,
-        title: l10n.tutorialCompletionTitle,
-        description: l10n.tutorialCompletionDescription,
+        title: l10n.tutorialHelpGuidanceTitle,
+        description: l10n.tutorialHelpGuidanceDescription,
       ),
     ];
   }
@@ -416,6 +394,48 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
   bool get isAwaitingShowSolutionAction =>
       state.awaitingActionId == tutorialActionShowSolutionId;
 
+  bool get isAwaitingNextStepAction =>
+      state.awaitingActionId == 'next_step';
+
+  void handleNextStepAction() {
+    if (state.awaitingActionId == 'next_step') {
+      // プレビューをクリアして次のステップに進む
+      state = state.copyWith(
+        awaitingActionId: null,
+        practiceCompleted: false,
+        practiceKeyProgress: 0,
+        inputClearRequest: state.inputClearRequest + 1,
+      );
+      nextStep();
+    }
+  }
+
+  void resetTutorial() {
+    _cancelPendingAutoAdvance();
+    state = state.copyWith(
+      isActive: false,
+      isCompleted: false,
+      isSkipped: false,
+      isDisabled: false,
+      practiceCompleted: false,
+      awaitingActionId: null,
+      practiceKeyProgress: 0,
+      inputClearRequest: 0,
+    );
+    _saveTutorialSettings();
+  }
+
+  // デバッグ用：チュートリアル状態を確認
+  Map<String, dynamic> get tutorialDebugInfo => {
+    'isActive': state.isActive,
+    'isCompleted': state.isCompleted,
+    'isSkipped': state.isSkipped,
+    'isDisabled': state.isDisabled,
+    'currentStepIndex': state.currentStepIndex,
+    'canStartTutorial': canStartTutorial,
+    'isInProgress': isInProgress,
+  };
+
   TutorialStep? get currentStep {
     if (state.currentStepIndex < 0 ||
         state.currentStepIndex >= _tutorialSteps.length) {
@@ -427,7 +447,7 @@ class TutorialNotifier extends StateNotifier<TutorialState> {
   List<TutorialStep> get allSteps => _tutorialSteps;
 
   bool get canStartTutorial =>
-      !state.isDisabled && !state.isActive && !state.isCompleted;
+      !state.isDisabled && !state.isActive;
 
   bool get isInProgress =>
       state.isActive && !state.isCompleted && !state.isSkipped;
@@ -572,12 +592,54 @@ String _practiceSuffix(String localeName) {
   }
 }
 
+TutorialFollowUpAction _createNextStepAction(String localeName) {
+  return TutorialFollowUpAction(
+    id: 'next_step',
+    title: _nextStepTitle(localeName),
+    description: _nextStepDescription(localeName),
+  );
+}
+
 TutorialFollowUpAction _createShowSolutionAction(String localeName) {
   return TutorialFollowUpAction(
     id: tutorialActionShowSolutionId,
     title: _showSolutionTitle(localeName),
     description: _showSolutionDescription(localeName),
   );
+}
+
+String _nextStepTitle(String localeName) {
+  switch (localeName) {
+    case 'ja':
+      return '次に進む';
+    case 'ko':
+      return '다음으로';
+    case 'zh_TW':
+      return '下一步';
+    case 'zh_CN':
+      return '下一步';
+    case 'zh':
+      return '下一步';
+    default:
+      return 'Next Step';
+  }
+}
+
+String _nextStepDescription(String localeName) {
+  switch (localeName) {
+    case 'ja':
+      return '入力内容を確認してから「次に進む」ボタンを押してください。';
+    case 'ko':
+      return '입력 내용을 확인한 후 "다음으로" 버튼을 누르세요.';
+    case 'zh_TW':
+      return '確認輸入內容後，點擊「下一步」按鈕。';
+    case 'zh_CN':
+      return '确认输入内容后，点击「下一步」按钮。';
+    case 'zh':
+      return '确认输入内容后，点击「下一步」按钮。';
+    default:
+      return 'Review your input and tap the "Next Step" button.';
+  }
 }
 
 String _showSolutionTitle(String localeName) {

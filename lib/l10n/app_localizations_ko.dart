@@ -421,6 +421,13 @@ class AppLocalizationsKo extends AppLocalizations {
       'MathStep 사용법을 단계별로 배워봅시다. 각 단계에서 실제로 키를 눌러 기능을 익힐 수 있습니다.';
 
   @override
+  String get tutorialBasicFunctionTitle => '기본 함수 입력';
+
+  @override
+  String get tutorialBasicFunctionDescription =>
+      '기본적인 함수부터 시작해보겠습니다. f(x)=x²+1과 같은 간단한 식을 입력해보겠습니다.';
+
+  @override
   String get tutorialBasicOperationsTitle => '기본 사칙연산';
 
   @override
@@ -453,7 +460,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tutorialSummationDescription =>
-      'Σ 키를 사용해 총합을 입력하세요. 변수, 하한, 상한, 식 순서로 입력합니다.';
+      'Σ 키를 사용해 총합을 입력하세요. Σ(i=1,5,i²)과 같은 간단한 식부터 시작합니다.';
 
   @override
   String get tutorialIntegralTitle => '적분 기호 입력';
@@ -475,6 +482,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get tutorialCompletionDescription =>
       '축하합니다! 튜토리얼이 완료되었습니다. 이제 MathStep의 기본 사용법을 익혔습니다.';
+
+  @override
+  String get tutorialHelpGuidanceTitle => 'HELP 버튼으로 자세한 내용 확인';
+
+  @override
+  String get tutorialHelpGuidanceDescription =>
+      '튜토리얼 완료 수고하셨습니다! 기본적인 조작을 마스터했습니다. 우측 상단의 HELP 버튼을 눌러 더 자세한 기호 입력 방법과 고급 기능에 대해 확인할 수 있습니다.';
 
   @override
   String tutorialStepIndicator(int current, int total) {

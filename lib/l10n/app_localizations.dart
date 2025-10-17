@@ -866,6 +866,18 @@ abstract class AppLocalizations {
   /// **'Let\'s learn how to use MathStep step by step. You can learn operations by actually pressing keys in each step.'**
   String get tutorialWelcomeDescription;
 
+  /// No description provided for @tutorialBasicFunctionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Function Input'**
+  String get tutorialBasicFunctionTitle;
+
+  /// No description provided for @tutorialBasicFunctionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s start with basic functions. We\'ll input simple expressions like f(x)=x²+1.'**
+  String get tutorialBasicFunctionDescription;
+
   /// No description provided for @tutorialBasicOperationsTitle.
   ///
   /// In en, this message translates to:
@@ -923,7 +935,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialSummationDescription.
   ///
   /// In en, this message translates to:
-  /// **'Use the Σ key to input summations. Enter in the order: variable, lower bound, upper bound, expression.'**
+  /// **'Use the Σ key to input summations. Let\'s start with simple expressions like Σ(i=1,5,i²).'**
   String get tutorialSummationDescription;
 
   /// No description provided for @tutorialIntegralTitle.
@@ -961,6 +973,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Congratulations! The tutorial is complete. You have now mastered the basic usage of MathStep.'**
   String get tutorialCompletionDescription;
+
+  /// No description provided for @tutorialHelpGuidanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Details with HELP Button'**
+  String get tutorialHelpGuidanceTitle;
+
+  /// No description provided for @tutorialHelpGuidanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job completing the tutorial! You\'ve mastered the basic operations. Tap the HELP button in the top-right corner to learn more about detailed symbol input methods and advanced features.'**
+  String get tutorialHelpGuidanceDescription;
 
   /// No description provided for @tutorialStepIndicator.
   ///

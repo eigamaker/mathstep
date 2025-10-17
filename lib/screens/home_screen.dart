@@ -51,18 +51,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _startTutorialAfterDelay() async {
+    // チュートリアル設定を読み込み
+    await ref.read(tutorialProvider.notifier).loadTutorialSettings();
     // 少し待ってからチュートリアルを開始
     await Future.delayed(const Duration(milliseconds: 200));
     _startTutorialIfNeeded();
   }
 
   void _startTutorialIfNeeded() {
-    final tutorialState = ref.read(tutorialProvider);
-
-    if (!tutorialState.isDisabled &&
-        !tutorialState.isCompleted &&
-        !tutorialState.isActive) {
-      ref.read(tutorialProvider.notifier).startTutorial(context);
+    final tutorialNotifier = ref.read(tutorialProvider.notifier);
+    
+    // デバッグ情報を出力
+    print('Tutorial Debug Info: ${tutorialNotifier.tutorialDebugInfo}');
+    
+    if (tutorialNotifier.canStartTutorial) {
+      print('Starting tutorial...');
+      tutorialNotifier.startTutorial(context);
+    } else {
+      print('Cannot start tutorial - conditions not met');
     }
   }
 

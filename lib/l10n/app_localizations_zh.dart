@@ -419,6 +419,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '让我们一步步学习 MathStep 的用法。在每个步骤中通过实际按键来掌握功能。';
 
   @override
+  String get tutorialBasicFunctionTitle => '基本函数输入';
+
+  @override
+  String get tutorialBasicFunctionDescription =>
+      '让我们从基本函数开始。我们将输入像 f(x)=x²+1 这样的简单表达式。';
+
+  @override
   String get tutorialBasicOperationsTitle => '基本四则运算';
 
   @override
@@ -447,7 +454,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tutorialSummationTitle => '求和符号输入';
 
   @override
-  String get tutorialSummationDescription => '使用 Σ 键输入求和，依次输入变量、下限、上限和表达式。';
+  String get tutorialSummationDescription =>
+      '使用 Σ 键输入求和，从 Σ(i=1,5,i²) 这样的简单表达式开始。';
 
   @override
   String get tutorialIntegralTitle => '积分符号输入';
@@ -467,6 +475,13 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get tutorialCompletionDescription =>
       '恭喜！教程已完成。现在你已经掌握了 MathStep 的基本用法。';
+
+  @override
+  String get tutorialHelpGuidanceTitle => '通过HELP按钮查看详细信息';
+
+  @override
+  String get tutorialHelpGuidanceDescription =>
+      '教程完成，辛苦了！您已经掌握了基本操作。点击右上角的HELP按钮可以了解更多详细的符号输入方法和高级功能。';
 
   @override
   String tutorialStepIndicator(int current, int total) {
@@ -904,6 +919,13 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
       '让我们一步步学习 MathStep 的用法。在每个步骤中通过实际按键来掌握功能。';
 
   @override
+  String get tutorialBasicFunctionTitle => '基本函数输入';
+
+  @override
+  String get tutorialBasicFunctionDescription =>
+      '让我们从基本函数开始。我们将输入像 f(x)=x²+1 这样的简单表达式。';
+
+  @override
   String get tutorialBasicOperationsTitle => '基本四则运算';
 
   @override
@@ -932,7 +954,8 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get tutorialSummationTitle => '求和符号输入';
 
   @override
-  String get tutorialSummationDescription => '使用 Σ 键输入求和，依次输入变量、下限、上限和表达式。';
+  String get tutorialSummationDescription =>
+      '使用 Σ 键输入求和，从 Σ(i=1,5,i²) 这样的简单表达式开始。';
 
   @override
   String get tutorialIntegralTitle => '积分符号输入';
@@ -952,6 +975,13 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get tutorialCompletionDescription =>
       '恭喜！教程已完成。现在你已经掌握了 MathStep 的基本用法。';
+
+  @override
+  String get tutorialHelpGuidanceTitle => '通过HELP按钮查看详细信息';
+
+  @override
+  String get tutorialHelpGuidanceDescription =>
+      '教程完成，辛苦了！您已经掌握了基本操作。点击右上角的HELP按钮可以了解更多详细的符号输入方法和高级功能。';
 
   @override
   String tutorialStepIndicator(int current, int total) {
@@ -1389,6 +1419,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
       '讓我們一步步學習 MathStep 的用法。每個步驟都可以實際按鍵來熟悉功能。';
 
   @override
+  String get tutorialBasicFunctionTitle => '基本函數輸入';
+
+  @override
+  String get tutorialBasicFunctionDescription =>
+      '讓我們從基本函數開始。我們將輸入像 f(x)=x²+1 這樣的簡單表達式。';
+
+  @override
   String get tutorialBasicOperationsTitle => '基本四則運算';
 
   @override
@@ -1417,7 +1454,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get tutorialSummationTitle => '總和符號輸入';
 
   @override
-  String get tutorialSummationDescription => '使用 Σ 鍵輸入總和，依序輸入變數、下限、上限與表示式。';
+  String get tutorialSummationDescription =>
+      '使用 Σ 鍵輸入總和，從 Σ(i=1,5,i²) 這樣的簡單表達式開始。';
 
   @override
   String get tutorialIntegralTitle => '積分符號輸入';
@@ -1437,6 +1475,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get tutorialCompletionDescription =>
       '恭喜！教學已完成。現在你已經掌握 MathStep 的基本用法。';
+
+  @override
+  String get tutorialHelpGuidanceTitle => '透過HELP按鈕查看詳細資訊';
+
+  @override
+  String get tutorialHelpGuidanceDescription =>
+      '教學完成，辛苦了！您已經掌握了基本操作。點擊右上角的HELP按鈕可以了解更多詳細的符號輸入方法和進階功能。';
 
   @override
   String tutorialStepIndicator(int current, int total) {

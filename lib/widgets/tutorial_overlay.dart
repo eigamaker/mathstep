@@ -53,7 +53,7 @@ class TutorialOverlay extends ConsumerWidget {
                 tutorialState.awaitingActionId == null &&
                 !step.autoAdvanceOnComplete,
             onNextPressed: () =>
-                ref.read(tutorialProvider.notifier).nextStep(),
+                ref.read(tutorialProvider.notifier).handleNextStepAction(),
           ),
         SafeArea(
           top: !isPracticeStep,
@@ -126,21 +126,13 @@ class _TutorialCard extends ConsumerWidget {
       children
         ..add(const SizedBox(height: 12))
         ..add(
-          Text(
-            step.description,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.textPrimary,
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          _buildDescriptionWithIcons(step.description),
         );
     }
 
     final bool showExampleExpression =
         step.exampleExpression.isNotEmpty &&
-        (!isPracticeStep || tutorialState.practiceCompleted);
+        !isPracticeStep; // practice modeでは例の式を表示しない
 
     if (showExampleExpression) {
       children
@@ -151,10 +143,8 @@ class _TutorialCard extends ConsumerWidget {
     if (isPracticeStep &&
         !isAwaitingAction &&
         !tutorialState.practiceCompleted) {
-      children
-        ..add(const SizedBox(height: 16))
-        ..add(_buildPracticeInstructionBanner(context, step, completedKeys))
-        ..add(_buildNextKeyHint(context, step, completedKeys));
+      // practice modeでは、メッセージはドラッグ可能パネルに統合されているため、
+      // ここでは何も表示しない（キーシーケンスパネルで表示）
     }
 
     if (isPracticeStep && tutorialState.practiceCompleted) {
@@ -175,6 +165,25 @@ class _TutorialCard extends ConsumerWidget {
       children
         ..add(const SizedBox(height: 16))
         ..add(_buildActionBanner(step.followUpAction!));
+      
+      // 次に進むアクションの場合はボタンを表示
+      if (step.followUpAction!.id == 'next_step') {
+        children
+          ..add(const SizedBox(height: 12))
+          ..add(
+            ElevatedButton(
+              onPressed: () => ref.read(tutorialProvider.notifier).handleNextStepAction(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(step.followUpAction!.title),
+            ),
+          );
+      }
     }
 
     // practice modeではアクションボタンを表示しない
@@ -212,6 +221,45 @@ class _TutorialCard extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDescriptionWithIcons(String description) {
+    // HELPボタンの説明文の場合、アイコンを表示
+    if (description.contains('HELP') || description.contains('ヘルプ')) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.help_outline,
+            color: AppColors.primary,
+            size: 20,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              description,
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppColors.textPrimary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    }
+    
+    // 通常の説明文
+    return Text(
+      description,
+      style: const TextStyle(
+        fontSize: 16,
+        color: AppColors.textPrimary,
+        height: 1.5,
+      ),
+      textAlign: TextAlign.center,
     );
   }
 
@@ -268,66 +316,6 @@ class _TutorialCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildPracticeInstructionBanner(
-    BuildContext context,
-    TutorialStep step,
-    int completedKeys,
-  ) {
-    final String message = _practiceInstructionText(context);
-    final int remaining = (step.keySequence.length - completedKeys).clamp(
-      0,
-      step.keySequence.length,
-    );
-    final String remainingLine = remaining > 0
-        ? '\n${_remainingKeysLabel(context, remaining)}'
-        : '';
-
-    return _InfoBanner(
-      icon: Icons.touch_app,
-      iconColor: AppColors.primary,
-      backgroundColor: AppColors.primaryContainer,
-      textColor: AppColors.primary,
-      message: '$message$remainingLine',
-    );
-  }
-
-  Widget _buildNextKeyHint(
-    BuildContext context,
-    TutorialStep step,
-    int completedKeys,
-  ) {
-    if (completedKeys >= step.keySequence.length) {
-      return const SizedBox.shrink();
-    }
-
-    final nextHint = step.keySequence[completedKeys];
-
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.keyboard, color: AppColors.primary.withValues(alpha: 0.9)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              '${_nextKeyLabel(context)}: ${nextHint.label}',
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildCompletionBanner(BuildContext context, String message) {
     return _InfoBanner(
@@ -350,39 +338,6 @@ class _TutorialCard extends ConsumerWidget {
     );
   }
 
-  String _nextKeyLabel(BuildContext context) {
-    switch (context.l10n.localeName) {
-      case 'ja':
-        return '次に押すキー';
-      case 'ko':
-        return '다음 키';
-      case 'zh_TW':
-        return '下一個按鍵';
-      case 'zh_CN':
-        return '下一个按键';
-      case 'zh':
-        return '下一个按键';
-      default:
-        return 'Next key';
-    }
-  }
-
-  String _remainingKeysLabel(BuildContext context, int remaining) {
-    switch (context.l10n.localeName) {
-      case 'ja':
-        return '残りキー数: $remaining';
-      case 'ko':
-        return '남은 키: $remaining';
-      case 'zh_TW':
-        return '剩餘按鍵：$remaining';
-      case 'zh_CN':
-        return '剩余按键：$remaining';
-      case 'zh':
-        return '剩余按键：$remaining';
-      default:
-        return 'Keys remaining: $remaining';
-    }
-  }
 
   Widget _buildActionButtons(
     BuildContext context,
@@ -442,23 +397,6 @@ class _TutorialCard extends ConsumerWidget {
           ),
       ],
     );
-  }
-
-  String _practiceInstructionText(BuildContext context) {
-    switch (context.l10n.localeName) {
-      case 'ja':
-        return '表示されているキーの順番に下のキーパッドをタップして数式を入力してください。プレビューで確認してみましょう。';
-      case 'ko':
-        return '화면에 나온 순서대로 아래 키패드를 눌러 수식을 입력하세요. 미리보기에서 결과를 확인할 수 있습니다.';
-      case 'zh_TW':
-        return '依照顯示的順序點擊下方的鍵盤輸入公式，預覽會即時更新。';
-      case 'zh_CN':
-        return '按照显示的顺序点击下方的键盘输入公式，预览会实时更新。';
-      case 'zh':
-        return '按照显示的顺序点击下方的键盘输入公式，预览会实时更新。';
-      default:
-        return 'Tap the keys in the shown order on the keypad below. The preview updates as you go.';
-    }
   }
 
   String _practiceCompletionText(
@@ -563,20 +501,20 @@ class _PracticeSequencePanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final l10n = context.l10n;
     final int currentIndex = completedKeys.clamp(0, step.keySequence.length);
+    final int remaining = (step.keySequence.length - completedKeys).clamp(0, step.keySequence.length);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -584,42 +522,65 @@ class _PracticeSequencePanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            l10n.tutorialKeySequenceLabel,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            height: 32, // 固定の高さで1行表示
-            child: _buildScrollableKeySequence(step, currentIndex, completedKeys),
-          ),
-          if (showNextButton && onNextPressed != null)
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: ElevatedButton.icon(
-                  onPressed: onNextPressed,
-                  icon: const Icon(Icons.arrow_forward_rounded, size: 16),
-                  label: Text(
-                    context.l10n.tutorialNextButton,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          // メッセージとキーシーケンスラベルを統合
+          Row(
+            children: [
+              Icon(
+                Icons.touch_app,
+                size: 16,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _practiceInstructionText(context),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
                   ),
                 ),
               ),
+            ],
+          ),
+          if (remaining > 0) ...[
+            const SizedBox(height: 4),
+            Text(
+              _remainingKeysLabel(context, remaining),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
             ),
+          ],
+          const SizedBox(height: 12),
+          // キーシーケンス
+          SizedBox(
+            height: 48, // より高くして見やすく
+            child: _buildScrollableKeySequence(step, currentIndex, completedKeys),
+          ),
+          if (showNextButton && onNextPressed != null) ...[
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: onNextPressed,
+                icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                label: Text(
+                  context.l10n.tutorialNextButton,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -637,15 +598,16 @@ class _PracticeSequencePanel extends StatelessWidget {
           controller: _ScrollController.controller,
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: List.generate(step.keySequence.length * 2 - 1, (index) {
               if (index.isOdd) {
                 // 矢印を表示
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: Icon(
                     Icons.arrow_forward,
-                    size: 14,
-                    color: AppColors.textSecondary.withValues(alpha: 0.6),
+                    size: 18,
+                    color: AppColors.primary.withValues(alpha: 0.7),
                   ),
                 );
               }
@@ -661,7 +623,7 @@ class _PracticeSequencePanel extends StatelessWidget {
                 index: keyIndex,
                 hint: step.keySequence[keyIndex],
                 status: status,
-                isCompact: true, // コンパクトモード
+                isCompact: false, // 通常サイズで見やすく
               );
             }),
           ),
@@ -670,6 +632,39 @@ class _PracticeSequencePanel extends StatelessWidget {
     );
   }
 
+  String _practiceInstructionText(BuildContext context) {
+    switch (context.l10n.localeName) {
+      case 'ja':
+        return '表示されているキーの順番に下のキーパッドをタップして数式を入力してください。プレビューで確認してみましょう。';
+      case 'ko':
+        return '화면에 나온 순서대로 아래 키패드를 눌러 수식을 입력하세요. 미리보기에서 결과를 확인할 수 있습니다.';
+      case 'zh_TW':
+        return '依照顯示的順序點擊下方的鍵盤輸入公式，預覽會即時更新。';
+      case 'zh_CN':
+        return '按照显示的顺序点击下方的键盘输入公式，预览会实时更新。';
+      case 'zh':
+        return '按照显示的顺序点击下方的键盘输入公式，预览会实时更新。';
+      default:
+        return 'Tap the keys in the shown order on the keypad below. The preview updates as you go.';
+    }
+  }
+
+  String _remainingKeysLabel(BuildContext context, int remaining) {
+    switch (context.l10n.localeName) {
+      case 'ja':
+        return '残りキー数: $remaining';
+      case 'ko':
+        return '남은 키: $remaining';
+      case 'zh_TW':
+        return '剩餘按鍵：$remaining';
+      case 'zh_CN':
+        return '剩余按键：$remaining';
+      case 'zh':
+        return '剩余按键：$remaining';
+      default:
+        return 'Keys remaining: $remaining';
+    }
+  }
 }
 
 class _DraggablePracticeSequencePanel extends StatefulWidget {
@@ -693,19 +688,25 @@ class _DraggablePracticeSequencePanelState extends State<_DraggablePracticeSeque
   Offset _position = const Offset(0, 0);
   bool _isDragging = false;
   late Size _screenSize;
+  late double _panelHeight;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _screenSize = MediaQuery.of(context).size;
+    // パネルの高さを推定（メッセージ + キーシーケンス + ボタン）
+    _panelHeight = 140.0;
   }
 
   @override
   Widget build(BuildContext context) {
+    // 初期位置を画面の中央下部に設定（キーパッドの上）
+    final initialY = _screenSize.height - _panelHeight - 200;
+    
     return Positioned(
       left: 16 + _position.dx,
-      top: _screenSize.height - 220 - 100 + _position.dy, // 初期位置から上下に移動可能
-      right: 16 - _position.dx, // 左右の制約を維持
+      top: initialY + _position.dy,
+      right: 16 - _position.dx,
       child: GestureDetector(
         onPanStart: (details) {
           setState(() {
@@ -714,13 +715,12 @@ class _DraggablePracticeSequencePanelState extends State<_DraggablePracticeSeque
         },
         onPanUpdate: (details) {
           setState(() {
-            // 上下の移動を制限（画面内に留める）
             final newY = _position.dy + details.delta.dy;
             final newX = _position.dx + details.delta.dx;
             
-            // 上下の制限：画面の上端から下端まで
-            final minY = -(_screenSize.height - 300); // 上端制限
-            final maxY = 100; // 下端制限
+            // 上下の制限：画面の上端から下端まで（より広い範囲）
+            final minY = -(_screenSize.height - _panelHeight - 100); // 上端制限
+            final maxY = _screenSize.height - _panelHeight - 100; // 下端制限
             
             // 左右の制限：画面幅内
             final minX = -(_screenSize.width - 100); // 左端制限
@@ -803,18 +803,26 @@ class _KeyStepChip extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isCompact ? 8 : 14,
-        vertical: isCompact ? 6 : 10,
+        horizontal: isCompact ? 8 : 12,
+        vertical: isCompact ? 6 : 8,
       ),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(isCompact ? 16 : 24),
-        border: Border.all(color: borderColor, width: 1),
+        borderRadius: BorderRadius.circular(isCompact ? 16 : 18),
+        border: Border.all(color: borderColor, width: 1.5),
         boxShadow: status == _KeyStepStatus.current
             ? [
                 BoxShadow(
-                  color: borderColor.withValues(alpha: 0.35),
-                  blurRadius: isCompact ? 4 : 8,
+                  color: borderColor.withValues(alpha: 0.4),
+                  blurRadius: isCompact ? 6 : 12,
+                  offset: const Offset(0, 3),
+                ),
+              ]
+            : status == _KeyStepStatus.completed
+            ? [
+                BoxShadow(
+                  color: borderColor.withValues(alpha: 0.2),
+                  blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
               ]
@@ -823,7 +831,7 @@ class _KeyStepChip extends StatelessWidget {
       child: Text(
         hint.label,
         style: TextStyle(
-          fontSize: isCompact ? 12 : 14,
+          fontSize: isCompact ? 12 : 18,
           fontWeight: FontWeight.w600,
           color: textColor,
         ),
@@ -831,3 +839,4 @@ class _KeyStepChip extends StatelessWidget {
     );
   }
 }
+

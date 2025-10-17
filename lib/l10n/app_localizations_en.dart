@@ -458,6 +458,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Let\'s learn how to use MathStep step by step. You can learn operations by actually pressing keys in each step.';
 
   @override
+  String get tutorialBasicFunctionTitle => 'Basic Function Input';
+
+  @override
+  String get tutorialBasicFunctionDescription =>
+      'Let\'s start with basic functions. We\'ll input simple expressions like f(x)=x²+1.';
+
+  @override
   String get tutorialBasicOperationsTitle => 'Basic Arithmetic Operations';
 
   @override
@@ -490,7 +497,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialSummationDescription =>
-      'Use the Σ key to input summations. Enter in the order: variable, lower bound, upper bound, expression.';
+      'Use the Σ key to input summations. Let\'s start with simple expressions like Σ(i=1,5,i²).';
 
   @override
   String get tutorialIntegralTitle => 'Integral Symbol Input';
@@ -512,6 +519,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tutorialCompletionDescription =>
       'Congratulations! The tutorial is complete. You have now mastered the basic usage of MathStep.';
+
+  @override
+  String get tutorialHelpGuidanceTitle => 'Check Details with HELP Button';
+
+  @override
+  String get tutorialHelpGuidanceDescription =>
+      'Great job completing the tutorial! You\'ve mastered the basic operations. Tap the HELP button in the top-right corner to learn more about detailed symbol input methods and advanced features.';
 
   @override
   String tutorialStepIndicator(int current, int total) {
